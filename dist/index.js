@@ -2897,7 +2897,7 @@ function Run() {
                 args.push(core.getInput('execute-method'));
             }
             if (core.getInput('additional-arguments') !== '') {
-                args.concat(core.getInput('additional-arguments').split(" "));
+                args = args.concat(core.getInput('additional-arguments').split(" "));
             }
             yield exec.exec(GetUnityVersionPath(os.platform(), unityVersion), args);
         }
