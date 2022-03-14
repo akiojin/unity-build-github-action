@@ -1,0 +1,27 @@
+{
+  "name": "xcode-bulid-github-action",
+  "version": "0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akiojin/xcode-bulid-github-action.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/akiojin/xcode-bulid-github-action/issues"
+  },
+  "homepage": "https://github.com/akiojin/xcode-bulid-github-action#readme",
+  "dependencies": {
+    "@actions/core": "^1.6.0",
+    "@actions/exec": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.21"
+  }
+}

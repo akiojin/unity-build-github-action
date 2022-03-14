@@ -1,0 +1,61 @@
+name: 'unity-build-github-action'
+description: 'このアクションは Unity コマンドラインビルドを行います。'
+inputs:
+  unity-version:
+    description: >
+      Specifies the Unity version. (e.g. 2021.2.7f1)
+    required: true
+  build-target:
+    description: >
+      Allows the selection of an active build target before loading a project.
+      
+      Possible options are:
+      standalone, Win, Win64, OSXUniversal, Linux, Linux64, LinuxUniversal, iOS, Android, Web, WebStreamed, WebGL, XboxOne, PS4, WindowsStoreApps, Switch, N3DS, tvOS.
+    required: true
+  project-directory:
+    description: >
+      Open the project at the given path. If the pathname contains spaces, enclose it in quotes.
+    required: true
+  output-directory:
+    description: >
+      出力先ディレクトリを指定します。
+    required: false
+    default: ''
+  execute-method:
+    description: >
+      Execute the static method as soon as Unity opens the project,
+      and after the optional Asset server update is complete.
+      You can use this to do tasks such as continuous integration,
+      performing Unit Tests, making builds or preparing data.
+      To return an error from the command line process,
+      either throw an exception which causes Unity to exit with return code 1,
+      or call EditorApplication.Exit with a non-zero return code.
+      To pass parameters, add them to the command line and retrieve them inside the function using System.Environment.GetCommandLineArgs.
+      To use -executeMethod, you need to place the enclosing script in an Editor folder.
+      The method you execute must be defined as static.
+    required: false
+    default: ''
+  log-file:
+    description: >
+      Specify where Unity writes the Editor or Windows/Linux/OSX standalone log file.
+      To output to the console, specify - for the path name.
+      On Windows, specify - option to make the output go to stdout, which is not the console by default.
+    required: false
+    default: '-'
+  disable-upm:
+    description: >
+      Specify true to disable the Unity package manager.
+      Disabling UPM speeds up the startup process a bit.
+    required: false
+    default: false
+  additional-arguments:
+    description: >
+      追加で必要な引数を指定します。
+    required: false
+    default: ''
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
+branding:
+  icon: "download"
+  color: "orange"
