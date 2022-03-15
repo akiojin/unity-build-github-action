@@ -2877,8 +2877,8 @@ function GetUnityVersion(projectDirectory) {
     return __awaiter(this, void 0, void 0, function* () {
         const data = yield fs_1.promises.readFile(`${projectDirectory}/ProjectSettings/ProjectVersion.txt`);
         const text = data.toString();
-        const result = text.match(new RegExp('^m_EditorVersion: (.*)$'));
-        if (result == null) {
+        const result = text.match(/^.*m_EditorVersion: (.*)$/);
+        if (result === null) {
             throw new Error('Invalid ProjectVersion.txt');
         }
         return result[1];

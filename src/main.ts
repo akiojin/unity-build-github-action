@@ -19,9 +19,9 @@ async function GetUnityVersion(projectDirectory: string): Promise<string>
 	const data = await fs.readFile(`${projectDirectory}/ProjectSettings/ProjectVersion.txt`)
 	const text = data.toString()
 
-	const result = text.match(new RegExp('^m_EditorVersion: (.*)$'))
+	const result = text.match(/^.*m_EditorVersion: (.*)$/)
 
-	if (result == null) {
+	if (result === null) {
 		throw new Error('Invalid ProjectVersion.txt')
 	}
 
