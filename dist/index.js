@@ -2837,9 +2837,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Unity = void 0;
+exports.UnityCommandBuilder = exports.Unity = void 0;
 var unity_1 = __nccwpck_require2_(327);
 Object.defineProperty(exports, "Unity", ({ enumerable: true, get: function () { return __importDefault(unity_1).default; } }));
+var unity_2 = __nccwpck_require2_(327);
+Object.defineProperty(exports, "UnityCommandBuilder", ({ enumerable: true, get: function () { return unity_2.UnityCommandBuilder; } }));
 
 
 /***/ }),
@@ -2849,6 +2851,7 @@ Object.defineProperty(exports, "Unity", ({ enumerable: true, get: function () { 
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UnityCommandBuilder = void 0;
 const fs_1 = __nccwpck_require2_(147);
 class Unity {
     static GetExecutePath(os, unityVersion) {
@@ -2871,6 +2874,30 @@ class Unity {
     }
 }
 exports["default"] = Unity;
+class UnityCommandBuilder {
+    constructor() {
+        this.args = [];
+        this.AddCommand('-quit');
+        this.AddCommand('-batchmode');
+        this.AddCommand('-nographics');
+        this.AddCommand('silent-crashes');
+    }
+    AddCommand(command, param) {
+        if (Array.isArray(command)) {
+            this.args = this.args.concat(command);
+        }
+        else {
+            this.args.push(command);
+            if (param != null) {
+                this.args.push(param);
+            }
+        }
+    }
+    Build() {
+        return this.args;
+    }
+}
+exports.UnityCommandBuilder = UnityCommandBuilder;
 
 
 /***/ }),
@@ -2981,27 +3008,21 @@ function Run() {
             const unityVersion = yield unity_command_1.Unity.GetVersion(projectDirectory);
             const buildTarget = core.getInput('build-target');
             const outputDirectory = core.getInput('output-directory');
-            var args = [
-                '-quit',
-                '-batchmode',
-                '-nographics',
-                '-silent-crashes',
-                '-buildTarget', buildTarget,
-                '-projectPath', projectDirectory,
-                '-outputPath', outputDirectory,
-                '-logFile', core.getInput('log-file')
-            ];
+            const builder = new unity_command_1.UnityCommandBuilder();
+            builder.AddCommand('-buildTarget', buildTarget);
+            builder.AddCommand('-projectPath', projectDirectory);
+            builder.AddCommand('-outputPath', outputDirectory);
+            builder.AddCommand('-logFile', core.getInput('log-file'));
             if (!!core.getBooleanInput('disable-upm')) {
-                args.push('-noUpm');
+                builder.AddCommand('-noUpm');
             }
             if (core.getInput('execute-method') !== '') {
-                args.push('-executeMethod');
-                args.push(core.getInput('execute-method'));
+                builder.AddCommand('-executeMethod', core.getInput('execute-method'));
             }
             if (core.getInput('additional-arguments') !== '') {
-                args = args.concat(core.getInput('additional-arguments').split(" "));
+                builder.AddCommand(core.getInput('additional-arguments').split(' '));
             }
-            yield exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), unityVersion), args);
+            yield exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), unityVersion), builder.Build());
         }
         catch (ex) {
             core.setFailed(ex.message);
