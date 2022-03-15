@@ -2880,7 +2880,7 @@ class UnityCommandBuilder {
         this.AddCommand('-quit');
         this.AddCommand('-batchmode');
         this.AddCommand('-nographics');
-        this.AddCommand('silent-crashes');
+        this.AddCommand('-silent-crashes');
     }
     AddCommand(command, param) {
         if (Array.isArray(command)) {
@@ -2892,6 +2892,47 @@ class UnityCommandBuilder {
                 this.args.push(param);
             }
         }
+    }
+    DisableGPUSkinning() {
+        this.AddCommand('-disable-gpu-skinning');
+    }
+    SetExecuteMethod(executeMethod) {
+        this.AddCommand('-executeMethod', executeMethod);
+    }
+    SetJobWorkerCount(count) {
+        this.AddCommand('-job-worker-count', count.toString());
+    }
+    SetLogFile(logFile) {
+        this.AddCommand('-logFile', logFile);
+    }
+    DisableUPM() {
+        this.AddCommand('-noUpm');
+    }
+    Activation(username, password) {
+        this.AddCommand('-username', username);
+        this.AddCommand('-password', password);
+    }
+    SetProjectPath(projectPath) {
+        this.AddCommand('-projectPath', projectPath);
+    }
+    EnableReleaseCodeOptimization() {
+        this.AddCommand('-releaseCodeOptimization');
+    }
+    // Batch mode arguments
+    EnableAPIUpdater() {
+        this.AddCommand('-accept-apiupdate');
+    }
+    // Build Arguments
+    SetBuildTarget(target) {
+        this.AddCommand('-buildTarget', target);
+    }
+    // Cache server arguments
+    EnableCacheServer(endpoint) {
+        this.AddCommand('-EnableCacheServer');
+        this.AddCommand('-cacheServerEndpoint', endpoint);
+    }
+    SetOutputPath(outputPath) {
+        this.AddCommand('-outputPath', outputPath);
     }
     Build() {
         return this.args;
@@ -3006,18 +3047,16 @@ function Run() {
         try {
             const projectDirectory = core.getInput('project-directory');
             const unityVersion = yield unity_command_1.Unity.GetVersion(projectDirectory);
-            const buildTarget = core.getInput('build-target');
-            const outputDirectory = core.getInput('output-directory');
             const builder = new unity_command_1.UnityCommandBuilder();
-            builder.AddCommand('-buildTarget', buildTarget);
-            builder.AddCommand('-projectPath', projectDirectory);
-            builder.AddCommand('-outputPath', outputDirectory);
-            builder.AddCommand('-logFile', core.getInput('log-file'));
+            builder.SetBuildTarget(core.getInput('build-target'));
+            builder.SetProjectPath(projectDirectory);
+            builder.SetOutputPath(core.getInput('output-directory'));
+            builder.SetLogFile(core.getInput('log-file'));
             if (!!core.getBooleanInput('disable-upm')) {
-                builder.AddCommand('-noUpm');
+                builder.DisableUPM();
             }
             if (core.getInput('execute-method') !== '') {
-                builder.AddCommand('-executeMethod', core.getInput('execute-method'));
+                builder.SetExecuteMethod(core.getInput('execute-method'));
             }
             if (core.getInput('additional-arguments') !== '') {
                 builder.AddCommand(core.getInput('additional-arguments').split(' '));

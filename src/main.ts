@@ -8,21 +8,19 @@ async function Run()
 	try {
 		const projectDirectory = core.getInput('project-directory')
 		const unityVersion = await Unity.GetVersion(projectDirectory)
-		const buildTarget = core.getInput('build-target')
-		const outputDirectory = core.getInput('output-directory')
 
 		const builder = new UnityCommandBuilder()
-		builder.AddCommand('-buildTarget', buildTarget)
-		builder.AddCommand('-projectPath', projectDirectory)
-		builder.AddCommand('-outputPath', outputDirectory)
-		builder.AddCommand('-logFile', core.getInput('log-file'))
+		builder.SetBuildTarget(core.getInput('build-target'))
+		builder.SetProjectPath(projectDirectory)
+		builder.SetOutputPath(core.getInput('output-directory'))
+		builder.SetLogFile(core.getInput('log-file'))
 
 		if (!!core.getBooleanInput('disable-upm')) {
-			builder.AddCommand('-noUpm')
+			builder.DisableUPM()
 		}
 
 		if (core.getInput('execute-method') !== '') {
-			builder.AddCommand('-executeMethod', core.getInput('execute-method'))
+			builder.SetExecuteMethod(core.getInput('execute-method'))
 		}
 
 		if (core.getInput('additional-arguments') !== '') {
