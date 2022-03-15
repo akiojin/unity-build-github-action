@@ -2822,6 +2822,116 @@ exports.debug = debug; // for test
 
 /***/ }),
 
+/***/ 14:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 925:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require2_) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Unity = void 0;
+var unity_1 = __nccwpck_require2_(327);
+Object.defineProperty(exports, "Unity", ({ enumerable: true, get: function () { return __importDefault(unity_1).default; } }));
+
+
+/***/ }),
+
+/***/ 327:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require2_) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const fs_1 = __nccwpck_require2_(147);
+class Unity {
+    static GetExecutePath(os, unityVersion) {
+        switch (os) {
+            default:
+            case 'darwin':
+                return `/Applications/Unity/Hub/Editor/${unityVersion}/Unity.app/Contents/MacOS/Unity`;
+            case 'win32':
+                return `C:\\Program Files\\Unity\\Hub\\Editor\\${unityVersion}\\Editor\\Unity.exe`;
+        }
+    }
+    static async GetVersion(projectDirectory) {
+        const data = await fs_1.promises.readFile(`${projectDirectory}/ProjectSettings/ProjectVersion.txt`);
+        const text = data.toString();
+        const result = text.match(/m_EditorVersion: (?<version>[0-9a-zA-Z.]*)/i);
+        if (result === null || result.groups == null) {
+            throw new Error('Invalid ProjectVersion.txt');
+        }
+        return result.groups.version;
+    }
+}
+exports["default"] = Unity;
+
+
+/***/ }),
+
+/***/ 147:
+/***/ ((module) => {
+
+module.exports = __nccwpck_require__(147);
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __nccwpck_require2_(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		var threw = true;
+/******/ 		try {
+/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require2_);
+/******/ 			threw = false;
+/******/ 		} finally {
+/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 		}
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat */
+/******/ 	
+/******/ 	if (typeof __nccwpck_require2_ !== 'undefined') __nccwpck_require2_.ab = __dirname + "/";
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require2_(925);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
+/******/ })()
+;
+
+/***/ }),
+
 /***/ 116:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -2863,32 +2973,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(127));
 const exec = __importStar(__nccwpck_require__(49));
 const os = __importStar(__nccwpck_require__(37));
-const fs_1 = __nccwpck_require__(147);
-function GetUnityVersionPath(os, unityVersion) {
-    switch (os) {
-        default:
-        case 'darwin':
-            return `/Applications/Unity/Hub/Editor/${unityVersion}/Unity.app/Contents/MacOS/Unity`;
-        case 'win32':
-            return `C:\\Program Files\\Unity\\Hub\\Editor\\${unityVersion}\\Editor\\Unity.exe`;
-    }
-}
-function GetUnityVersion(projectDirectory) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const data = yield fs_1.promises.readFile(`${projectDirectory}/ProjectSettings/ProjectVersion.txt`);
-        const text = data.toString();
-        const result = text.match(/m_EditorVersion: (?<version>[0-9a-zA-Z.]*)/i);
-        if (result === null || result.groups == null) {
-            throw new Error('Invalid ProjectVersion.txt');
-        }
-        return result.groups.version;
-    });
-}
+const unity_command_1 = __nccwpck_require__(14);
 function Run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const projectDirectory = core.getInput('project-directory');
-            const unityVersion = yield GetUnityVersion(projectDirectory);
+            const unityVersion = yield unity_command_1.Unity.GetVersion(projectDirectory);
             const buildTarget = core.getInput('build-target');
             const outputDirectory = core.getInput('output-directory');
             var args = [
@@ -2911,7 +3001,7 @@ function Run() {
             if (core.getInput('additional-arguments') !== '') {
                 args = args.concat(core.getInput('additional-arguments').split(" "));
             }
-            yield exec.exec(GetUnityVersionPath(os.platform(), unityVersion), args);
+            yield exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), unityVersion), args);
         }
         catch (ex) {
             core.setFailed(ex.message);
