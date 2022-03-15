@@ -1,5 +1,5 @@
 name: 'unity-build-github-action'
-description: 'このアクションは Unity コマンドラインビルドを行います。'
+description: 'This action performs a Unity command line build.'
 inputs:
   build-target:
     description: >
@@ -14,7 +14,7 @@ inputs:
     required: true
   output-directory:
     description: >
-      出力先ディレクトリを指定します。
+      Specifies the output directory.
     required: false
     default: ''
   execute-method:
@@ -38,15 +38,9 @@ inputs:
       On Windows, specify - option to make the output go to stdout, which is not the console by default.
     required: false
     default: '-'
-  disable-upm:
-    description: >
-      Specify true to disable the Unity package manager.
-      Disabling UPM speeds up the startup process a bit.
-    required: false
-    default: false
   additional-arguments:
     description: >
-      追加で必要な引数を指定します。
+      Specify additional required arguments.
     required: false
     default: ''
 runs:

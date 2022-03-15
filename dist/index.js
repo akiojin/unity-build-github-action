@@ -2542,6 +2542,184 @@ function copyFile(srcFile, destFile, force) {
 
 /***/ }),
 
+/***/ 783:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 925:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require2_) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UnityCommandBuilder = exports.Unity = void 0;
+var unity_1 = __nccwpck_require2_(327);
+Object.defineProperty(exports, "Unity", ({ enumerable: true, get: function () { return __importDefault(unity_1).default; } }));
+var unity_2 = __nccwpck_require2_(327);
+Object.defineProperty(exports, "UnityCommandBuilder", ({ enumerable: true, get: function () { return unity_2.UnityCommandBuilder; } }));
+
+
+/***/ }),
+
+/***/ 327:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require2_) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UnityCommandBuilder = void 0;
+const fs_1 = __nccwpck_require2_(147);
+class Unity {
+    static GetExecutePath(os, unityVersion) {
+        switch (os) {
+            default:
+            case 'darwin':
+                return `/Applications/Unity/Hub/Editor/${unityVersion}/Unity.app/Contents/MacOS/Unity`;
+            case 'win32':
+                return `C:\\Program Files\\Unity\\Hub\\Editor\\${unityVersion}\\Editor\\Unity.exe`;
+        }
+    }
+    static async GetVersion(projectDirectory) {
+        const data = await fs_1.promises.readFile(`${projectDirectory}/ProjectSettings/ProjectVersion.txt`);
+        const text = data.toString();
+        const result = text.match(/m_EditorVersion: (?<version>[0-9a-zA-Z.]*)/i);
+        if (result === null || result.groups == null) {
+            throw new Error('Invalid ProjectVersion.txt');
+        }
+        return result.groups.version;
+    }
+}
+exports["default"] = Unity;
+class UnityCommandBuilder {
+    constructor() {
+        this.args = [];
+        this.AddCommand('-quit');
+        this.AddCommand('-batchmode');
+        this.AddCommand('-nographics');
+        this.AddCommand('-silent-crashes');
+    }
+    AddCommand(command, param) {
+        if (Array.isArray(command)) {
+            this.args = this.args.concat(command);
+        }
+        else {
+            this.args.push(command);
+            if (param != null) {
+                this.args.push(param);
+            }
+        }
+    }
+    DisableGPUSkinning() {
+        this.AddCommand('-disable-gpu-skinning');
+    }
+    SetExecuteMethod(executeMethod) {
+        this.AddCommand('-executeMethod', executeMethod);
+    }
+    SetJobWorkerCount(count) {
+        this.AddCommand('-job-worker-count', count.toString());
+    }
+    SetLogFile(logFile) {
+        this.AddCommand('-logFile', logFile);
+    }
+    DisableUPM() {
+        this.AddCommand('-noUpm');
+    }
+    Activation(username, password) {
+        this.AddCommand('-username', username);
+        this.AddCommand('-password', password);
+    }
+    SetProjectPath(projectPath) {
+        this.AddCommand('-projectPath', projectPath);
+    }
+    EnableReleaseCodeOptimization() {
+        this.AddCommand('-releaseCodeOptimization');
+    }
+    // Batch mode arguments
+    EnableAPIUpdater() {
+        this.AddCommand('-accept-apiupdate');
+    }
+    // Build Arguments
+    SetBuildTarget(target) {
+        this.AddCommand('-buildTarget', target);
+    }
+    // Cache server arguments
+    EnableCacheServer(endpoint) {
+        this.AddCommand('-EnableCacheServer');
+        this.AddCommand('-cacheServerEndpoint', endpoint);
+    }
+    SetOutputPath(outputPath) {
+        this.AddCommand('-outputPath', outputPath);
+    }
+    Build() {
+        return this.args;
+    }
+}
+exports.UnityCommandBuilder = UnityCommandBuilder;
+
+
+/***/ }),
+
+/***/ 147:
+/***/ ((module) => {
+
+module.exports = __nccwpck_require__(147);
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __nccwpck_require2_(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		var threw = true;
+/******/ 		try {
+/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require2_);
+/******/ 			threw = false;
+/******/ 		} finally {
+/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 		}
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat */
+/******/ 	
+/******/ 	if (typeof __nccwpck_require2_ !== 'undefined') __nccwpck_require2_.ab = __dirname + "/";
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require2_(925);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
+/******/ })()
+;
+
+/***/ }),
+
 /***/ 265:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -2822,184 +3000,6 @@ exports.debug = debug; // for test
 
 /***/ }),
 
-/***/ 14:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-/******/ (() => { // webpackBootstrap
-/******/ 	"use strict";
-/******/ 	var __webpack_modules__ = ({
-
-/***/ 925:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require2_) {
-
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UnityCommandBuilder = exports.Unity = void 0;
-var unity_1 = __nccwpck_require2_(327);
-Object.defineProperty(exports, "Unity", ({ enumerable: true, get: function () { return __importDefault(unity_1).default; } }));
-var unity_2 = __nccwpck_require2_(327);
-Object.defineProperty(exports, "UnityCommandBuilder", ({ enumerable: true, get: function () { return unity_2.UnityCommandBuilder; } }));
-
-
-/***/ }),
-
-/***/ 327:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require2_) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UnityCommandBuilder = void 0;
-const fs_1 = __nccwpck_require2_(147);
-class Unity {
-    static GetExecutePath(os, unityVersion) {
-        switch (os) {
-            default:
-            case 'darwin':
-                return `/Applications/Unity/Hub/Editor/${unityVersion}/Unity.app/Contents/MacOS/Unity`;
-            case 'win32':
-                return `C:\\Program Files\\Unity\\Hub\\Editor\\${unityVersion}\\Editor\\Unity.exe`;
-        }
-    }
-    static async GetVersion(projectDirectory) {
-        const data = await fs_1.promises.readFile(`${projectDirectory}/ProjectSettings/ProjectVersion.txt`);
-        const text = data.toString();
-        const result = text.match(/m_EditorVersion: (?<version>[0-9a-zA-Z.]*)/i);
-        if (result === null || result.groups == null) {
-            throw new Error('Invalid ProjectVersion.txt');
-        }
-        return result.groups.version;
-    }
-}
-exports["default"] = Unity;
-class UnityCommandBuilder {
-    constructor() {
-        this.args = [];
-        this.AddCommand('-quit');
-        this.AddCommand('-batchmode');
-        this.AddCommand('-nographics');
-        this.AddCommand('-silent-crashes');
-    }
-    AddCommand(command, param) {
-        if (Array.isArray(command)) {
-            this.args = this.args.concat(command);
-        }
-        else {
-            this.args.push(command);
-            if (param != null) {
-                this.args.push(param);
-            }
-        }
-    }
-    DisableGPUSkinning() {
-        this.AddCommand('-disable-gpu-skinning');
-    }
-    SetExecuteMethod(executeMethod) {
-        this.AddCommand('-executeMethod', executeMethod);
-    }
-    SetJobWorkerCount(count) {
-        this.AddCommand('-job-worker-count', count.toString());
-    }
-    SetLogFile(logFile) {
-        this.AddCommand('-logFile', logFile);
-    }
-    DisableUPM() {
-        this.AddCommand('-noUpm');
-    }
-    Activation(username, password) {
-        this.AddCommand('-username', username);
-        this.AddCommand('-password', password);
-    }
-    SetProjectPath(projectPath) {
-        this.AddCommand('-projectPath', projectPath);
-    }
-    EnableReleaseCodeOptimization() {
-        this.AddCommand('-releaseCodeOptimization');
-    }
-    // Batch mode arguments
-    EnableAPIUpdater() {
-        this.AddCommand('-accept-apiupdate');
-    }
-    // Build Arguments
-    SetBuildTarget(target) {
-        this.AddCommand('-buildTarget', target);
-    }
-    // Cache server arguments
-    EnableCacheServer(endpoint) {
-        this.AddCommand('-EnableCacheServer');
-        this.AddCommand('-cacheServerEndpoint', endpoint);
-    }
-    SetOutputPath(outputPath) {
-        this.AddCommand('-outputPath', outputPath);
-    }
-    Build() {
-        return this.args;
-    }
-}
-exports.UnityCommandBuilder = UnityCommandBuilder;
-
-
-/***/ }),
-
-/***/ 147:
-/***/ ((module) => {
-
-module.exports = __nccwpck_require__(147);
-
-/***/ })
-
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __nccwpck_require2_(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		var threw = true;
-/******/ 		try {
-/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require2_);
-/******/ 			threw = false;
-/******/ 		} finally {
-/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
-/******/ 		}
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/compat */
-/******/ 	
-/******/ 	if (typeof __nccwpck_require2_ !== 'undefined') __nccwpck_require2_.ab = __dirname + "/";
-/******/ 	
-/************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require2_(925);
-/******/ 	module.exports = __webpack_exports__;
-/******/ 	
-/******/ })()
-;
-
-/***/ }),
-
 /***/ 116:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -3028,45 +3028,31 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(127));
 const exec = __importStar(__nccwpck_require__(49));
 const os = __importStar(__nccwpck_require__(37));
-const unity_command_1 = __nccwpck_require__(14);
-function Run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const projectDirectory = core.getInput('project-directory');
-            const unityVersion = yield unity_command_1.Unity.GetVersion(projectDirectory);
-            const builder = new unity_command_1.UnityCommandBuilder();
-            builder.SetBuildTarget(core.getInput('build-target'));
-            builder.SetProjectPath(projectDirectory);
-            builder.SetOutputPath(core.getInput('output-directory'));
-            builder.SetLogFile(core.getInput('log-file'));
-            if (!!core.getBooleanInput('disable-upm')) {
-                builder.DisableUPM();
-            }
-            if (core.getInput('execute-method') !== '') {
-                builder.SetExecuteMethod(core.getInput('execute-method'));
-            }
-            if (core.getInput('additional-arguments') !== '') {
-                builder.AddCommand(core.getInput('additional-arguments').split(' '));
-            }
-            yield exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), unityVersion), builder.Build());
+const unity_command_1 = __nccwpck_require__(783);
+async function Run() {
+    try {
+        const projectDirectory = core.getInput('project-directory');
+        const unityVersion = await unity_command_1.Unity.GetVersion(projectDirectory);
+        const builder = new unity_command_1.UnityCommandBuilder();
+        builder.SetBuildTarget(core.getInput('build-target'));
+        builder.SetProjectPath(projectDirectory);
+        builder.SetOutputPath(core.getInput('output-directory'));
+        builder.SetLogFile(core.getInput('log-file'));
+        if (core.getInput('execute-method') !== '') {
+            builder.SetExecuteMethod(core.getInput('execute-method'));
         }
-        catch (ex) {
-            core.setFailed(ex.message);
+        if (core.getInput('additional-arguments') !== '') {
+            builder.AddCommand(core.getInput('additional-arguments').split(' '));
         }
-    });
+        await exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), unityVersion), builder.Build());
+    }
+    catch (ex) {
+        core.setFailed(ex.message);
+    }
 }
 Run();
 
