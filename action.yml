@@ -1,10 +1,6 @@
 name: 'unity-build-github-action'
 description: 'このアクションは Unity コマンドラインビルドを行います。'
 inputs:
-  unity-version:
-    description: >
-      Specifies the Unity version. (e.g. 2021.2.7f1)
-    required: true
   build-target:
     description: >
       Allows the selection of an active build target before loading a project.

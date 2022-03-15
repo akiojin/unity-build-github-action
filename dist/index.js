@@ -2863,6 +2863,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(127));
 const exec = __importStar(__nccwpck_require__(49));
 const os = __importStar(__nccwpck_require__(37));
+const fs_1 = __nccwpck_require__(147);
 function GetUnityVersionPath(os, unityVersion) {
     switch (os) {
         default:
@@ -2872,12 +2873,23 @@ function GetUnityVersionPath(os, unityVersion) {
             return `C:\\Program Files\\Unity\\Hub\\Editor\\${unityVersion}\\Editor\\Unity.exe`;
     }
 }
+function GetUnityVersion(projectDirectory) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const data = yield fs_1.promises.readFile(`${projectDirectory}/ProjectSettings/ProjectVersion.txt`);
+        const text = data.toString();
+        const result = text.match(new RegExp('^m_EditorVersion: (.*)$'));
+        if (result == null) {
+            throw new Error('Invalid ProjectVersion.txt');
+        }
+        return result[1];
+    });
+}
 function Run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const unityVersion = core.getInput('unity-version');
-            const buildTarget = core.getInput('build-target');
             const projectDirectory = core.getInput('project-directory');
+            const unityVersion = yield GetUnityVersion(projectDirectory);
+            const buildTarget = core.getInput('build-target');
             const outputDirectory = core.getInput('output-directory');
             var args = [
                 '-quit',

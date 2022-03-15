@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import * as os from 'os'
+import { promises as fs } from 'fs'
 
 function GetUnityVersionPath(os: string, unityVersion: string)
 {
@@ -13,12 +14,26 @@ function GetUnityVersionPath(os: string, unityVersion: string)
 	}
 }
 
+async function GetUnityVersion(projectDirectory: string): Promise<string>
+{
+	const data = await fs.readFile(`${projectDirectory}/ProjectSettings/ProjectVersion.txt`)
+	const text = data.toString()
+
+	const result = text.match(new RegExp('^m_EditorVersion: (.*)$'))
+
+	if (result == null) {
+		throw new Error('Invalid ProjectVersion.txt')
+	}
+
+	return result[1]
+}
+
 async function Run()
 {
 	try {
-		const unityVersion = core.getInput('unity-version')
-		const buildTarget = core.getInput('build-target')
 		const projectDirectory = core.getInput('project-directory')
+		const unityVersion = await GetUnityVersion(projectDirectory)
+		const buildTarget = core.getInput('build-target')
 		const outputDirectory = core.getInput('output-directory')
 
 		var args = [
