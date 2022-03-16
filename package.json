@@ -20,7 +20,7 @@
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@actions/exec": "^1.1.0",
-    "@akiojin/unity-command": "^0.1.11"
+    "@akiojin/unity-command": "^0.2.3"
   },
   "devDependencies": {
     "@types/node": "^17.0.21"

@@ -20,7 +20,7 @@ async function Run()
 		}
 
 		if (core.getInput('additional-arguments') !== '') {
-			builder.AddCommand(core.getInput('additional-arguments').split(' '))
+			builder.Append(core.getInput('additional-arguments').split(' '))
 		}
 
 		await exec.exec(Unity.GetExecutePath(os.platform(), unityVersion), builder.Build())

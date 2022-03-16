@@ -2546,12 +2546,174 @@ function copyFile(srcFile, destFile, force) {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 /******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 582:
+/***/ ((module) => {
+
+/******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 356:
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+class ArgumentBuilder {
+    constructor() {
+        this.args = [];
+    }
+    Append(arg, param) {
+        if (Array.isArray(arg)) {
+            this.args = this.args.concat(arg);
+        }
+        else {
+            this.args.push(arg);
+            if (param != null) {
+                this.args.push(param);
+            }
+        }
+    }
+    Count() {
+        return this.args.length;
+    }
+    Build() {
+        return this.args;
+    }
+    ToString() {
+        return this.args.join(' ');
+    }
+}
+exports["default"] = ArgumentBuilder;
+
+
+/***/ }),
+
+/***/ 925:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require3_) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ArgumentBuilder = void 0;
+var ArgumentBuilder_1 = __nccwpck_require3_(356);
+Object.defineProperty(exports, "ArgumentBuilder", ({ enumerable: true, get: function () { return __importDefault(ArgumentBuilder_1).default; } }));
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __nccwpck_require3_(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		var threw = true;
+/******/ 		try {
+/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require3_);
+/******/ 			threw = false;
+/******/ 		} finally {
+/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 		}
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat */
+/******/ 	
+/******/ 	if (typeof __nccwpck_require3_ !== 'undefined') __nccwpck_require3_.ab = __dirname + "/";
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require3_(925);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
+/******/ })()
+;
+
+/***/ }),
+
+/***/ 156:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require2_) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const argument_builder_1 = __nccwpck_require2_(582);
+class UnityCommandBuilder extends argument_builder_1.ArgumentBuilder {
+    DisableGPUSkinning() {
+        this.Append('-disable-gpu-skinning');
+    }
+    SetExecuteMethod(executeMethod) {
+        this.Append('-executeMethod', executeMethod);
+    }
+    SetJobWorkerCount(count) {
+        this.Append('-job-worker-count', count.toString());
+    }
+    SetLogFile(logFile) {
+        this.Append('-logFile', logFile);
+    }
+    DisableUPM() {
+        this.Append('-noUpm');
+    }
+    Activation(username, password) {
+        this.Append('-username', username);
+        this.Append('-password', password);
+    }
+    SetProjectPath(projectPath) {
+        this.Append('-projectPath', projectPath);
+    }
+    EnableReleaseCodeOptimization() {
+        this.Append('-releaseCodeOptimization');
+    }
+    // Batch mode arguments
+    EnableAPIUpdater() {
+        this.Append('-accept-apiupdate');
+    }
+    // Build Arguments
+    SetBuildTarget(target) {
+        this.Append('-buildTarget', target);
+    }
+    // Cache server arguments
+    EnableCacheServer(endpoint) {
+        this.Append('-EnableCacheServer');
+        this.Append('-cacheServerEndpoint', endpoint);
+    }
+    SetOutputPath(outputPath) {
+        this.Append('-outputPath', outputPath);
+    }
+}
+exports["default"] = UnityCommandBuilder;
+
+
+/***/ }),
 
 /***/ 925:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require2_) {
 
+"use strict";
 
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -2560,8 +2722,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UnityCommandBuilder = exports.Unity = void 0;
 var unity_1 = __nccwpck_require2_(327);
 Object.defineProperty(exports, "Unity", ({ enumerable: true, get: function () { return __importDefault(unity_1).default; } }));
-var unity_2 = __nccwpck_require2_(327);
-Object.defineProperty(exports, "UnityCommandBuilder", ({ enumerable: true, get: function () { return unity_2.UnityCommandBuilder; } }));
+var UnityCommandBuilder_1 = __nccwpck_require2_(156);
+Object.defineProperty(exports, "UnityCommandBuilder", ({ enumerable: true, get: function () { return __importDefault(UnityCommandBuilder_1).default; } }));
 
 
 /***/ }),
@@ -2569,9 +2731,9 @@ Object.defineProperty(exports, "UnityCommandBuilder", ({ enumerable: true, get: 
 /***/ 327:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require2_) => {
 
+"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UnityCommandBuilder = void 0;
 const fs_1 = __nccwpck_require2_(147);
 class Unity {
     static GetExecutePath(os, unityVersion) {
@@ -2594,71 +2756,6 @@ class Unity {
     }
 }
 exports["default"] = Unity;
-class UnityCommandBuilder {
-    constructor() {
-        this.args = [];
-        this.AddCommand('-quit');
-        this.AddCommand('-batchmode');
-        this.AddCommand('-nographics');
-        this.AddCommand('-silent-crashes');
-    }
-    AddCommand(command, param) {
-        if (Array.isArray(command)) {
-            this.args = this.args.concat(command);
-        }
-        else {
-            this.args.push(command);
-            if (param != null) {
-                this.args.push(param);
-            }
-        }
-    }
-    DisableGPUSkinning() {
-        this.AddCommand('-disable-gpu-skinning');
-    }
-    SetExecuteMethod(executeMethod) {
-        this.AddCommand('-executeMethod', executeMethod);
-    }
-    SetJobWorkerCount(count) {
-        this.AddCommand('-job-worker-count', count.toString());
-    }
-    SetLogFile(logFile) {
-        this.AddCommand('-logFile', logFile);
-    }
-    DisableUPM() {
-        this.AddCommand('-noUpm');
-    }
-    Activation(username, password) {
-        this.AddCommand('-username', username);
-        this.AddCommand('-password', password);
-    }
-    SetProjectPath(projectPath) {
-        this.AddCommand('-projectPath', projectPath);
-    }
-    EnableReleaseCodeOptimization() {
-        this.AddCommand('-releaseCodeOptimization');
-    }
-    // Batch mode arguments
-    EnableAPIUpdater() {
-        this.AddCommand('-accept-apiupdate');
-    }
-    // Build Arguments
-    SetBuildTarget(target) {
-        this.AddCommand('-buildTarget', target);
-    }
-    // Cache server arguments
-    EnableCacheServer(endpoint) {
-        this.AddCommand('-EnableCacheServer');
-        this.AddCommand('-cacheServerEndpoint', endpoint);
-    }
-    SetOutputPath(outputPath) {
-        this.AddCommand('-outputPath', outputPath);
-    }
-    Build() {
-        return this.args;
-    }
-}
-exports.UnityCommandBuilder = UnityCommandBuilder;
 
 
 /***/ }),
@@ -2666,6 +2763,7 @@ exports.UnityCommandBuilder = UnityCommandBuilder;
 /***/ 147:
 /***/ ((module) => {
 
+"use strict";
 module.exports = __nccwpck_require__(147);
 
 /***/ })
@@ -3046,7 +3144,7 @@ async function Run() {
             builder.SetExecuteMethod(core.getInput('execute-method'));
         }
         if (core.getInput('additional-arguments') !== '') {
-            builder.AddCommand(core.getInput('additional-arguments').split(' '));
+            builder.Append(core.getInput('additional-arguments').split(' '));
         }
         await exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), unityVersion), builder.Build());
     }
