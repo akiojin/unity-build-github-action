@@ -2663,6 +2663,13 @@ Object.defineProperty(exports, "ArgumentBuilder", ({ enumerable: true, get: func
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const argument_builder_1 = __nccwpck_require2_(582);
 class UnityCommandBuilder extends argument_builder_1.ArgumentBuilder {
+    constructor() {
+        super();
+        this.Append('-quit');
+        this.Append('-batchmode');
+        this.Append('-nographics');
+        this.Append('-silent-crashes');
+    }
     DisableGPUSkinning() {
         this.Append('-disable-gpu-skinning');
     }
