@@ -38,7 +38,7 @@ async function Run()
 			await fs.mkdir(path.dirname(cs), {recursive: true})
 			await fs.writeFile(cs, script)
 
-			core.startGroup('UnityBuildScript.cs')
+			core.startGroup('Generate "UnityBuildScript.cs"')
 			console.log(`UnityBuildScript.cs:\n${script}`)
 			core.endGroup()
 		}
@@ -47,7 +47,7 @@ async function Run()
 			builder.Append(core.getInput('additional-arguments').split(' '))
 		}
 
-		core.startGroup('Unity build')
+		core.startGroup('Unity build log')
 		await exec.exec(Unity.GetExecutePath(os.platform(), unityVersion), builder.Build())
 		core.endGroup()
 	} catch (ex: any) {

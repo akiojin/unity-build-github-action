@@ -3272,14 +3272,16 @@ async function Run() {
             const cs = path_1.default.join(projectDirectory, 'Assets', 'Editor', 'UnityBuildScript.cs');
             await fs.mkdir(path_1.default.dirname(cs), { recursive: true });
             await fs.writeFile(cs, script);
-            core.startGroup('UnityBuildScript.cs');
+            core.startGroup('Generate "UnityBuildScript.cs"');
             console.log(`UnityBuildScript.cs:\n${script}`);
             core.endGroup();
         }
         if (core.getInput('additional-arguments') !== '') {
             builder.Append(core.getInput('additional-arguments').split(' '));
         }
+        core.startGroup('Unity build log');
         await exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), unityVersion), builder.Build());
+        core.endGroup();
     }
     catch (ex) {
         core.setFailed(ex.message);
