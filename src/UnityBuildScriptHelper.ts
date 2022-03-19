@@ -29,7 +29,7 @@ export default class UnityBuildScriptHelper
 
             public static string Keystore = @"${keystore}";
 			public static string KeystorePassword = @"${keystorePassword}";
-            public static string KeystoreAlias = @"${keystoreAlias}"
+            public static string KeystoreAlias = @"${keystoreAlias}";
 			public static string KeystoreAliasPassword = @"${keystoreAliasPassword}";
 		
             public static bool Development = ${development};
