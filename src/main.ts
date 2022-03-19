@@ -47,7 +47,9 @@ async function Run()
 			builder.Append(core.getInput('additional-arguments').split(' '))
 		}
 
+		core.startGroup('Unity build')
 		await exec.exec(Unity.GetExecutePath(os.platform(), unityVersion), builder.Build())
+		core.endGroup()
 	} catch (ex: any) {
 		core.setFailed(ex.message)
 	}
