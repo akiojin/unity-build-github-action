@@ -34,7 +34,9 @@ async function Run()
 				core.getInput('keystore-alias-password')				
 			)
 
-			fs.writeFile(`${path.join(projectDirectory, 'Assets', 'Editor', 'UnityBuildScript.cs')}`, script)
+			const cs = path.join(projectDirectory, 'Assets', 'Editor', 'UnityBuildScript.cs')
+			await fs.mkdir(path.dirname(cs), {recursive: true})
+			await fs.writeFile(cs, script)
 
 			core.startGroup('UnityBuildScript.cs')
 			console.log(`UnityBuildScript.cs:\n${script}`)

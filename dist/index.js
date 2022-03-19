@@ -3269,7 +3269,9 @@ async function Run() {
         else {
             builder.SetExecuteMethod('UnityBuildScript.PerformBuild');
             const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(core.getInput('output-directory'), core.getInput('output-file-name'), core.getBooleanInput('development'), core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('keystore'), core.getInput('keystore-alias'), core.getInput('keystore-password'), core.getInput('keystore-alias-password'));
-            fs.writeFile(`${path_1.default.join(projectDirectory, 'Assets', 'Editor', 'UnityBuildScript.cs')}`, script);
+            const cs = path_1.default.join(projectDirectory, 'Assets', 'Editor', 'UnityBuildScript.cs');
+            await fs.mkdir(path_1.default.dirname(cs), { recursive: true });
+            await fs.writeFile(cs, script);
             core.startGroup('UnityBuildScript.cs');
             console.log(`UnityBuildScript.cs:\n${script}`);
             core.endGroup();
