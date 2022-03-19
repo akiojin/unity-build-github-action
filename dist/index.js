@@ -2708,8 +2708,15 @@ class UnityCommandBuilder extends argument_builder_1.ArgumentBuilder {
         this.Append('-EnableCacheServer');
         this.Append('-cacheServerEndpoint', endpoint);
     }
-    SetOutputPath(outputPath) {
-        this.Append('-outputPath', outputPath);
+    // Debugging arguments
+    DisableManagedDebugger() {
+        this.Append('-disableManagedDebugger');
+    }
+    EnableDebugCodeOptimization() {
+        this.Append('-debugCodeOptimization');
+    }
+    SetStackTraceLogType(type) {
+        this.Append('-stackTraceLogType', `"${type}"`);
     }
 }
 exports["default"] = UnityCommandBuilder;
@@ -3105,6 +3112,111 @@ exports.debug = debug; // for test
 
 /***/ }),
 
+/***/ 43:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+class UnityBuildScriptHelper {
+    static GenerateUnityBuildScript(outputDirectory, outputFileName, development = false, teamID, provisioningProfileUUID, keystore, keystoreAlias, keystorePassword, keystoreAliasPassword) {
+        return `
+		using System;
+		using System.IO;
+		using System.Linq;
+		using UnityEditor;
+		using UnityEditor.Build.Reporting;
+		using UnityEngine;
+		
+		public class UnityBuildScript
+		{
+			public static string OutputFileName = @"${outputFileName}";
+			public static string OutputDirectory = @"${outputDirectory}";
+		
+			public static string TeamID = "${teamID}";
+			public static string ProvisioningProfileUUID = @"${provisioningProfileUUID}";
+
+            public static string Keystore = @"${keystore}";
+			public static string KeystorePassword = @"${keystorePassword}";
+            public static string KeystoreAlias = @"${keystoreAlias}"
+			public static string KeystoreAliasPassword = @"${keystoreAliasPassword}";
+		
+            public static bool Development = ${development};
+
+            static string GetBuildTargetOutputFileName()
+				=> EditorUserBuildSettings.activeBuildTarget switch {
+					BuildTarget.Android => $"{OutputFileName}.apk",
+					BuildTarget.StandaloneWindows => $"{OutputFileName}.exe",
+					BuildTarget.StandaloneWindows64 => $"{OutputFileName}.exe",
+					BuildTarget.StandaloneOSX => $"{OutputFileName}.app",
+					_ => ""
+				};
+		
+			static BuildOptions GetBuildOptions()
+			{
+				var options = BuildOptions.None;
+		
+                if (!!Development) {
+                    options |= BuildOptions.Development;
+                }
+                
+				return options;
+			}
+		
+			static void Configure()
+			{
+				if (!string.IsNullOrWhiteSpace(TeamID)) {
+					PlayerSettings.iOS.appleDeveloperTeamID = TeamID;
+				}
+				if (!string.IsNullOrWhiteSpace(ProvisioningProfileUUID)) {
+					PlayerSettings.iOS.iOSManualProvisioningProfileID = ProvisioningProfileUUID;
+				}
+		
+				if (!string.IsNullOrWhiteSpace(Keystore)) {
+					PlayerSettings.Android.keystoreName = Keystore;
+				}
+				if (!string.IsNullOrWhiteSpace(KeystorePassword)) {
+					PlayerSettings.Android.keystorePass = KeystorePassword;
+				}
+				if (!string.IsNullOrWhiteSpace(KeystoreAlias)) {
+					PlayerSettings.Android.keyaliasName = KeystoreAlias;
+				}
+				if (!string.IsNullOrWhiteSpace(KeystoreAliasPassword)) {
+					PlayerSettings.Android.keyaliasPass = KeystoreAliasPassword;
+				}
+			}
+				
+			public static void PerformBuild()
+			{
+				try {
+					Configure();
+		
+					var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
+						scenes = EditorBuildSettings.scenes.Select(x => x.path).ToArray(),
+						locationPathName = Path.Combine(OutputDirectory, GetBuildTargetOutputFileName()),
+						target = EditorUserBuildSettings.activeBuildTarget,
+						options = GetBuildOptions()
+					});
+		
+					if (report.summary.result == BuildResult.Succeeded) {
+						EditorApplication.Exit(0);
+					} else {
+						throw new Exception();
+					}
+				} catch (Exception ex) {
+					Debug.LogException(ex);
+					EditorApplication.Exit(1);
+				}
+			}
+		}
+		`;
+    }
+}
+exports["default"] = UnityBuildScriptHelper;
+
+
+/***/ }),
+
 /***/ 116:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -3133,11 +3245,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(127));
 const exec = __importStar(__nccwpck_require__(49));
 const os = __importStar(__nccwpck_require__(37));
 const unity_command_1 = __nccwpck_require__(783);
+const fs = __importStar(__nccwpck_require__(292));
+const UnityBuildScriptHelper_1 = __importDefault(__nccwpck_require__(43));
+const path_1 = __importDefault(__nccwpck_require__(17));
 async function Run() {
     try {
         const projectDirectory = core.getInput('project-directory');
@@ -3145,10 +3263,14 @@ async function Run() {
         const builder = new unity_command_1.UnityCommandBuilder();
         builder.SetBuildTarget(core.getInput('build-target'));
         builder.SetProjectPath(projectDirectory);
-        builder.SetOutputPath(core.getInput('output-directory'));
         builder.SetLogFile(core.getInput('log-file'));
         if (core.getInput('execute-method') !== '') {
             builder.SetExecuteMethod(core.getInput('execute-method'));
+        }
+        else {
+            builder.SetExecuteMethod('UnityBuildScript.PerformBuild');
+            const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(core.getInput('output-directory'), core.getInput('output-file-name'), core.getBooleanInput('development'), core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('keystore'), core.getInput('keystore-alias'), core.getInput('keystore-password'), core.getInput('keystore-alias-password'));
+            fs.writeFile(`${path_1.default.join(projectDirectory, 'Assets', 'UnityBuildScripts.cs')}`, script);
         }
         if (core.getInput('additional-arguments') !== '') {
             builder.Append(core.getInput('additional-arguments').split(' '));
@@ -3193,6 +3315,14 @@ module.exports = require("events");
 
 "use strict";
 module.exports = require("fs");
+
+/***/ }),
+
+/***/ 292:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs/promises");
 
 /***/ }),
 

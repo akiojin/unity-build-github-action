@@ -2,6 +2,9 @@ import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import * as os from 'os'
 import { Unity, UnityCommandBuilder } from '@akiojin/unity-command'
+import * as fs from 'fs/promises'
+import UnityBuildScriptHelper from './UnityBuildScriptHelper'
+import path from 'path'
 
 async function Run()
 {
@@ -12,11 +15,26 @@ async function Run()
 		const builder = new UnityCommandBuilder()
 		builder.SetBuildTarget(core.getInput('build-target'))
 		builder.SetProjectPath(projectDirectory)
-		builder.SetOutputPath(core.getInput('output-directory'))
 		builder.SetLogFile(core.getInput('log-file'))
 
 		if (core.getInput('execute-method') !== '') {
 			builder.SetExecuteMethod(core.getInput('execute-method'))
+		} else {
+			builder.SetExecuteMethod('UnityBuildScript.PerformBuild')
+
+			const script = UnityBuildScriptHelper.GenerateUnityBuildScript(
+				core.getInput('output-directory'),
+				core.getInput('output-file-name'),
+				core.getBooleanInput('development'),
+				core.getInput('team-id'),
+				core.getInput('provisioning-profile-uuid'),
+				core.getInput('keystore'),
+				core.getInput('keystore-alias'),
+				core.getInput('keystore-password'),
+				core.getInput('keystore-alias-password')				
+			)
+
+			fs.writeFile(`${path.join(projectDirectory, 'Assets', 'UnityBuildScripts.cs')}`, script)
 		}
 
 		if (core.getInput('additional-arguments') !== '') {

@@ -8,6 +8,11 @@ inputs:
       Possible options are:
       standalone, Win, Win64, OSXUniversal, Linux, Linux64, LinuxUniversal, iOS, Android, Web, WebStreamed, WebGL, XboxOne, PS4, WindowsStoreApps, Switch, N3DS, tvOS.
     required: true
+  development:
+    description: >
+      Build a development version of the player.
+    required: false
+    default: false
   project-directory:
     description: >
       Open the project at the given path. If the pathname contains spaces, enclose it in quotes.
@@ -17,6 +22,11 @@ inputs:
       Specifies the output directory.
     required: false
     default: ''
+  output-file-name:
+    description: >
+      Specifies the output directory.
+    required: false
+    default: 'Build'
   execute-method:
     description: >
       Execute the static method as soon as Unity opens the project,
@@ -43,9 +53,33 @@ inputs:
       Specify additional required arguments.
     required: false
     default: ''
+  team-id:
+    description: ''
+    required: false
+    default: ''
+  provisioning-profile-uuid:
+    description: ''
+    required: false
+    default: ''
+  keystore:
+    description: ''
+    required: false
+    default: ''
+  keystore-alias:
+    description: ''
+    required: false
+    default: ''
+  keystore-password:
+    description: ''
+    required: false
+    default: ''
+  keystore-ailas-password:
+    description: ''
+    required: false
+    default: ''
 runs:
   using: 'node16'
   main: 'dist/index.js'
 branding:
-  icon: "download"
+  icon: "box"
   color: "orange"
