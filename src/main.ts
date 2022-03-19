@@ -34,7 +34,9 @@ async function Run()
 				core.getInput('keystore-alias-password')				
 			)
 
-			fs.writeFile(`${path.join(projectDirectory, 'Assets', 'UnityBuildScripts.cs')}`, script)
+			fs.writeFile(`${path.join(projectDirectory, 'Assets', 'UnityBuildScript.cs')}`, script)
+
+			console.log(`UnityBuildScript.cs:\n${script}`)
 		}
 
 		if (core.getInput('additional-arguments') !== '') {
