@@ -3134,12 +3134,12 @@ public class UnityBuildScript
 	public static string OutputDirectory = @"${outputDirectory}";
 
 	public static string TeamID = "${teamID}";
-	public static string ProvisioningProfileUUID = @"${provisioningProfileUUID}";
+	public static string ProvisioningProfileUUID = "${provisioningProfileUUID}";
 
 	public static string Keystore = @"${keystore}";
-	public static string KeystorePassword = @"${keystorePassword}";
-	public static string KeystoreAlias = @"${keystoreAlias}";
-	public static string KeystoreAliasPassword = @"${keystoreAliasPassword}";
+	public static string KeystorePassword = "${keystorePassword}";
+	public static string KeystoreAlias = "${keystoreAlias}";
+	public static string KeystoreAliasPassword = "${keystoreAliasPassword}";
 
 	public static bool Development = ${development};
 
