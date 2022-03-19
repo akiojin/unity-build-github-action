@@ -39,7 +39,7 @@ async function Run()
 			await fs.writeFile(cs, script)
 
 			core.startGroup('Generate "UnityBuildScript.cs"')
-			console.log(`UnityBuildScript.cs:\n${script}`)
+			core.info(`UnityBuildScript.cs:\n${script}`)
 			core.endGroup()
 		}
 
@@ -47,7 +47,7 @@ async function Run()
 			builder.Append(core.getInput('additional-arguments').split(' '))
 		}
 
-		core.startGroup('Unity build log')
+		core.startGroup('Run Unity')
 		await exec.exec(Unity.GetExecutePath(os.platform(), unityVersion), builder.Build())
 		core.endGroup()
 	} catch (ex: any) {

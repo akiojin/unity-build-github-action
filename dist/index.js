@@ -3273,13 +3273,13 @@ async function Run() {
             await fs.mkdir(path_1.default.dirname(cs), { recursive: true });
             await fs.writeFile(cs, script);
             core.startGroup('Generate "UnityBuildScript.cs"');
-            console.log(`UnityBuildScript.cs:\n${script}`);
+            core.info(`UnityBuildScript.cs:\n${script}`);
             core.endGroup();
         }
         if (core.getInput('additional-arguments') !== '') {
             builder.Append(core.getInput('additional-arguments').split(' '));
         }
-        core.startGroup('Unity build log');
+        core.startGroup('Run Unity');
         await exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), unityVersion), builder.Build());
         core.endGroup();
     }
