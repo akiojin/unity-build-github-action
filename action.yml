@@ -73,7 +73,7 @@ inputs:
     description: ''
     required: false
     default: ''
-  keystore-ailas-password:
+  keystore-alias-password:
     description: ''
     required: false
     default: ''

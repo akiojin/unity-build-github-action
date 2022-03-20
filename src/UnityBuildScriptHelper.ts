@@ -7,8 +7,8 @@ export default class UnityBuildScriptHelper
 		teamID?: string,
 		provisioningProfileUUID?: string,
 		keystore?: string,
-		keystoreAlias?: string,
 		keystorePassword?: string,
+		keystoreAlias?: string,
 		keystoreAliasPassword?: string): string
 	{
 		return `

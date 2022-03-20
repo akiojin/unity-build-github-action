@@ -29,8 +29,8 @@ async function BuildUnityProject()
 			core.getInput('team-id'),
 			core.getInput('provisioning-profile-uuid'),
 			core.getInput('keystore'),
-			core.getInput('keystore-alias'),
 			core.getInput('keystore-password'),
+			core.getInput('keystore-alias'),
 			core.getInput('keystore-alias-password')				
 		)
 
