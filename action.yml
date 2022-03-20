@@ -8,11 +8,16 @@ inputs:
       Possible options are:
       standalone, Win, Win64, OSXUniversal, Linux, Linux64, LinuxUniversal, iOS, Android, Web, WebStreamed, WebGL, XboxOne, PS4, WindowsStoreApps, Switch, N3DS, tvOS.
     required: true
-  development:
+  configuration:
     description: >
-      Build a development version of the player.
+      The configuration to use when building the app.
+
+      Possible options are:
+      Debug, Release.
+
+      Defaults to 'Debug'
     required: false
-    default: false
+    default: 'Debug'
   project-directory:
     description: >
       Open the project at the given path. If the pathname contains spaces, enclose it in quotes.
@@ -54,27 +59,39 @@ inputs:
     required: false
     default: ''
   team-id:
-    description: ''
+    description: >
+      The ID of your Developer Portal team if you're in multiple teams.
+      Required for iOS builds.
     required: false
     default: ''
   provisioning-profile-uuid:
-    description: ''
+    description: >
+      Specify the UUID of the provisioning profile.
+      Required for iOS builds.
     required: false
     default: ''
   keystore:
-    description: ''
-    required: false
-    default: ''
-  keystore-alias:
-    description: ''
+    description: >
+      Specify the path to the keystore file.
+      Required for Android builds.
     required: false
     default: ''
   keystore-password:
-    description: ''
+    description: >
+      Specify the password for the keystore.
+      Required for Android builds.
+    required: false
+    default: ''
+  keystore-alias:
+    description: >
+      Specifies the name of the keystore alias.
+      Required for Android builds.
     required: false
     default: ''
   keystore-alias-password:
-    description: ''
+    description: >
+      Specify the password for the keystore alias.
+      Required for Android builds.
     required: false
     default: ''
 runs:

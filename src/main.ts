@@ -25,7 +25,7 @@ async function BuildUnityProject()
 		const script = UnityBuildScriptHelper.GenerateUnityBuildScript(
 			core.getInput('output-directory'),
 			core.getInput('output-file-name'),
-			core.getBooleanInput('development'),
+			core.getInput('configuration') === 'Debug',
 			core.getInput('team-id'),
 			core.getInput('provisioning-profile-uuid'),
 			core.getInput('keystore'),

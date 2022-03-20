@@ -82,8 +82,11 @@ public class UnityBuildScript
 		try {
 			Configure();
 
+			var scenes = EditorBuildSettings.scenes
+				.Where(scene => scene.enabled)
+				.Select(scene => scene.path).ToArray();
 			var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
-				scenes = EditorBuildSettings.scenes.Select(x => x.path).ToArray(),
+				scenes = scenes,
 				locationPathName = Path.Combine(OutputDirectory, GetBuildTargetOutputFileName()),
 				target = EditorUserBuildSettings.activeBuildTarget,
 				options = GetBuildOptions()

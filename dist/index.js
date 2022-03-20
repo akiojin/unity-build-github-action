@@ -3219,8 +3219,11 @@ public class UnityBuildScript
 		try {
 			Configure();
 
+			var scenes = EditorBuildSettings.scenes
+				.Where(scene => scene.enabled)
+				.Select(scene => scene.path).ToArray();
 			var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
-				scenes = EditorBuildSettings.scenes.Select(x => x.path).ToArray(),
+				scenes = scenes,
 				locationPathName = Path.Combine(OutputDirectory, GetBuildTargetOutputFileName()),
 				target = EditorUserBuildSettings.activeBuildTarget,
 				options = GetBuildOptions()
@@ -3296,7 +3299,7 @@ async function BuildUnityProject() {
     }
     else {
         builder.SetExecuteMethod('UnityBuildScript.PerformBuild');
-        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(core.getInput('output-directory'), core.getInput('output-file-name'), core.getBooleanInput('development'), core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('keystore'), core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
+        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(core.getInput('output-directory'), core.getInput('output-file-name'), core.getInput('configuration') === 'Debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('keystore'), core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
         const cs = path_1.default.join(projectDirectory, 'Assets', 'Editor', 'UnityBuildScript.cs');
         await fs.mkdir(path_1.default.dirname(cs), { recursive: true });
         await fs.writeFile(cs, script);
