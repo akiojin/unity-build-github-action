@@ -3283,8 +3283,8 @@ const core = __importStar(__nccwpck_require__(127));
 const exec = __importStar(__nccwpck_require__(49));
 const os = __importStar(__nccwpck_require__(37));
 const fs = __importStar(__nccwpck_require__(292));
-const path_1 = __importDefault(__nccwpck_require__(17));
 const tmp = __importStar(__nccwpck_require__(196));
+const path_1 = __importDefault(__nccwpck_require__(17));
 const unity_command_1 = __nccwpck_require__(783);
 const UnityBuildScriptHelper_1 = __importDefault(__nccwpck_require__(43));
 async function BuildUnityProject() {
