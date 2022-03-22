@@ -3310,9 +3310,7 @@ async function BuildUnityProject() {
     if (core.getInput('additional-arguments') !== '') {
         builder.Append(core.getInput('additional-arguments').split(' '));
     }
-    core.startGroup('Run Unity');
     await exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), unityVersion), builder.Build());
-    core.endGroup();
 }
 async function Run() {
     try {

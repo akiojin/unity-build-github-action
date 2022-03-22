@@ -47,9 +47,7 @@ async function BuildUnityProject()
 		builder.Append(core.getInput('additional-arguments').split(' '))
 	}
 
-	core.startGroup('Run Unity')
 	await exec.exec(Unity.GetExecutePath(os.platform(), unityVersion), builder.Build())
-	core.endGroup()
 }
 
 async function Run()
