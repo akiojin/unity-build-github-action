@@ -15,13 +15,17 @@ jobs:
     strategy:
       matrix:
         target: [ "iOS", "Android" ]
+        configuration: [ "Debug", "Release" ]
 
     steps:
       - uses: actions/checkout@v2
 
+      - run: |
+        brew install --cask unity
+
       - uses: ./
         with:
           build-target: ${{ matrix.target }}
-          configuration: ${{ env.CONFIGURATION }}
+          configuration: ${{ matrix.configuration }}
           project-directory: ${{ github.workspace }}/unity
-          output-directory: ${{ runner.temp }}/Unity
+          output-directory: ${{ runner.temp }}/${{ matrix.target }}/${{ matrix.configuration }}/Unity
