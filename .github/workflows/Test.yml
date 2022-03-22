@@ -12,6 +12,16 @@ jobs:
   Test:
     runs-on: macos-latest
     timeout-minutes: 5
+    strategy:
+      matrix:
+        target: [ "iOS", "Android" ]
 
     steps:
       - uses: actions/checkout@v2
+
+      - uses: ./
+        with:
+          build-target: ${{ matrix.target }}
+          configuration: ${{ env.CONFIGURATION }}
+          project-directory: ${{ github.workspace }}/unity
+          output-directory: ${{ runner.temp }}/Unity
