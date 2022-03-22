@@ -20,8 +20,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - run: |
-        brew install --cask unity
+      - name: Install Unity
+        run: |
+          brew install --cask unity
 
       - uses: ./
         with:
