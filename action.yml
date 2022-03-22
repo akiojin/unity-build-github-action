@@ -82,6 +82,12 @@ inputs:
       Required for Android builds.
     required: false
     default: ''
+  keystore-base64:
+    description: >
+      Specifies Base64 data for the keystore.
+      If you do not specify a file path in `keystore`, you must specify this parameter.
+    required: false
+    default: ''
   keystore-password:
     description: >
       Specify the password for the keystore.
