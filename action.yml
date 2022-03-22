@@ -1,6 +1,12 @@
 name: 'unity-build-github-action'
 description: 'This action performs a Unity command line build.'
 inputs:
+  unity-version:
+    description: >
+      Specify the Unity version to be used.
+      If omitted, the project version is used.
+    required: false
+    default: ''
   build-target:
     description: >
       Allows the selection of an active build target before loading a project.

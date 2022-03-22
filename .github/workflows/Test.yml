@@ -20,10 +20,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Unity
-        run: |
-          brew install --cask unity
-
       - uses: ./
         with:
           build-target: ${{ matrix.target }}

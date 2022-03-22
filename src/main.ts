@@ -9,7 +9,7 @@ import UnityBuildScriptHelper from './UnityBuildScriptHelper'
 async function BuildUnityProject()
 {
 	const projectDirectory = core.getInput('project-directory')
-	const unityVersion = await Unity.GetVersion(projectDirectory)
+	const unityVersion = core.getInput('unity-version') || await Unity.GetVersion(projectDirectory)
 
 	const builder = new UnityCommandBuilder()
 	builder
@@ -25,7 +25,7 @@ async function BuildUnityProject()
 		const script = UnityBuildScriptHelper.GenerateUnityBuildScript(
 			core.getInput('output-directory'),
 			core.getInput('output-file-name'),
-			core.getInput('configuration') === 'Debug',
+			core.getInput('configuration').toLowerCase() === 'debug',
 			core.getInput('team-id'),
 			core.getInput('provisioning-profile-uuid'),
 			core.getInput('keystore'),

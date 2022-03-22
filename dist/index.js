@@ -3288,7 +3288,7 @@ const unity_command_1 = __nccwpck_require__(783);
 const UnityBuildScriptHelper_1 = __importDefault(__nccwpck_require__(43));
 async function BuildUnityProject() {
     const projectDirectory = core.getInput('project-directory');
-    const unityVersion = await unity_command_1.Unity.GetVersion(projectDirectory);
+    const unityVersion = core.getInput('unity-version') || await unity_command_1.Unity.GetVersion(projectDirectory);
     const builder = new unity_command_1.UnityCommandBuilder();
     builder
         .SetBuildTarget(core.getInput('build-target'))
@@ -3299,7 +3299,7 @@ async function BuildUnityProject() {
     }
     else {
         builder.SetExecuteMethod('UnityBuildScript.PerformBuild');
-        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(core.getInput('output-directory'), core.getInput('output-file-name'), core.getInput('configuration') === 'Debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('keystore'), core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
+        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(core.getInput('output-directory'), core.getInput('output-file-name'), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('keystore'), core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
         const cs = path_1.default.join(projectDirectory, 'Assets', 'Editor', 'UnityBuildScript.cs');
         await fs.mkdir(path_1.default.dirname(cs), { recursive: true });
         await fs.writeFile(cs, script);
