@@ -16,7 +16,7 @@ inputs:
       Allows the selection of an active build target before loading a project.
       
       Possible options are:
-      standalone, Win, Win64, OSXUniversal, Linux, Linux64, LinuxUniversal, iOS, Android, Web, WebStreamed, WebGL, XboxOne, PS4, WindowsStoreApps, Switch, N3DS, tvOS.
+      Standalone, Win, Win64, OSXUniversal, Linux, Linux64, LinuxUniversal, iOS, Android, Web, WebStreamed, WebGL, XboxOne, PS4, WindowsStoreApps, Switch, N3DS, tvOS.
     required: true
   configuration:
     description: >
@@ -31,11 +31,15 @@ inputs:
   output-directory:
     description: >
       Specifies the output directory.
+
+      Defaults to $RUNNER_TEMP
     required: false
-    default: ''
+    default: ${{ runner.temp }}
   output-name:
     description: >
-      Specifies the output directory.
+      Specifies the output file name.
+
+      Defaults to "Build"
     required: false
     default: 'Build'
   execute-method:
@@ -64,34 +68,6 @@ inputs:
       Specify additional required arguments.
     required: false
     default: ''
-  team-id:
-    description: >
-      The ID of your Developer Portal team if you're in multiple teams.
-      Required for iOS builds.
-    required: false
-    default: ''
-  provisioning-profile-uuid:
-    description: >
-      Specify the UUID of the provisioning profile.
-      Required for iOS builds.
-    required: false
-    default: ''
-  scheme:
-    description: >
-      The project's scheme.
-      Defaults to 'Unity-iPhone'
-
-      Required for iOS builds.
-    required: false
-    default: 'Unity-iPhone'
-  sdk:
-    description: >
-      The SDK that should be used for building the application.
-      Defaults to 'iphoneos'
-
-      Required for iOS builds.
-    required: false
-    default: 'iphoneos'
   export-method:
     description: >
       Define the profile type,
@@ -116,6 +92,34 @@ inputs:
       Required for iOS builds.
     required: false
     default: false
+  provisioning-profile-uuid:
+    description: >
+      Specify the UUID of the provisioning profile.
+      Required for iOS builds.
+    required: false
+    default: ''
+  scheme:
+    description: >
+      The project's scheme.
+      Defaults to 'Unity-iPhone'
+
+      Required for iOS builds.
+    required: false
+    default: 'Unity-iPhone'
+  sdk:
+    description: >
+      The SDK that should be used for building the application.
+      Defaults to 'iphoneos'
+
+      Required for iOS builds.
+    required: false
+    default: 'iphoneos'
+  team-id:
+    description: >
+      The ID of your Developer Portal team if you're in multiple teams.
+      Required for iOS builds.
+    required: false
+    default: ''
   keystore:
     description: >
       Specify the path to the keystore file.
