@@ -25,10 +25,9 @@ async function BuildUnityProject()
 
 		let keystore = core.getInput('keystore')
 
-		if (core.getInput('keystore-base64')) {
-			const data = Buffer.from(core.getInput('keystore-base64'), 'base64')
+		if (core.getInput('keystore-base64') !== '') {
 			keystore = tmp.tmpNameSync()
-			await fs.writeFile(keystore, data)
+			await fs.writeFile(keystore, Buffer.from(core.getInput('keystore-base64'), 'base64'))
 		}
 
 		const script = UnityBuildScriptHelper.GenerateUnityBuildScript(
@@ -37,7 +36,7 @@ async function BuildUnityProject()
 			core.getInput('configuration').toLowerCase() === 'debug',
 			core.getInput('team-id'),
 			core.getInput('provisioning-profile-uuid'),
-			core.getInput('keystore'),
+			keystore,
 			core.getInput('keystore-password'),
 			core.getInput('keystore-alias'),
 			core.getInput('keystore-alias-password')				
