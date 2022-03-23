@@ -2542,6 +2542,127 @@ function copyFile(srcFile, destFile, force) {
 
 /***/ }),
 
+/***/ 582:
+/***/ ((module) => {
+
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 356:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+};
+var _ArgumentBuilder_args;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+class ArgumentBuilder {
+    constructor() {
+        _ArgumentBuilder_args.set(this, []);
+    }
+    Append(arg, param) {
+        if (Array.isArray(arg)) {
+            __classPrivateFieldSet(this, _ArgumentBuilder_args, __classPrivateFieldGet(this, _ArgumentBuilder_args, "f").concat(arg), "f");
+        }
+        else {
+            __classPrivateFieldGet(this, _ArgumentBuilder_args, "f").push(arg);
+            if (param != null) {
+                __classPrivateFieldGet(this, _ArgumentBuilder_args, "f").push(param);
+            }
+        }
+        return this;
+    }
+    Count() {
+        return __classPrivateFieldGet(this, _ArgumentBuilder_args, "f").length;
+    }
+    Build() {
+        return __classPrivateFieldGet(this, _ArgumentBuilder_args, "f");
+    }
+    ToString() {
+        return __classPrivateFieldGet(this, _ArgumentBuilder_args, "f").join(' ');
+    }
+}
+exports["default"] = ArgumentBuilder;
+_ArgumentBuilder_args = new WeakMap();
+
+
+/***/ }),
+
+/***/ 925:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require2_) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ArgumentBuilder = void 0;
+var ArgumentBuilder_1 = __nccwpck_require2_(356);
+Object.defineProperty(exports, "ArgumentBuilder", ({ enumerable: true, get: function () { return __importDefault(ArgumentBuilder_1).default; } }));
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __nccwpck_require2_(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		var threw = true;
+/******/ 		try {
+/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require2_);
+/******/ 			threw = false;
+/******/ 		} finally {
+/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 		}
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat */
+/******/ 	
+/******/ 	if (typeof __nccwpck_require2_ !== 'undefined') __nccwpck_require2_.ab = __dirname + "/";
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require2_(925);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
+/******/ })()
+;
+
+/***/ }),
+
 /***/ 783:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -7830,26 +7951,48 @@ const fs = __importStar(__nccwpck_require__(292));
 const tmp = __importStar(__nccwpck_require__(729));
 const path_1 = __importDefault(__nccwpck_require__(17));
 const unity_command_1 = __nccwpck_require__(783);
+const argument_builder_1 = __nccwpck_require__(582);
 const UnityBuildScriptHelper_1 = __importDefault(__nccwpck_require__(43));
-async function BuildUnityProject() {
-    const projectDirectory = core.getInput('project-directory');
-    const unityVersion = core.getInput('unity-version') || await unity_command_1.Unity.GetVersion(projectDirectory);
-    const builder = new unity_command_1.UnityCommandBuilder();
-    builder
-        .SetBuildTarget(core.getInput('build-target'))
+async function ExportIPA(workspace, project, outputDirectory, outputName, schema, sdk, configuration, includeBitcode, includeSymbols, exportMethod, exportTeamID) {
+    const builder = new argument_builder_1.ArgumentBuilder()
+        .Append('gym')
+        .Append('--output_directory', outputDirectory)
+        .Append('--scheme', schema)
+        .Append('--sdk', sdk)
+        .Append('--configuration', configuration)
+        .Append('--include_bitcode', includeBitcode.toString())
+        .Append('--include_symbols', includeSymbols.toString())
+        .Append('--export_method', exportMethod)
+        .Append('--export_team_id', exportTeamID);
+    if (workspace !== '') {
+        builder.Append('--workspace', workspace);
+    }
+    else {
+        builder.Append('--project', project);
+    }
+    if (outputName !== '') {
+        builder.Append('--output_name', outputName);
+    }
+    core.startGroup('Run fastlane "gym"');
+    await exec.exec('fastlane', builder.Build());
+    core.endGroup();
+}
+async function BuildUnityProject(projectDirectory, outputDirectory, outputName, unityVersion, buildTarget, configuration, logFile, executeMethod, teamID, provisioningProfileUUID, keystore, keystoreBase64, keystorePassword, keystoreAlias, keystoreAliasPassword, additionalArguments) {
+    unityVersion = unityVersion !== null && unityVersion !== void 0 ? unityVersion : await unity_command_1.Unity.GetVersion(projectDirectory);
+    const builder = new unity_command_1.UnityCommandBuilder()
+        .SetBuildTarget(buildTarget)
         .SetProjectPath(projectDirectory)
-        .SetLogFile(core.getInput('log-file'));
-    if (core.getInput('execute-method') !== '') {
-        builder.SetExecuteMethod(core.getInput('execute-method'));
+        .SetLogFile(logFile);
+    if (executeMethod !== '') {
+        builder.SetExecuteMethod(executeMethod);
     }
     else {
         builder.SetExecuteMethod('UnityBuildScript.PerformBuild');
-        let keystore = core.getInput('keystore');
-        if (core.getInput('keystore-base64') !== '') {
-            keystore = tmp.tmpNameSync();
-            await fs.writeFile(keystore, Buffer.from(core.getInput('keystore-base64'), 'base64'));
+        if (keystoreBase64 !== '') {
+            keystore = tmp.tmpNameSync() + '.keystore';
+            await fs.writeFile(keystore, Buffer.from(keystoreBase64, 'base64'));
         }
-        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(core.getInput('output-directory'), core.getInput('output-name'), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
+        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(outputDirectory, outputName, configuration.toLowerCase() === 'debug', teamID, provisioningProfileUUID, keystore, keystorePassword, keystoreAlias, keystoreAliasPassword);
         const cs = path_1.default.join(projectDirectory, 'Assets', 'Editor', 'UnityBuildScript.cs');
         await fs.mkdir(path_1.default.dirname(cs), { recursive: true });
         await fs.writeFile(cs, script);
@@ -7857,14 +8000,32 @@ async function BuildUnityProject() {
         core.info(`UnityBuildScript.cs:\n${script}`);
         core.endGroup();
     }
-    if (core.getInput('additional-arguments') !== '') {
-        builder.Append(core.getInput('additional-arguments').split(' '));
+    if (additionalArguments !== '') {
+        builder.Append(additionalArguments.split(' '));
     }
     await exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), unityVersion), builder.Build());
 }
 async function Run() {
     try {
-        await BuildUnityProject();
+        const buildTarget = core.getInput('build-target');
+        const outputDirectory = buildTarget.toLowerCase() === 'ios'
+            ? core.getInput('temporary-directory') : core.getInput('output-directory');
+        const outputName = core.getInput('output-name');
+        const configuration = core.getInput('configuration');
+        const teamID = core.getInput('team-id');
+        await BuildUnityProject(core.getInput('project-directory'), outputDirectory, outputName, core.getInput('unity-version'), buildTarget, configuration, core.getInput('log-file'), core.getInput('execute-method'), teamID, core.getInput('provisioning-profile-uuid'), core.getInput('keystore'), core.getInput('keystore-base64'), core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'), core.getInput('additional-arguments'));
+        if (buildTarget.toLowerCase() === 'ios') {
+            let workspace = '';
+            let project = '';
+            try {
+                await fs.access(path_1.default.join(outputDirectory, 'Unity-iPhone.xcworkspace'));
+                workspace = path_1.default.join(outputDirectory, 'Unity-iPhone.xcworkspace');
+            }
+            catch (ex) {
+                project = path_1.default.join(outputDirectory, 'Unity-iPhone.xcodeproj');
+            }
+            await ExportIPA(workspace, project, core.getInput('output-directory'), outputName, core.getInput('scheme'), core.getInput('sdk'), configuration, core.getBooleanInput('include-bitcode'), core.getBooleanInput('include-symbols'), core.getInput('export-method'), teamID);
+        }
     }
     catch (ex) {
         core.setFailed(ex.message);

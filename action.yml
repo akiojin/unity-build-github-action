@@ -1,6 +1,10 @@
 name: 'unity-build-github-action'
 description: 'This action performs a Unity command line build.'
 inputs:
+  project-directory:
+    description: >
+      Open the project at the given path. If the pathname contains spaces, enclose it in quotes.
+    required: true
   unity-version:
     description: >
       Specify the Unity version to be used.
@@ -24,10 +28,10 @@ inputs:
       Defaults to 'Debug'
     required: false
     default: 'Debug'
-  project-directory:
-    description: >
-      Open the project at the given path. If the pathname contains spaces, enclose it in quotes.
-    required: true
+  temporary-directory:
+    description: ''
+    required: false
+    default: ${{ runner.temp }}
   output-directory:
     description: >
       Specifies the output directory.
@@ -86,6 +90,7 @@ inputs:
     description: >
       Specifies Base64 data for the keystore.
       If you do not specify a file path in `keystore`, you must specify this parameter.
+      Also, if this value is specified, the value of `keystore` is ignored.
     required: false
     default: ''
   keystore-password:
@@ -106,6 +111,36 @@ inputs:
       Required for Android builds.
     required: false
     default: ''
+  scheme:
+    description: >
+      The project's scheme.
+      Defaults to 'Unity-iPhone'
+    required: false
+    default: 'Unity-iPhone'
+  sdk:
+    description: >
+      The SDK that should be used for building the application.
+      Defaults to 'iphoneos'
+    required: false
+    default: 'iphoneos'
+  export-method:
+    description: >
+      Define the profile type,
+      can be appstore, adhoc, development, enterprise, developer_id, mac_installer_distribution
+    required: false
+    default: 'development'
+  include-bitcode:
+    description: >
+      Should the ipa file include bitcode?
+      Defaults to false
+    required: false
+    default: false
+  include-symbols:
+    description: >
+      Should the ipa file include symbols?
+      Defaults to false
+    required: false
+    default: false
 runs:
   using: 'node16'
   main: 'dist/index.js'
