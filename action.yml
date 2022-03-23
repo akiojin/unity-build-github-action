@@ -28,10 +28,6 @@ inputs:
       Defaults to 'Debug'
     required: false
     default: 'Debug'
-  temporary-directory:
-    description: ''
-    required: false
-    default: ${{ runner.temp }}
   output-directory:
     description: >
       Specifies the output directory.
@@ -80,9 +76,52 @@ inputs:
       Required for iOS builds.
     required: false
     default: ''
+  scheme:
+    description: >
+      The project's scheme.
+      Defaults to 'Unity-iPhone'
+
+      Required for iOS builds.
+    required: false
+    default: 'Unity-iPhone'
+  sdk:
+    description: >
+      The SDK that should be used for building the application.
+      Defaults to 'iphoneos'
+
+      Required for iOS builds.
+    required: false
+    default: 'iphoneos'
+  export-method:
+    description: >
+      Define the profile type,
+      can be appstore, adhoc, development, enterprise, developer_id, mac_installer_distribution
+
+      Required for iOS builds.
+    required: false
+    default: 'development'
+  include-bitcode:
+    description: >
+      Should the ipa file include bitcode?
+      Defaults to false.
+
+      Required for iOS builds.
+    required: false
+    default: false
+  include-symbols:
+    description: >
+      Should the ipa file include symbols?
+      Defaults to false.
+
+      Required for iOS builds.
+    required: false
+    default: false
   keystore:
     description: >
       Specify the path to the keystore file.
+      For Android, if `keystore` or `keystore-base64`, `keystore-password`, `keystore-alias`,
+      `keystore-alias-password` is not specified, will be signed with a debug key.
+
       Required for Android builds.
     required: false
     default: ''
@@ -91,56 +130,37 @@ inputs:
       Specifies Base64 data for the keystore.
       If you do not specify a file path in `keystore`, you must specify this parameter.
       Also, if this value is specified, the value of `keystore` is ignored.
+
+      Required for Android builds.
     required: false
     default: ''
   keystore-password:
     description: >
       Specify the password for the keystore.
+
       Required for Android builds.
     required: false
     default: ''
   keystore-alias:
     description: >
       Specifies the name of the keystore alias.
+
       Required for Android builds.
     required: false
     default: ''
   keystore-alias-password:
     description: >
       Specify the password for the keystore alias.
+
       Required for Android builds.
     required: false
     default: ''
-  scheme:
+  temporary-directory:
     description: >
-      The project's scheme.
-      Defaults to 'Unity-iPhone'
+      Specify a temporary folder for the Xcode project files that Unity outputs during iOS build.
+      No change is required unless there is a specific reason.
     required: false
-    default: 'Unity-iPhone'
-  sdk:
-    description: >
-      The SDK that should be used for building the application.
-      Defaults to 'iphoneos'
-    required: false
-    default: 'iphoneos'
-  export-method:
-    description: >
-      Define the profile type,
-      can be appstore, adhoc, development, enterprise, developer_id, mac_installer_distribution
-    required: false
-    default: 'development'
-  include-bitcode:
-    description: >
-      Should the ipa file include bitcode?
-      Defaults to false
-    required: false
-    default: false
-  include-symbols:
-    description: >
-      Should the ipa file include symbols?
-      Defaults to false
-    required: false
-    default: false
+    default: ${{ runner.temp }}
 runs:
   using: 'node16'
   main: 'dist/index.js'

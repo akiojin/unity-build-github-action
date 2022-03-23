@@ -63,17 +63,26 @@ public class UnityBuildScript
 			PlayerSettings.iOS.iOSManualProvisioningProfileID = ProvisioningProfileUUID;
 		}
 
-		if (!string.IsNullOrWhiteSpace(Keystore)) {
-			PlayerSettings.Android.keystoreName = Keystore;
-		}
-		if (!string.IsNullOrWhiteSpace(KeystorePassword)) {
-			PlayerSettings.Android.keystorePass = KeystorePassword;
-		}
-		if (!string.IsNullOrWhiteSpace(KeystoreAlias)) {
-			PlayerSettings.Android.keyaliasName = KeystoreAlias;
-		}
-		if (!string.IsNullOrWhiteSpace(KeystoreAliasPassword)) {
-			PlayerSettings.Android.keyaliasPass = KeystoreAliasPassword;
+		if (!string.IsNullOrWhiteSpace(Keystore) &&
+			!string.IsNullOrWhiteSpace(KeystorePassword) &&
+			!string.IsNullOrWhiteSpace(KeystoreAlias) &&
+			!string.IsNullOrWhiteSpace(KeystoreAliasPassword)) {
+			PlayerSettings.Android.useCustomKeystore = true;
+
+			if (!string.IsNullOrWhiteSpace(Keystore)) {
+				PlayerSettings.Android.keystoreName = Keystore;
+			}
+			if (!string.IsNullOrWhiteSpace(KeystorePassword)) {
+				PlayerSettings.Android.keystorePass = KeystorePassword;
+			}
+			if (!string.IsNullOrWhiteSpace(KeystoreAlias)) {
+				PlayerSettings.Android.keyaliasName = KeystoreAlias;
+			}
+			if (!string.IsNullOrWhiteSpace(KeystoreAliasPassword)) {
+				PlayerSettings.Android.keyaliasPass = KeystoreAliasPassword;
+			}
+		} else {
+			PlayerSettings.Android.useCustomKeystore = false;
 		}
 	}
 		
