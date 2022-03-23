@@ -7978,7 +7978,7 @@ async function ExportIPA(workspace, project, outputDirectory, outputName, schema
     core.endGroup();
 }
 async function BuildUnityProject(projectDirectory, outputDirectory, outputName, unityVersion, buildTarget, configuration, logFile, executeMethod, teamID, provisioningProfileUUID, keystore, keystoreBase64, keystorePassword, keystoreAlias, keystoreAliasPassword, additionalArguments) {
-    unityVersion = unityVersion !== null && unityVersion !== void 0 ? unityVersion : await unity_command_1.Unity.GetVersion(projectDirectory);
+    unityVersion = unityVersion || await unity_command_1.Unity.GetVersion(projectDirectory);
     const builder = new unity_command_1.UnityCommandBuilder()
         .SetBuildTarget(buildTarget)
         .SetProjectPath(projectDirectory)
@@ -8003,7 +8003,9 @@ async function BuildUnityProject(projectDirectory, outputDirectory, outputName, 
     if (additionalArguments !== '') {
         builder.Append(additionalArguments.split(' '));
     }
+    core.startGroup('Run Unity build');
     await exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), unityVersion), builder.Build());
+    core.endGroup();
 }
 async function Run() {
     try {

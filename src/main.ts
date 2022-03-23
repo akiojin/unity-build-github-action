@@ -67,7 +67,7 @@ async function BuildUnityProject(
 	additionalArguments: string
 )
 {
-	unityVersion = unityVersion ?? await Unity.GetVersion(projectDirectory)
+	unityVersion = unityVersion || await Unity.GetVersion(projectDirectory)
 
 	const builder = new UnityCommandBuilder()
 		.SetBuildTarget(buildTarget)
@@ -109,7 +109,9 @@ async function BuildUnityProject(
 		builder.Append(additionalArguments.split(' '))
 	}
 
+	core.startGroup('Run Unity build')
 	await exec.exec(Unity.GetExecutePath(os.platform(), unityVersion), builder.Build())
+	core.endGroup()
 }
 
 async function Run()
