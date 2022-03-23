@@ -33,7 +33,7 @@ inputs:
       Specifies the output directory.
     required: false
     default: ''
-  output-file-name:
+  output-name:
     description: >
       Specifies the output directory.
     required: false

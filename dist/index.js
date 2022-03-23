@@ -7849,7 +7849,7 @@ async function BuildUnityProject() {
             keystore = tmp.tmpNameSync();
             await fs.writeFile(keystore, Buffer.from(core.getInput('keystore-base64'), 'base64'));
         }
-        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(core.getInput('output-directory'), core.getInput('output-file-name'), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
+        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(core.getInput('output-directory'), core.getInput('output-name'), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
         const cs = path_1.default.join(projectDirectory, 'Assets', 'Editor', 'UnityBuildScript.cs');
         await fs.mkdir(path_1.default.dirname(cs), { recursive: true });
         await fs.writeFile(cs, script);

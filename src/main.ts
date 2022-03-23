@@ -32,7 +32,7 @@ async function BuildUnityProject()
 
 		const script = UnityBuildScriptHelper.GenerateUnityBuildScript(
 			core.getInput('output-directory'),
-			core.getInput('output-file-name'),
+			core.getInput('output-name'),
 			core.getInput('configuration').toLowerCase() === 'debug',
 			core.getInput('team-id'),
 			core.getInput('provisioning-profile-uuid'),
