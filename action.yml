@@ -21,24 +21,22 @@ inputs:
   configuration:
     description: >
       The configuration to use when building the app.
+      Defaults to 'Debug'
 
       Possible options are:
       Debug, Release.
-
-      Defaults to 'Debug'
     required: false
     default: 'Debug'
   output-directory:
     description: >
       Specifies the output directory.
-
       Defaults to $RUNNER_TEMP
     required: false
     default: ${{ runner.temp }}
   output-name:
     description: >
       Specifies the output file name.
-
+      If an empty string is passed for this value, the product name or "ProductName" specified in the Unity Editor will be used.
       Defaults to "Build"
     required: false
     default: 'Build'
@@ -46,14 +44,6 @@ inputs:
     description: >
       Execute the static method as soon as Unity opens the project,
       and after the optional Asset server update is complete.
-      You can use this to do tasks such as continuous integration,
-      performing Unit Tests, making builds or preparing data.
-      To return an error from the command line process,
-      either throw an exception which causes Unity to exit with return code 1,
-      or call EditorApplication.Exit with a non-zero return code.
-      To pass parameters, add them to the command line and retrieve them inside the function using System.Environment.GetCommandLineArgs.
-      To use -executeMethod, you need to place the enclosing script in an Editor folder.
-      The method you execute must be defined as static.
     required: false
     default: ''
   log-file:
@@ -98,22 +88,6 @@ inputs:
       Required for iOS builds.
     required: false
     default: ''
-  scheme:
-    description: >
-      The project's scheme.
-      Defaults to 'Unity-iPhone'
-
-      Required for iOS builds.
-    required: false
-    default: 'Unity-iPhone'
-  sdk:
-    description: >
-      The SDK that should be used for building the application.
-      Defaults to 'iphoneos'
-
-      Required for iOS builds.
-    required: false
-    default: 'iphoneos'
   team-id:
     description: >
       The ID of your Developer Portal team if you're in multiple teams.

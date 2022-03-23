@@ -2798,6 +2798,9 @@ Object.defineProperty(exports, "ArgumentBuilder", ({ enumerable: true, get: func
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const argument_builder_1 = __nccwpck_require2_(582);
 class UnityCommandBuilder extends argument_builder_1.ArgumentBuilder {
+    /**
+     * Sets the default argument.
+     */
     constructor() {
         super();
         this.Append('-quit')
@@ -2805,64 +2808,153 @@ class UnityCommandBuilder extends argument_builder_1.ArgumentBuilder {
             .Append('-nographics')
             .Append('-silent-crashes');
     }
+    /**
+     * Disable Graphics Processing Unit (GPU) skinning at startup.
+     *
+     * @returns this
+     */
     DisableGPUSkinning() {
         this.Append('-disable-gpu-skinning');
         return this;
     }
+    /**
+     * Execute the static method as soon as Unity opens the project,
+     * and after the optional Asset server update is complete.
+     *
+     * @param executeMethod Method name
+     * @returns this
+     */
     SetExecuteMethod(executeMethod) {
         this.Append('-executeMethod', executeMethod);
         return this;
     }
+    /**
+     * Specify the maximum thread count for the Unity JobQueue Job Worker Count.
+     *
+     * @param count Job Worker Count
+     * @returns this
+     */
     SetJobWorkerCount(count) {
         this.Append('-job-worker-count', count.toString());
         return this;
     }
+    /**
+     * Specify where Unity writes the Editor or Windows/Linux/OSX standalone log file.
+     *
+     * @param logFile pathname
+     * @returns this
+     */
     SetLogFile(logFile) {
         this.Append('-logFile', logFile);
         return this;
     }
+    /**
+     * Disables the Unity Package Manager.
+     *
+     * @returns this
+     */
     DisableUPM() {
         this.Append('-noUpm');
         return this;
     }
+    /**
+     * Activate Unity Editor.
+     *
+     * @param username username
+     * @param password password
+     * @returns this
+     */
     Activation(username, password) {
         this.Append('-username', username)
             .Append('-password', password);
         return this;
     }
+    /**
+     * Open the project at the given path.
+     *
+     * @param projectPath pathname
+     * @returns this
+     */
     SetProjectPath(projectPath) {
         this.Append('-projectPath', projectPath);
         return this;
     }
+    /**
+     * Enables release code optimization mode,
+     * overriding the current default code optimization mode for the session.
+     *
+     * @returns this
+     */
     EnableReleaseCodeOptimization() {
         this.Append('-releaseCodeOptimization');
         return this;
     }
     // Batch mode arguments
+    /**
+     * Use this command line option to specify that APIUpdater should run when Unity is launched in batch mode.
+     *
+     * @returns this
+     */
     EnableAPIUpdater() {
         this.Append('-accept-apiupdate');
         return this;
     }
     // Build Arguments
+    /**
+     * Select an active build target before loading a project.
+     *
+     * Possible options are:
+     * Standalone, Win, Win64, OSXUniversal, Linux64, iOS, Android, WebGL, WindowsStoreApps, tvOS
+     *
+     * @param target Target name
+     * @returns this
+     */
     SetBuildTarget(target) {
         this.Append('-buildTarget', target);
         return this;
     }
     // Cache server arguments
+    /**
+     * Tells Unity to use the newer Accelerator Cache Server.
+     * Specifies the endpoint address if you are using the newer Accelerator Cache Server.
+     *
+     * @param endpoint Example: -cacheServerEndpoint 127.0.0.1:10080
+     * @returns this
+     */
     EnableCacheServer(endpoint) {
         this.Append('-EnableCacheServer')
             .Append('-cacheServerEndpoint', endpoint);
         return this;
     }
     // Debugging arguments
+    /**
+     * Disables the debugger listen socket.
+     *
+     * @returns this
+     */
     DisableManagedDebugger() {
         this.Append('-disableManagedDebugger');
         return this;
     }
+    /**
+     * Enables debug code optimization mode,
+     * overriding the current default code optimization mode for the session.
+     *
+     * @returns this
+     */
     EnableDebugCodeOptimization() {
         this.Append('-debugCodeOptimization');
         return this;
     }
+    /**
+     * Allow detailed debugging.
+     *
+     * Possible options are:
+     * None, Script Only, Full
+     *
+     * @param type option
+     * @returns
+     */
     SetStackTraceLogType(type) {
         this.Append('-stackTraceLogType', `"${type}"`);
         return this;
@@ -2892,25 +2984,44 @@ Object.defineProperty(exports, "UnityCommandBuilder", ({ enumerable: true, get: 
 /***/ }),
 
 /***/ 327:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require2_) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require2_) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const fs_1 = __nccwpck_require2_(147);
+const path_1 = __importDefault(__nccwpck_require2_(17));
 class Unity {
+    /**
+     * Returns the path to the Unity executable.
+     *
+     * @param os platform name (e.g. os.platform())
+     * @param unityVersion Unity version
+     * @returns Execute path
+     */
     static GetExecutePath(os, unityVersion) {
         switch (os) {
             default:
+                throw new Error('Unsupported platform.');
             case 'darwin':
                 return `/Applications/Unity/Hub/Editor/${unityVersion}/Unity.app/Contents/MacOS/Unity`;
             case 'win32':
                 return `C:\\Program Files\\Unity\\Hub\\Editor\\${unityVersion}\\Editor\\Unity.exe`;
         }
     }
+    /**
+     * Returns the version of Unity used in a given project.
+     * The Unity version is obtained from ProjectSettings/ProjectVersion.txt.
+     *
+     * @param projectDirectory Unity project path
+     * @returns Unity version (e.g. 2021.2.16f1)
+     */
     static async GetVersion(projectDirectory) {
-        const data = await fs_1.promises.readFile(`${projectDirectory}/ProjectSettings/ProjectVersion.txt`);
-        const text = data.toString();
+        const filePath = path_1.default.join(projectDirectory, 'ProjectSettings', 'ProjectVersion.txt');
+        const text = await fs_1.promises.readFile(filePath, 'utf-8');
         const result = text.match(/m_EditorVersion: (?<version>[0-9a-zA-Z.]*)/i);
         if (result === null || result.groups == null) {
             throw new Error('Invalid ProjectVersion.txt');
@@ -2928,6 +3039,14 @@ exports["default"] = Unity;
 
 "use strict";
 module.exports = __nccwpck_require__(147);
+
+/***/ }),
+
+/***/ 17:
+/***/ ((module) => {
+
+"use strict";
+module.exports = __nccwpck_require__(17);
 
 /***/ })
 
@@ -7962,58 +8081,58 @@ const path_1 = __importDefault(__nccwpck_require__(17));
 const unity_command_1 = __nccwpck_require__(783);
 const argument_builder_1 = __nccwpck_require__(582);
 const UnityBuildScriptHelper_1 = __importDefault(__nccwpck_require__(43));
-async function ExportIPA(workspace, project, outputDirectory, outputName, schema, sdk, configuration, includeBitcode, includeSymbols, exportMethod, exportTeamID) {
+async function ExportIPA(options) {
     const builder = new argument_builder_1.ArgumentBuilder()
         .Append('gym')
-        .Append('--output_directory', outputDirectory)
-        .Append('--scheme', schema)
-        .Append('--sdk', sdk)
-        .Append('--configuration', configuration)
-        .Append('--include_bitcode', includeBitcode.toString())
-        .Append('--include_symbols', includeSymbols.toString())
-        .Append('--export_method', exportMethod)
-        .Append('--export_team_id', exportTeamID);
-    if (workspace !== '') {
-        builder.Append('--workspace', workspace);
+        .Append('--output_directory', options.outputDirectory)
+        .Append('--scheme', 'Unity-iPhone')
+        .Append('--sdk', 'iphoneos')
+        .Append('--configuration', options.configuration)
+        .Append('--include_bitcode', options.includeBitcode.toString())
+        .Append('--include_symbols', options.includeSymbols.toString())
+        .Append('--export_method', options.exportMethod)
+        .Append('--export_team_id', options.exportTeamID);
+    if (!!options.workspace) {
+        builder.Append('--workspace', options.workspace);
     }
     else {
-        builder.Append('--project', project);
+        builder.Append('--project', options.project || path_1.default.join(__dirname, 'Unity-iPhone.xcodeproj'));
     }
-    if (outputName !== '') {
-        builder.Append('--output_name', outputName);
+    if (!!options.outputName) {
+        builder.Append('--output_name', options.outputName);
     }
     core.startGroup('Run fastlane "gym"');
     await exec.exec('fastlane', builder.Build());
     core.endGroup();
 }
-async function BuildUnityProject(projectDirectory, outputDirectory, outputName, unityVersion, buildTarget, configuration, logFile, executeMethod, teamID, provisioningProfileUUID, keystore, keystoreBase64, keystorePassword, keystoreAlias, keystoreAliasPassword, additionalArguments) {
-    unityVersion = unityVersion || await unity_command_1.Unity.GetVersion(projectDirectory);
+async function BuildUnityProject(optioins) {
+    optioins.unityVersion = optioins.unityVersion || await unity_command_1.Unity.GetVersion(optioins.projectDirectory);
     const builder = new unity_command_1.UnityCommandBuilder()
-        .SetBuildTarget(buildTarget)
-        .SetProjectPath(projectDirectory)
-        .SetLogFile(logFile);
-    if (executeMethod !== '') {
-        builder.SetExecuteMethod(executeMethod);
+        .SetBuildTarget(optioins.buildTarget)
+        .SetProjectPath(optioins.projectDirectory)
+        .SetLogFile(optioins.logFile);
+    if (!!optioins.executeMethod) {
+        builder.SetExecuteMethod(optioins.executeMethod);
     }
     else {
         builder.SetExecuteMethod('UnityBuildScript.PerformBuild');
-        if (keystoreBase64 !== '') {
-            keystore = tmp.tmpNameSync() + '.keystore';
-            await fs.writeFile(keystore, Buffer.from(keystoreBase64, 'base64'));
+        if (!!optioins.keystoreBase64) {
+            optioins.keystore = tmp.tmpNameSync() + '.keystore';
+            await fs.writeFile(optioins.keystore, Buffer.from(optioins.keystoreBase64, 'base64'));
         }
-        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(outputDirectory, outputName, configuration.toLowerCase() === 'debug', teamID, provisioningProfileUUID, keystore, keystorePassword, keystoreAlias, keystoreAliasPassword);
-        const cs = path_1.default.join(projectDirectory, 'Assets', 'Editor', 'UnityBuildScript.cs');
+        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(optioins.outputDirectory, optioins.outputName, optioins.configuration.toLowerCase() === 'debug', optioins.teamID, optioins.provisioningProfileUUID, optioins.keystore, optioins.keystorePassword, optioins.keystoreAlias, optioins.keystoreAliasPassword);
+        const cs = path_1.default.join(optioins.projectDirectory, 'Assets', 'Editor', 'UnityBuildScript.cs');
         await fs.mkdir(path_1.default.dirname(cs), { recursive: true });
         await fs.writeFile(cs, script);
         core.startGroup('Generate "UnityBuildScript.cs"');
         core.info(`UnityBuildScript.cs:\n${script}`);
         core.endGroup();
     }
-    if (additionalArguments !== '') {
-        builder.Append(additionalArguments.split(' '));
+    if (!!optioins.additionalArguments) {
+        builder.Append(optioins.additionalArguments.split(' '));
     }
-    core.startGroup('Run Unity build');
-    await exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), unityVersion), builder.Build());
+    core.startGroup('Run Unity');
+    await exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), optioins.unityVersion), builder.Build());
     core.endGroup();
 }
 async function Run() {
@@ -8024,18 +8143,48 @@ async function Run() {
         const outputName = core.getInput('output-name');
         const configuration = core.getInput('configuration');
         const teamID = core.getInput('team-id');
-        await BuildUnityProject(core.getInput('project-directory'), outputDirectory, outputName, core.getInput('unity-version'), buildTarget, configuration, core.getInput('log-file'), core.getInput('execute-method'), teamID, core.getInput('provisioning-profile-uuid'), core.getInput('keystore'), core.getInput('keystore-base64'), core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'), core.getInput('additional-arguments'));
+        const options = {
+            projectDirectory: core.getInput('project-directory'),
+            outputDirectory: outputDirectory,
+            outputName: outputName,
+            unityVersion: core.getInput('unity-version'),
+            buildTarget: buildTarget,
+            configuration: configuration,
+            logFile: core.getInput('log-file'),
+            executeMethod: core.getInput('execute-method'),
+            additionalArguments: core.getInput('additional-arguments')
+        };
         if (buildTarget.toLowerCase() === 'ios') {
-            let workspace = '';
-            let project = '';
+            options.teamID = teamID;
+            options.provisioningProfileUUID = core.getInput('provisioning-profile-uuid');
+        }
+        else {
+            options.keystore = core.getInput('keystore');
+            options.keystoreBase64 = core.getInput('keystore-base64');
+            options.keystorePassword = core.getInput('keystore-password');
+            options.keystoreAlias = core.getInput('keystore-alias');
+            options.keystoreAliasPassword = core.getInput('keystore-alias-password');
+        }
+        await BuildUnityProject(options);
+        if (buildTarget.toLowerCase() === 'ios') {
+            const options = {
+                outputDirectory: core.getInput('output-directory'),
+                outputName: outputName,
+                configuration: configuration,
+                includeBitcode: core.getBooleanInput('include-bitcode'),
+                includeSymbols: core.getBooleanInput('include-symbols'),
+                exportMethod: core.getInput('export-method'),
+                exportTeamID: teamID
+            };
             try {
-                await fs.access(path_1.default.join(outputDirectory, 'Unity-iPhone.xcworkspace'));
-                workspace = path_1.default.join(outputDirectory, 'Unity-iPhone.xcworkspace');
+                options.workspace = path_1.default.join(outputDirectory, 'Unity-iPhone.xcworkspace');
+                await fs.access(options.workspace);
             }
             catch (ex) {
-                project = path_1.default.join(outputDirectory, 'Unity-iPhone.xcodeproj');
+                options.workspace = undefined;
+                options.project = path_1.default.join(outputDirectory, 'Unity-iPhone.xcodeproj');
             }
-            await ExportIPA(workspace, project, core.getInput('output-directory'), outputName, core.getInput('scheme'), core.getInput('sdk'), configuration, core.getBooleanInput('include-bitcode'), core.getBooleanInput('include-symbols'), core.getInput('export-method'), teamID);
+            await ExportIPA(options);
         }
     }
     catch (ex) {
