@@ -7932,8 +7932,7 @@ function wrappy (fn, cb) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 class UnityBuildScriptHelper {
     static GenerateUnityBuildScript(outputDirectory, outputFileName, development = false, teamID, provisioningProfileUUID, keystore, keystorePassword, keystoreAlias, keystoreAliasPassword) {
-        return `
-using System;
+        return `using System;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -7942,96 +7941,89 @@ using UnityEngine;
 
 public class UnityBuildScript
 {
-	public static string OutputFileName = @"${outputFileName}";
-	public static string OutputDirectory = @"${outputDirectory}";
+    private const string OutputFileName = @"${outputFileName}";
+    private const string OutputDirectory = @"${outputDirectory}";
+    private const bool Development = ${development};
 
-	public static string TeamID = "${teamID}";
-	public static string ProvisioningProfileUUID = "${provisioningProfileUUID}";
+    // for iOS
+    private const string TeamID = "${teamID}";
+    private const string ProvisioningProfileUUID = @"${provisioningProfileUUID}";
 
-	public static string Keystore = @"${keystore}";
-	public static string KeystorePassword = "${keystorePassword}";
-	public static string KeystoreAlias = "${keystoreAlias}";
-	public static string KeystoreAliasPassword = "${keystoreAliasPassword}";
+    // for Android
+    private const string Keystore = @"${keystore}";
+    private const string KeystorePassword = @"${keystorePassword}";
+    private const string KeystoreAlias = @"${keystoreAlias}";
+    private const string KeystoreAliasPassword = @"${keystoreAliasPassword}";
 
-	public static bool Development = ${development};
+    private static string GetBuildTargetOutputFileName()
+        => EditorUserBuildSettings.activeBuildTarget switch {
+            BuildTarget.Android => $"{OutputFileName}.apk",
+            BuildTarget.StandaloneWindows => $"{OutputFileName}.exe",
+            BuildTarget.StandaloneWindows64 => $"{OutputFileName}.exe",
+            BuildTarget.StandaloneOSX => $"{OutputFileName}.app",
+            _ => string.Empty
+        };
 
-	static string GetBuildTargetOutputFileName()
-		=> EditorUserBuildSettings.activeBuildTarget switch {
-			BuildTarget.Android => $"{OutputFileName}.apk",
-			BuildTarget.StandaloneWindows => $"{OutputFileName}.exe",
-			BuildTarget.StandaloneWindows64 => $"{OutputFileName}.exe",
-			BuildTarget.StandaloneOSX => $"{OutputFileName}.app",
-			_ => ""
-		};
+    private static BuildOptions GetBuildOptions()
+    {
+        var options = BuildOptions.StrictMode | BuildOptions.DetailedBuildReport;
 
-	static BuildOptions GetBuildOptions()
-	{
-		var options = BuildOptions.None;
+        if (!!Development) {
+            options |= BuildOptions.Development;
+        }
 
-		if (!!Development) {
-			options |= BuildOptions.Development;
-		}
-		
-		return options;
-	}
+        return options;
+    }
 
-	static void Configure()
-	{
-		if (!string.IsNullOrWhiteSpace(TeamID)) {
-			PlayerSettings.iOS.appleDeveloperTeamID = TeamID;
-		}
-		if (!string.IsNullOrWhiteSpace(ProvisioningProfileUUID)) {
-			PlayerSettings.iOS.iOSManualProvisioningProfileID = ProvisioningProfileUUID;
-		}
+    private static void Configure()
+    {
+        if (!string.IsNullOrWhiteSpace(TeamID)) {
+            PlayerSettings.iOS.appleDeveloperTeamID = TeamID;
+        }
 
-		if (!string.IsNullOrWhiteSpace(Keystore) &&
-			!string.IsNullOrWhiteSpace(KeystorePassword) &&
-			!string.IsNullOrWhiteSpace(KeystoreAlias) &&
-			!string.IsNullOrWhiteSpace(KeystoreAliasPassword)) {
-			PlayerSettings.Android.useCustomKeystore = true;
+        if (!string.IsNullOrWhiteSpace(ProvisioningProfileUUID)) {
+            PlayerSettings.iOS.iOSManualProvisioningProfileID = ProvisioningProfileUUID;
+        }
 
-			if (!string.IsNullOrWhiteSpace(Keystore)) {
-				PlayerSettings.Android.keystoreName = Keystore;
-			}
-			if (!string.IsNullOrWhiteSpace(KeystorePassword)) {
-				PlayerSettings.Android.keystorePass = KeystorePassword;
-			}
-			if (!string.IsNullOrWhiteSpace(KeystoreAlias)) {
-				PlayerSettings.Android.keyaliasName = KeystoreAlias;
-			}
-			if (!string.IsNullOrWhiteSpace(KeystoreAliasPassword)) {
-				PlayerSettings.Android.keyaliasPass = KeystoreAliasPassword;
-			}
-		} else {
-			PlayerSettings.Android.useCustomKeystore = false;
-		}
-	}
-		
-	public static void PerformBuild()
-	{
-		try {
-			Configure();
+        if (!string.IsNullOrWhiteSpace(Keystore)) {
+            PlayerSettings.Android.keystoreName = Keystore;
+        }
 
-			var scenes = EditorBuildSettings.scenes
-				.Where(scene => scene.enabled)
-				.Select(scene => scene.path).ToArray();
-			var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
-				scenes = scenes,
-				locationPathName = Path.Combine(OutputDirectory, GetBuildTargetOutputFileName()),
-				target = EditorUserBuildSettings.activeBuildTarget,
-				options = GetBuildOptions()
-			});
+        if (!string.IsNullOrWhiteSpace(KeystorePassword)) {
+            PlayerSettings.Android.keystorePass = KeystorePassword;
+        }
 
-			if (report.summary.result == BuildResult.Succeeded) {
-				EditorApplication.Exit(0);
-			} else {
-				throw new Exception();
-			}
-		} catch (Exception ex) {
-			Debug.LogException(ex);
-			EditorApplication.Exit(1);
-		}
-	}
+        if (!string.IsNullOrWhiteSpace(KeystoreAlias)) {
+            PlayerSettings.Android.keyaliasName = KeystoreAlias;
+        }
+
+        if (!string.IsNullOrWhiteSpace(KeystoreAliasPassword)) {
+            PlayerSettings.Android.keyaliasPass = KeystoreAliasPassword;
+        }
+    }
+
+    private static void PerformBuild()
+    {
+        try {
+            Configure();
+
+            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
+                scenes = EditorBuildSettings.scenes.Select(x => x.path).ToArray(),
+                locationPathName = Path.Combine(OutputDirectory, GetBuildTargetOutputFileName()),
+                target = EditorUserBuildSettings.activeBuildTarget,
+                options = GetBuildOptions(),
+            });
+
+            if (report.summary.result == BuildResult.Succeeded) {
+                EditorApplication.Exit(0);
+            } else {
+                throw new Exception();
+            }
+        } catch (Exception ex) {
+            Debug.LogException(ex);
+            EditorApplication.Exit(1);
+        }
+    }
 }`;
     }
 }
