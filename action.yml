@@ -82,6 +82,10 @@ inputs:
       Required for iOS builds.
     required: false
     default: false
+  provisioning-profile-base64:
+    description: ''
+    required: false
+    default: ''
   provisioning-profile-uuid:
     description: >
       Specify the UUID of the provisioning profile.

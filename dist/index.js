@@ -8083,7 +8083,10 @@ async function ExportIPA(options) {
         .Append('--include_bitcode', options.includeBitcode.toString())
         .Append('--include_symbols', options.includeSymbols.toString())
         .Append('--export_method', options.exportMethod)
-        .Append('--export_team_id', options.exportTeamID);
+        .Append('--export_team_id', options.exportTeamID)
+        .Append('--skip_package_pkg', 'true')
+        .Append('--skip_package_dependencies_resolution', 'true')
+        .Append('--silent');
     if (!!options.workspace) {
         builder.Append('--workspace', options.workspace);
     }
@@ -8144,19 +8147,15 @@ async function Run() {
             configuration: configuration,
             logFile: core.getInput('log-file'),
             executeMethod: core.getInput('execute-method'),
-            additionalArguments: core.getInput('additional-arguments')
+            additionalArguments: core.getInput('additional-arguments'),
+            teamID: core.getInput('team-id'),
+            provisioningProfileUUID: core.getInput('provisioning-profile-uuid'),
+            keystore: core.getInput('keystore'),
+            keystoreBase64: core.getInput('keystore-base64'),
+            keystorePassword: core.getInput('keystore-password'),
+            keystoreAlias: core.getInput('keystore-alias'),
+            keystoreAliasPassword: core.getInput('keystore-alias-password')
         };
-        if (buildTarget.toLowerCase() === 'ios') {
-            options.teamID = teamID;
-            options.provisioningProfileUUID = core.getInput('provisioning-profile-uuid');
-        }
-        else {
-            options.keystore = core.getInput('keystore');
-            options.keystoreBase64 = core.getInput('keystore-base64');
-            options.keystorePassword = core.getInput('keystore-password');
-            options.keystoreAlias = core.getInput('keystore-alias');
-            options.keystoreAliasPassword = core.getInput('keystore-alias-password');
-        }
         await BuildUnityProject(options);
         if (buildTarget.toLowerCase() === 'ios') {
             const options = {
