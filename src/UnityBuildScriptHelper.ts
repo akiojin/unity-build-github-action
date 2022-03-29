@@ -26,13 +26,13 @@ public class UnityBuildScript
 
     // for iOS
     private const string TeamID = "${teamID}";
-    private const string ProvisioningProfileUUID = @"${provisioningProfileUUID}";
+    private const string ProvisioningProfileUUID = "${provisioningProfileUUID}";
 
     // for Android
     private const string Keystore = @"${keystore}";
-    private const string KeystorePassword = @"${keystorePassword}";
-    private const string KeystoreAlias = @"${keystoreAlias}";
-    private const string KeystoreAliasPassword = @"${keystoreAliasPassword}";
+    private const string KeystorePassword = "${keystorePassword}";
+    private const string KeystoreAlias = "${keystoreAlias}";
+    private const string KeystoreAliasPassword = "${keystoreAliasPassword}";
 
     private static string GetBuildTargetOutputFileName()
         => EditorUserBuildSettings.activeBuildTarget switch {
