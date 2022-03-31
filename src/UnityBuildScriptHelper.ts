@@ -45,7 +45,7 @@ public class UnityBuildScript
 
     private static BuildOptions GetBuildOptions()
     {
-		var options = BuildOptions.DetailedBuildReport;
+		var options = BuildOptions.None;
 
         if (!!Development) {
             options |= BuildOptions.Development;
