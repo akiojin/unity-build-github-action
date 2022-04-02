@@ -64,58 +64,40 @@ async function ExportIPA(options: ExportOptions): Promise<void>
 	core.endGroup()
 }
 
-interface UnityBuildOptions
+async function BuildUnityProject(outputDirectory: string)
 {
-	projectDirectory: string
-	outputDirectory: string
-	outputName: string
-	unityVersion: string
-	buildTarget: string
-	configuration: string
-	logFile: string
-	executeMethod: string
-	teamID?: string
-	provisioningProfileUUID?: string
-	keystore?: string
-	keystoreBase64?: string
-	keystorePassword?: string
-	keystoreAlias?: string
-	keystoreAliasPassword?: string
-	additionalArguments?: string
-}
-
-async function BuildUnityProject(optioins: UnityBuildOptions)
-{
-	optioins.unityVersion = optioins.unityVersion || await Unity.GetVersion(optioins.projectDirectory)
+	var version = core.getInput('unity-version') || await Unity.GetVersion(core.getInput('project-directory'))
 
 	const builder = new UnityCommandBuilder()
-		.SetBuildTarget(optioins.buildTarget)
-		.SetProjectPath(optioins.projectDirectory)
-		.SetLogFile(optioins.logFile)
+		.SetBuildTarget(core.getInput('build-target'))
+		.SetProjectPath(core.getInput('project-directory'))
+		.SetLogFile(core.getInput('log-file'))
 
-	if (!!optioins.executeMethod) {
-		builder.SetExecuteMethod(optioins.executeMethod)
+	if (!!core.getInput('execute-method')) {
+		builder.SetExecuteMethod(core.getInput('execute-method'))
 	} else {
 		builder.SetExecuteMethod('UnityBuildScript.PerformBuild')
 
-		if (!!optioins.keystoreBase64) {
-			optioins.keystore = tmp.tmpNameSync() + '.keystore'
-			await fs.writeFile(optioins.keystore, Buffer.from(optioins.keystoreBase64, 'base64'))
+		var keystore = core.getInput('keystore')
+
+		if (!!core.getInput('keystore-base64')) {
+			keystore = tmp.tmpNameSync() + '.keystore'
+			await fs.writeFile(keystore, Buffer.from(core.getInput('keystore-base64'), 'base64'))
 		}
 
 		const script = UnityBuildScriptHelper.GenerateUnityBuildScript(
-			optioins.outputDirectory,
-			optioins.outputName,
-			optioins.configuration.toLowerCase() === 'debug',
-			optioins.teamID,
-			optioins.provisioningProfileUUID,
-			optioins.keystore,
-			optioins.keystorePassword,
-			optioins.keystoreAlias,
-			optioins.keystoreAliasPassword
+			outputDirectory,
+			core.getInput('output-name'),
+			core.getInput('configuration').toLowerCase() === 'debug',
+			core.getInput('team-id'),
+			core.getInput('provisioning-profile-uuid'),
+			keystore,
+			core.getInput('keystore-password'),
+			core.getInput('keystore-alias'),
+			core.getInput('keystore-alias-password')
 		)
 
-		const cs = path.join(optioins.projectDirectory, 'Assets', 'Editor', 'UnityBuildScript.cs')
+		const cs = path.join(core.getInput('project-directory'), 'Assets', 'Editor', 'UnityBuildScript.cs')
 		await fs.mkdir(path.dirname(cs), {recursive: true})
 		await fs.writeFile(cs, script)
 
@@ -124,57 +106,33 @@ async function BuildUnityProject(optioins: UnityBuildOptions)
 		core.endGroup()
 	}
 
-	if (!!optioins.additionalArguments) {
-		builder.Append(optioins.additionalArguments.split(' '))
+	if (!!core.getInput('additional-arguments')) {
+		builder.Append(core.getInput('additional-arguments').split(' '))
 	}
 
 	core.startGroup('Run Unity')
-	await exec.exec(Unity.GetExecutePath(os.platform(), optioins.unityVersion), builder.Build())
+	await exec.exec(Unity.GetExecutePath(os.platform(), version), builder.Build())
 	core.endGroup()
 }
 
 async function Run()
 {
 	try {
-		const buildTarget = core.getInput('build-target')
-		const outputDirectory = buildTarget.toLowerCase() === 'ios'
+		const outputDirectory = core.getInput('build-target').toLowerCase() === 'ios'
 			? core.getInput('temporary-directory') : core.getInput('output-directory')
 		const outputName = core.getInput('output-name')
-		const configuration = core.getInput('configuration')
-		const teamID = core.getInput('team-id')
 
-		const options: UnityBuildOptions = {
-			projectDirectory: core.getInput('project-directory'),
-			outputDirectory: outputDirectory,
-			outputName: outputName,
-			unityVersion: core.getInput('unity-version'),
-			buildTarget: buildTarget,
-			configuration: configuration,
-			logFile: core.getInput('log-file'),
-			executeMethod: core.getInput('execute-method'),
-			additionalArguments: core.getInput('additional-arguments'),
+		await BuildUnityProject(outputDirectory)
 
-			teamID: core.getInput('team-id'),
-			provisioningProfileUUID: core.getInput('provisioning-profile-uuid'),
-
-			keystore: core.getInput('keystore'),
-			keystoreBase64: core.getInput('keystore-base64'),
-			keystorePassword: core.getInput('keystore-password'),
-			keystoreAlias: core.getInput('keystore-alias'),
-			keystoreAliasPassword: core.getInput('keystore-alias-password')
-		}
-
-		await BuildUnityProject(options)
-
-		if (buildTarget.toLowerCase() === 'ios') {
+		if (core.getInput('build-target').toLowerCase() === 'ios') {
 			const options: ExportOptions = {
 				outputDirectory: core.getInput('output-directory'),
 				outputName: outputName,
-				configuration: configuration,
+				configuration: core.getInput('configuration'),
 				includeBitcode: core.getBooleanInput('include-bitcode'),
 				includeSymbols: core.getBooleanInput('include-symbols'),
 				exportMethod: core.getInput('export-method'),
-				exportTeamID: teamID
+				exportTeamID: core.getInput('team-id')
 			}
 
 			try {

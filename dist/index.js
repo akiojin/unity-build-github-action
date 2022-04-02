@@ -7941,21 +7941,21 @@ using UnityEngine;
 
 public class UnityBuildScript
 {
-    private const string OutputFileName = @"${outputFileName}";
-    private const string OutputDirectory = @"${outputDirectory}";
-    private const bool Development = ${development};
+    const string OutputFileName = @"${outputFileName}";
+    const string OutputDirectory = @"${outputDirectory}";
+    const bool Development = ${development};
 
     // for iOS
-    private const string TeamID = "${teamID}";
-    private const string ProvisioningProfileUUID = "${provisioningProfileUUID}";
+    const string TeamID = "${teamID}";
+    const string ProvisioningProfileUUID = "${provisioningProfileUUID}";
 
     // for Android
-    private const string Keystore = @"${keystore}";
-    private const string KeystorePassword = "${keystorePassword}";
-    private const string KeystoreAlias = "${keystoreAlias}";
-    private const string KeystoreAliasPassword = "${keystoreAliasPassword}";
+    const string Keystore = @"${keystore}";
+    const string KeystorePassword = "${keystorePassword}";
+    const string KeystoreAlias = "${keystoreAlias}";
+    const string KeystoreAliasPassword = "${keystoreAliasPassword}";
 
-    private static string GetBuildTargetOutputFileName()
+    static string GetBuildTargetOutputFileName()
         => EditorUserBuildSettings.activeBuildTarget switch {
             BuildTarget.Android => $"{OutputFileName}.apk",
             BuildTarget.StandaloneWindows => $"{OutputFileName}.exe",
@@ -7964,7 +7964,7 @@ public class UnityBuildScript
             _ => string.Empty
         };
 
-    private static BuildOptions GetBuildOptions()
+    static BuildOptions GetBuildOptions()
     {
 		var options = BuildOptions.None;
 
@@ -7975,7 +7975,7 @@ public class UnityBuildScript
         return options;
     }
 
-    private static void Configure()
+    static void Configure()
     {
         if (!string.IsNullOrWhiteSpace(TeamID)) {
             PlayerSettings.iOS.appleDeveloperTeamID = TeamID;
@@ -8100,72 +8100,52 @@ async function ExportIPA(options) {
     await exec.exec('fastlane', builder.Build());
     core.endGroup();
 }
-async function BuildUnityProject(optioins) {
-    optioins.unityVersion = optioins.unityVersion || await unity_command_1.Unity.GetVersion(optioins.projectDirectory);
+async function BuildUnityProject(outputDirectory) {
+    var version = core.getInput('unity-version') || await unity_command_1.Unity.GetVersion(core.getInput('project-directory'));
     const builder = new unity_command_1.UnityCommandBuilder()
-        .SetBuildTarget(optioins.buildTarget)
-        .SetProjectPath(optioins.projectDirectory)
-        .SetLogFile(optioins.logFile);
-    if (!!optioins.executeMethod) {
-        builder.SetExecuteMethod(optioins.executeMethod);
+        .SetBuildTarget(core.getInput('build-target'))
+        .SetProjectPath(core.getInput('project-directory'))
+        .SetLogFile(core.getInput('log-file'));
+    if (!!core.getInput('execute-method')) {
+        builder.SetExecuteMethod(core.getInput('execute-method'));
     }
     else {
         builder.SetExecuteMethod('UnityBuildScript.PerformBuild');
-        if (!!optioins.keystoreBase64) {
-            optioins.keystore = tmp.tmpNameSync() + '.keystore';
-            await fs.writeFile(optioins.keystore, Buffer.from(optioins.keystoreBase64, 'base64'));
+        var keystore = core.getInput('keystore');
+        if (!!core.getInput('keystore-base64')) {
+            keystore = tmp.tmpNameSync() + '.keystore';
+            await fs.writeFile(keystore, Buffer.from(core.getInput('keystore-base64'), 'base64'));
         }
-        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(optioins.outputDirectory, optioins.outputName, optioins.configuration.toLowerCase() === 'debug', optioins.teamID, optioins.provisioningProfileUUID, optioins.keystore, optioins.keystorePassword, optioins.keystoreAlias, optioins.keystoreAliasPassword);
-        const cs = path_1.default.join(optioins.projectDirectory, 'Assets', 'Editor', 'UnityBuildScript.cs');
+        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(outputDirectory, core.getInput('output-name'), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
+        const cs = path_1.default.join(core.getInput('project-directory'), 'Assets', 'Editor', 'UnityBuildScript.cs');
         await fs.mkdir(path_1.default.dirname(cs), { recursive: true });
         await fs.writeFile(cs, script);
         core.startGroup('Generate "UnityBuildScript.cs"');
         core.info(`UnityBuildScript.cs:\n${script}`);
         core.endGroup();
     }
-    if (!!optioins.additionalArguments) {
-        builder.Append(optioins.additionalArguments.split(' '));
+    if (!!core.getInput('additional-arguments')) {
+        builder.Append(core.getInput('additional-arguments').split(' '));
     }
     core.startGroup('Run Unity');
-    await exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), optioins.unityVersion), builder.Build());
+    await exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), version), builder.Build());
     core.endGroup();
 }
 async function Run() {
     try {
-        const buildTarget = core.getInput('build-target');
-        const outputDirectory = buildTarget.toLowerCase() === 'ios'
+        const outputDirectory = core.getInput('build-target').toLowerCase() === 'ios'
             ? core.getInput('temporary-directory') : core.getInput('output-directory');
         const outputName = core.getInput('output-name');
-        const configuration = core.getInput('configuration');
-        const teamID = core.getInput('team-id');
-        const options = {
-            projectDirectory: core.getInput('project-directory'),
-            outputDirectory: outputDirectory,
-            outputName: outputName,
-            unityVersion: core.getInput('unity-version'),
-            buildTarget: buildTarget,
-            configuration: configuration,
-            logFile: core.getInput('log-file'),
-            executeMethod: core.getInput('execute-method'),
-            additionalArguments: core.getInput('additional-arguments'),
-            teamID: core.getInput('team-id'),
-            provisioningProfileUUID: core.getInput('provisioning-profile-uuid'),
-            keystore: core.getInput('keystore'),
-            keystoreBase64: core.getInput('keystore-base64'),
-            keystorePassword: core.getInput('keystore-password'),
-            keystoreAlias: core.getInput('keystore-alias'),
-            keystoreAliasPassword: core.getInput('keystore-alias-password')
-        };
-        await BuildUnityProject(options);
-        if (buildTarget.toLowerCase() === 'ios') {
+        await BuildUnityProject(outputDirectory);
+        if (core.getInput('build-target').toLowerCase() === 'ios') {
             const options = {
                 outputDirectory: core.getInput('output-directory'),
                 outputName: outputName,
-                configuration: configuration,
+                configuration: core.getInput('configuration'),
                 includeBitcode: core.getBooleanInput('include-bitcode'),
                 includeSymbols: core.getBooleanInput('include-symbols'),
                 exportMethod: core.getInput('export-method'),
-                exportTeamID: teamID
+                exportTeamID: core.getInput('team-id')
             };
             try {
                 options.workspace = path_1.default.join(outputDirectory, 'Unity-iPhone.xcworkspace');

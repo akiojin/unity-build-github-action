@@ -20,21 +20,21 @@ using UnityEngine;
 
 public class UnityBuildScript
 {
-    private const string OutputFileName = @"${outputFileName}";
-    private const string OutputDirectory = @"${outputDirectory}";
-    private const bool Development = ${development};
+    const string OutputFileName = @"${outputFileName}";
+    const string OutputDirectory = @"${outputDirectory}";
+    const bool Development = ${development};
 
     // for iOS
-    private const string TeamID = "${teamID}";
-    private const string ProvisioningProfileUUID = "${provisioningProfileUUID}";
+    const string TeamID = "${teamID}";
+    const string ProvisioningProfileUUID = "${provisioningProfileUUID}";
 
     // for Android
-    private const string Keystore = @"${keystore}";
-    private const string KeystorePassword = "${keystorePassword}";
-    private const string KeystoreAlias = "${keystoreAlias}";
-    private const string KeystoreAliasPassword = "${keystoreAliasPassword}";
+    const string Keystore = @"${keystore}";
+    const string KeystorePassword = "${keystorePassword}";
+    const string KeystoreAlias = "${keystoreAlias}";
+    const string KeystoreAliasPassword = "${keystoreAliasPassword}";
 
-    private static string GetBuildTargetOutputFileName()
+    static string GetBuildTargetOutputFileName()
         => EditorUserBuildSettings.activeBuildTarget switch {
             BuildTarget.Android => $"{OutputFileName}.apk",
             BuildTarget.StandaloneWindows => $"{OutputFileName}.exe",
@@ -43,7 +43,7 @@ public class UnityBuildScript
             _ => string.Empty
         };
 
-    private static BuildOptions GetBuildOptions()
+    static BuildOptions GetBuildOptions()
     {
 		var options = BuildOptions.None;
 
@@ -54,7 +54,7 @@ public class UnityBuildScript
         return options;
     }
 
-    private static void Configure()
+    static void Configure()
     {
         if (!string.IsNullOrWhiteSpace(TeamID)) {
             PlayerSettings.iOS.appleDeveloperTeamID = TeamID;
