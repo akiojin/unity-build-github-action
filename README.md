@@ -17,7 +17,6 @@ brew install fastlane
 - uses: akiojin/unity-build-github-action@v3
   with:
     build-target: 'iOS'
-    project-directory: ${{ github.workspace }}
 ```
 #### Team ID & Provisioning Profile UUID
 ```yml

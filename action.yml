@@ -4,7 +4,8 @@ inputs:
   project-directory:
     description: >
       Open the project at the given path. If the pathname contains spaces, enclose it in quotes.
-    required: true
+    required: false
+    default: ${{ github.workspace }}
   unity-version:
     description: >
       Specify the Unity version to be used.
