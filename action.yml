@@ -8,7 +8,8 @@ inputs:
   unity-version:
     description: >
       Specify the Unity version to be used.
-      If omitted, the project version is used.
+      If omitted, the installed version is used.
+      If 'project', the project version is used.
     required: false
     default: ''
   build-target:

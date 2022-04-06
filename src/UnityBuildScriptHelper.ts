@@ -20,7 +20,7 @@ using UnityEngine;
 
 public class UnityBuildScript
 {
-    const string OutputFileName = @"${outputFileName}";
+    const string OutputFileName = "${outputFileName}";
     const string OutputDirectory = @"${outputDirectory}";
     const bool Development = ${development};
 

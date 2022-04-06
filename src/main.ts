@@ -66,8 +66,6 @@ async function ExportIPA(options: ExportOptions): Promise<void>
 
 async function BuildUnityProject(outputDirectory: string)
 {
-	var version = core.getInput('unity-version') || await Unity.GetVersion(core.getInput('project-directory'))
-
 	const builder = new UnityCommandBuilder()
 		.SetBuildTarget(core.getInput('build-target'))
 		.SetProjectPath(core.getInput('project-directory'))
@@ -108,6 +106,12 @@ async function BuildUnityProject(outputDirectory: string)
 
 	if (!!core.getInput('additional-arguments')) {
 		builder.Append(core.getInput('additional-arguments').split(' '))
+	}
+
+	var version = core.getInput('unity-version')
+	
+	if (version === 'project') {
+		version = await Unity.GetVersion(core.getInput('project-directory'))
 	}
 
 	core.startGroup('Run Unity')

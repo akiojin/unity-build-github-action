@@ -3007,7 +3007,12 @@ class Unity {
             default:
                 throw new Error('Unsupported platform.');
             case 'darwin':
-                return `/Applications/Unity/Hub/Editor/${unityVersion}/Unity.app/Contents/MacOS/Unity`;
+                if (!unityVersion) {
+                    return `/Applications/Unity/Unity.app/Contents/MacOS/Unity`;
+                }
+                else {
+                    return `/Applications/Unity/Hub/Editor/${unityVersion}/Unity.app/Contents/MacOS/Unity`;
+                }
             case 'win32':
                 return `C:\\Program Files\\Unity\\Hub\\Editor\\${unityVersion}\\Editor\\Unity.exe`;
         }
@@ -7941,7 +7946,7 @@ using UnityEngine;
 
 public class UnityBuildScript
 {
-    const string OutputFileName = @"${outputFileName}";
+    const string OutputFileName = "${outputFileName}";
     const string OutputDirectory = @"${outputDirectory}";
     const bool Development = ${development};
 
@@ -8101,7 +8106,6 @@ async function ExportIPA(options) {
     core.endGroup();
 }
 async function BuildUnityProject(outputDirectory) {
-    var version = core.getInput('unity-version') || await unity_command_1.Unity.GetVersion(core.getInput('project-directory'));
     const builder = new unity_command_1.UnityCommandBuilder()
         .SetBuildTarget(core.getInput('build-target'))
         .SetProjectPath(core.getInput('project-directory'))
@@ -8126,6 +8130,10 @@ async function BuildUnityProject(outputDirectory) {
     }
     if (!!core.getInput('additional-arguments')) {
         builder.Append(core.getInput('additional-arguments').split(' '));
+    }
+    var version = core.getInput('unity-version');
+    if (version === 'project') {
+        version = await unity_command_1.Unity.GetVersion(core.getInput('project-directory'));
     }
     core.startGroup('Run Unity');
     await exec.exec(unity_command_1.Unity.GetExecutePath(os.platform(), version), builder.Build());
