@@ -7,6 +7,7 @@ import path from 'path'
 import { Unity, UnityCommandBuilder } from '@akiojin/unity-command'
 import { ArgumentBuilder } from '@akiojin/argument-builder'
 import UnityBuildScriptHelper from './UnityBuildScriptHelper'
+import ExportOptionsPlistHelper from './ExportOptionsPlistHelper'
 
 /**
  * interface for ExportIPA
@@ -35,6 +36,10 @@ interface ExportOptions
 
 async function ExportIPA(options: ExportOptions): Promise<void>
 {
+	const script = ExportOptionsPlistHelper.Generate(options.includeBitcode)
+	const plist = path.join(core.getInput('temporary-directory'), 'ExportOptions.plist')
+	await fs.writeFile(plist, script)
+
 	const builder = new ArgumentBuilder()
 		.Append('gym')
 		.Append('--output_directory', options.outputDirectory)
@@ -45,8 +50,7 @@ async function ExportIPA(options: ExportOptions): Promise<void>
 		.Append('--include_symbols', options.includeSymbols.toString())
 		.Append('--export_method', options.exportMethod)
 		.Append('--export_team_id', options.exportTeamID)
-		.Append('--skip_package_pkg', 'true')
-		.Append('--skip_package_dependencies_resolution', 'true')
+		.Append('--export_options', script)
 		.Append('--silent')
 
 	if (!!options.workspace) {
