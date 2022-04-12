@@ -50,7 +50,7 @@ async function ExportIPA(options: ExportOptions): Promise<void>
 		.Append('--include_symbols', options.includeSymbols.toString())
 		.Append('--export_method', options.exportMethod)
 		.Append('--export_team_id', options.exportTeamID)
-		.Append('--export_options', script)
+		.Append('--export_options', plist)
 		.Append('--silent')
 
 	if (!!options.workspace) {
