@@ -7930,12 +7930,57 @@ function wrappy (fn, cb) {
 /***/ }),
 
 /***/ 8299:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(5127));
+const fs = __importStar(__nccwpck_require__(3292));
+const path_1 = __importDefault(__nccwpck_require__(1017));
 class ExportOptionsPlistHelper {
+    /**
+     * Output ExportOptions.plist.
+     *
+     * @param outputDirctory Output directory.
+     * @param compileBitcode Output Bitcode?
+     * @returns Path of ExportOptions.plist
+     */
+    static async Export(outputDirctory, compileBitcode) {
+        const script = ExportOptionsPlistHelper.Generate(compileBitcode);
+        const plist = path_1.default.join(outputDirctory, 'ExportOptions.plist');
+        await fs.writeFile(plist, script);
+        core.startGroup('Generate "ExportOptions.plist"');
+        core.info(`ExportOptions.plist:\n${script}`);
+        core.endGroup();
+        return plist;
+    }
     static Generate(compileBitcode) {
         return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -8102,6 +8147,15 @@ const unity_command_1 = __nccwpck_require__(8783);
 const argument_builder_1 = __nccwpck_require__(4582);
 const UnityBuildScriptHelper_1 = __importDefault(__nccwpck_require__(5043));
 const ExportOptionsPlistHelper_1 = __importDefault(__nccwpck_require__(8299));
+async function ExportOptionsPlist(includeBitcode) {
+    const script = ExportOptionsPlistHelper_1.default.Generate(includeBitcode);
+    const plist = path_1.default.join(core.getInput('temporary-directory'), 'ExportOptions.plist');
+    await fs.writeFile(plist, script);
+    core.startGroup('Generate "ExportOptions.plist"');
+    core.info(`ExportOptions.plist:\n${script}`);
+    core.endGroup();
+    return plist;
+}
 async function ExportIPA(outputDirectory) {
     let workspace = '';
     let project = '';
@@ -8114,9 +8168,7 @@ async function ExportIPA(outputDirectory) {
         project = path_1.default.join(outputDirectory, 'Unity-iPhone.xcodeproj');
     }
     const includeBitcode = core.getBooleanInput('include-bitcode');
-    const script = ExportOptionsPlistHelper_1.default.Generate(includeBitcode);
-    const plist = path_1.default.join(core.getInput('temporary-directory'), 'ExportOptions.plist');
-    await fs.writeFile(plist, script);
+    const plist = await ExportOptionsPlistHelper_1.default.Export(core.getInput('temporary-directory'), includeBitcode);
     const builder = new argument_builder_1.ArgumentBuilder()
         .Append('gym')
         .Append('--output_directory', core.getInput('output-directory'))

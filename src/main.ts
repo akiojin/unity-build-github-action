@@ -9,6 +9,19 @@ import { ArgumentBuilder } from '@akiojin/argument-builder'
 import UnityBuildScriptHelper from './UnityBuildScriptHelper'
 import ExportOptionsPlistHelper from './ExportOptionsPlistHelper'
 
+async function ExportOptionsPlist(includeBitcode: boolean): Promise<string>
+{
+	const script = ExportOptionsPlistHelper.Generate(includeBitcode)
+	const plist = path.join(core.getInput('temporary-directory'), 'ExportOptions.plist')
+	await fs.writeFile(plist, script)
+
+	core.startGroup('Generate "ExportOptions.plist"')
+	core.info(`ExportOptions.plist:\n${script}`)
+	core.endGroup()
+
+	return plist;
+}
+
 async function ExportIPA(outputDirectory: string): Promise<void>
 {
 	let workspace = ''
@@ -24,9 +37,9 @@ async function ExportIPA(outputDirectory: string): Promise<void>
 
 	const includeBitcode = core.getBooleanInput('include-bitcode')
 
-	const script = ExportOptionsPlistHelper.Generate(includeBitcode)
-	const plist = path.join(core.getInput('temporary-directory'), 'ExportOptions.plist')
-	await fs.writeFile(plist, script)
+	const plist = await ExportOptionsPlistHelper.Export(
+		core.getInput('temporary-directory'),
+		includeBitcode)
 
 	const builder = new ArgumentBuilder()
 		.Append('gym')
