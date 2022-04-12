@@ -1,6 +1,6 @@
 {
   "name": "unity-bulid-github-action",
-  "version": "3.0.16",
+  "version": "3.0.17",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
