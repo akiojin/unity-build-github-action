@@ -9,19 +9,6 @@ import { ArgumentBuilder } from '@akiojin/argument-builder'
 import UnityBuildScriptHelper from './UnityBuildScriptHelper'
 import ExportOptionsPlistHelper from './ExportOptionsPlistHelper'
 
-async function ExportOptionsPlist(includeBitcode: boolean): Promise<string>
-{
-	const script = ExportOptionsPlistHelper.Generate(includeBitcode)
-	const plist = path.join(core.getInput('temporary-directory'), 'ExportOptions.plist')
-	await fs.writeFile(plist, script)
-
-	core.startGroup('Generate "ExportOptions.plist"')
-	core.info(`ExportOptions.plist:\n${script}`)
-	core.endGroup()
-
-	return plist;
-}
-
 async function ExportIPA(outputDirectory: string): Promise<void>
 {
 	let workspace = ''
@@ -39,7 +26,9 @@ async function ExportIPA(outputDirectory: string): Promise<void>
 
 	const plist = await ExportOptionsPlistHelper.Export(
 		core.getInput('temporary-directory'),
-		includeBitcode)
+		core.getInput('team-id'),
+		includeBitcode,
+		!core.getBooleanInput('include-symbols'))
 
 	const builder = new ArgumentBuilder()
 		.Append('gym')
@@ -52,6 +41,7 @@ async function ExportIPA(outputDirectory: string): Promise<void>
 		.Append('--export_method', core.getInput('export-method'))
 		.Append('--export_team_id', core.getInput('team-id'))
 		.Append('--export_options', plist)
+		.Append('--skip_build_archive', `false`)
 		.Append('--silent')
 
 	if (!!workspace) {

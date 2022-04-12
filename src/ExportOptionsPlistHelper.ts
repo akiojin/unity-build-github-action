@@ -13,9 +13,11 @@ export default class ExportOptionsPlistHelper
      */
     static async Export(
         outputDirctory: string,
-        compileBitcode: boolean): Promise<string>
+        teamID: string,
+        compileBitcode: boolean,
+        stripSwiftSymbols: boolean): Promise<string>
     {
-        const script = ExportOptionsPlistHelper.Generate(compileBitcode)
+        const script = ExportOptionsPlistHelper.Generate(teamID, compileBitcode, stripSwiftSymbols)
         const plist = path.join(outputDirctory, 'ExportOptions.plist')
         await fs.writeFile(plist, script)
     
@@ -26,14 +28,23 @@ export default class ExportOptionsPlistHelper
         return plist;
     }
     
-    static Generate(compileBitcode: boolean): string
+    static Generate(
+        teamID: string,
+        compileBitcode: boolean,
+        stripSwiftSymbols: boolean): string
     {
         return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
     <key>compileBitcode</key>
-    <bool>${compileBitcode}</bool>
+    <${compileBitcode}/>
+    <key>stripSwiftSymbols</key>
+    <${stripSwiftSymbols}/>
+    <key>teamID</key>
+    <string>${teamID}</string>
+    <key>thinning</key>
+    <string>&lt;none&gt;</string>
   </dic>
 </plist>`;
     }

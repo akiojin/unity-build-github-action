@@ -7972,8 +7972,8 @@ class ExportOptionsPlistHelper {
      * @param compileBitcode Output Bitcode?
      * @returns Path of ExportOptions.plist
      */
-    static async Export(outputDirctory, compileBitcode) {
-        const script = ExportOptionsPlistHelper.Generate(compileBitcode);
+    static async Export(outputDirctory, teamID, compileBitcode, stripSwiftSymbols) {
+        const script = ExportOptionsPlistHelper.Generate(teamID, compileBitcode, stripSwiftSymbols);
         const plist = path_1.default.join(outputDirctory, 'ExportOptions.plist');
         await fs.writeFile(plist, script);
         core.startGroup('Generate "ExportOptions.plist"');
@@ -7981,13 +7981,19 @@ class ExportOptionsPlistHelper {
         core.endGroup();
         return plist;
     }
-    static Generate(compileBitcode) {
+    static Generate(teamID, compileBitcode, stripSwiftSymbols) {
         return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
     <key>compileBitcode</key>
-    <bool>${compileBitcode}</bool>
+    <${compileBitcode}/>
+    <key>stripSwiftSymbols</key>
+    <${stripSwiftSymbols}/>
+    <key>teamID</key>
+    <string>${teamID}</string>
+    <key>thinning</key>
+    <string>&lt;none&gt;</string>
   </dic>
 </plist>`;
     }
@@ -8147,15 +8153,6 @@ const unity_command_1 = __nccwpck_require__(8783);
 const argument_builder_1 = __nccwpck_require__(4582);
 const UnityBuildScriptHelper_1 = __importDefault(__nccwpck_require__(5043));
 const ExportOptionsPlistHelper_1 = __importDefault(__nccwpck_require__(8299));
-async function ExportOptionsPlist(includeBitcode) {
-    const script = ExportOptionsPlistHelper_1.default.Generate(includeBitcode);
-    const plist = path_1.default.join(core.getInput('temporary-directory'), 'ExportOptions.plist');
-    await fs.writeFile(plist, script);
-    core.startGroup('Generate "ExportOptions.plist"');
-    core.info(`ExportOptions.plist:\n${script}`);
-    core.endGroup();
-    return plist;
-}
 async function ExportIPA(outputDirectory) {
     let workspace = '';
     let project = '';
@@ -8168,7 +8165,7 @@ async function ExportIPA(outputDirectory) {
         project = path_1.default.join(outputDirectory, 'Unity-iPhone.xcodeproj');
     }
     const includeBitcode = core.getBooleanInput('include-bitcode');
-    const plist = await ExportOptionsPlistHelper_1.default.Export(core.getInput('temporary-directory'), includeBitcode);
+    const plist = await ExportOptionsPlistHelper_1.default.Export(core.getInput('temporary-directory'), core.getInput('team-id'), includeBitcode, !core.getBooleanInput('include-symbols'));
     const builder = new argument_builder_1.ArgumentBuilder()
         .Append('gym')
         .Append('--output_directory', core.getInput('output-directory'))
@@ -8180,6 +8177,7 @@ async function ExportIPA(outputDirectory) {
         .Append('--export_method', core.getInput('export-method'))
         .Append('--export_team_id', core.getInput('team-id'))
         .Append('--export_options', plist)
+        .Append('--skip_build_archive', `false`)
         .Append('--silent');
     if (!!workspace) {
         builder.Append('--workspace', workspace);

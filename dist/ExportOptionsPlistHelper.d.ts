@@ -6,6 +6,6 @@ export default class ExportOptionsPlistHelper {
      * @param compileBitcode Output Bitcode?
      * @returns Path of ExportOptions.plist
      */
-    static Export(outputDirctory: string, compileBitcode: boolean): Promise<string>;
-    static Generate(compileBitcode: boolean): string;
+    static Export(outputDirctory: string, teamID: string, compileBitcode: boolean, stripSwiftSymbols: boolean): Promise<string>;
+    static Generate(teamID: string, compileBitcode: boolean, stripSwiftSymbols: boolean): string;
 }
