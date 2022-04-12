@@ -9,17 +9,19 @@ import { ArgumentBuilder } from '@akiojin/argument-builder'
 import UnityBuildScriptHelper from './UnityBuildScriptHelper'
 import ExportOptionsPlistHelper from './ExportOptionsPlistHelper'
 
-async function ExportIPA(outputDirectory: string): Promise<void>
+async function ExportIPA(
+	projectDirectory: string,
+	outputDirectory: string): Promise<void>
 {
 	let workspace = ''
 	let project = ''
 
 	try {
-		workspace = path.join(outputDirectory, 'Unity-iPhone.xcworkspace')
+		workspace = path.join(projectDirectory, 'Unity-iPhone.xcworkspace')
 		await fs.access(workspace)
 	} catch (ex: any) {
 		workspace = ''
-		project = path.join(outputDirectory, 'Unity-iPhone.xcodeproj')
+		project = path.join(projectDirectory, 'Unity-iPhone.xcodeproj')
 	}
 
 	const includeBitcode = core.getBooleanInput('include-bitcode')
@@ -32,7 +34,7 @@ async function ExportIPA(outputDirectory: string): Promise<void>
 
 	const builder = new ArgumentBuilder()
 		.Append('gym')
-		.Append('--output_directory', core.getInput('output-directory'))
+		.Append('--output_directory', outputDirectory)
 		.Append('--scheme', 'Unity-iPhone')
 		.Append('--sdk', 'iphoneos')
 		.Append('--configuration', core.getInput('configuration'))
@@ -117,14 +119,15 @@ async function BuildUnityProject(outputDirectory: string)
 async function Run()
 {
 	try {
-		const outputDirectory = core.getInput('build-target').toLowerCase() === 'ios'
-			? core.getInput('temporary-directory') : core.getInput('output-directory')
-		const outputName = core.getInput('output-name')
+		const isiOS = core.getInput('build-target').toLowerCase() === 'ios'
+		const outputDirectory = core.getInput(!!isiOS ? 'temporary-directory' : 'output-directory')
 
 		await BuildUnityProject(outputDirectory)
 
-		if (core.getInput('build-target').toLowerCase() === 'ios') {
-			await ExportIPA(core.getInput('output-directory'))
+		if (!!isiOS) {
+			await ExportIPA(
+				core.getInput('temporary-directory'),
+				core.getInput('output-directory'))
 		}
 	} catch (ex: any) {
 		core.setFailed(ex.message)

@@ -8153,22 +8153,22 @@ const unity_command_1 = __nccwpck_require__(8783);
 const argument_builder_1 = __nccwpck_require__(4582);
 const UnityBuildScriptHelper_1 = __importDefault(__nccwpck_require__(5043));
 const ExportOptionsPlistHelper_1 = __importDefault(__nccwpck_require__(8299));
-async function ExportIPA(outputDirectory) {
+async function ExportIPA(projectDirectory, outputDirectory) {
     let workspace = '';
     let project = '';
     try {
-        workspace = path_1.default.join(outputDirectory, 'Unity-iPhone.xcworkspace');
+        workspace = path_1.default.join(projectDirectory, 'Unity-iPhone.xcworkspace');
         await fs.access(workspace);
     }
     catch (ex) {
         workspace = '';
-        project = path_1.default.join(outputDirectory, 'Unity-iPhone.xcodeproj');
+        project = path_1.default.join(projectDirectory, 'Unity-iPhone.xcodeproj');
     }
     const includeBitcode = core.getBooleanInput('include-bitcode');
     const plist = await ExportOptionsPlistHelper_1.default.Export(core.getInput('temporary-directory'), core.getInput('team-id'), includeBitcode, !core.getBooleanInput('include-symbols'));
     const builder = new argument_builder_1.ArgumentBuilder()
         .Append('gym')
-        .Append('--output_directory', core.getInput('output-directory'))
+        .Append('--output_directory', outputDirectory)
         .Append('--scheme', 'Unity-iPhone')
         .Append('--sdk', 'iphoneos')
         .Append('--configuration', core.getInput('configuration'))
@@ -8228,12 +8228,11 @@ async function BuildUnityProject(outputDirectory) {
 }
 async function Run() {
     try {
-        const outputDirectory = core.getInput('build-target').toLowerCase() === 'ios'
-            ? core.getInput('temporary-directory') : core.getInput('output-directory');
-        const outputName = core.getInput('output-name');
+        const isiOS = core.getInput('build-target').toLowerCase() === 'ios';
+        const outputDirectory = core.getInput(!!isiOS ? 'temporary-directory' : 'output-directory');
         await BuildUnityProject(outputDirectory);
-        if (core.getInput('build-target').toLowerCase() === 'ios') {
-            await ExportIPA(core.getInput('output-directory'));
+        if (!!isiOS) {
+            await ExportIPA(core.getInput('temporary-directory'), core.getInput('output-directory'));
         }
     }
     catch (ex) {
