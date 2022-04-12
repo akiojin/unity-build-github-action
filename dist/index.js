@@ -8102,30 +8102,41 @@ const unity_command_1 = __nccwpck_require__(8783);
 const argument_builder_1 = __nccwpck_require__(4582);
 const UnityBuildScriptHelper_1 = __importDefault(__nccwpck_require__(5043));
 const ExportOptionsPlistHelper_1 = __importDefault(__nccwpck_require__(8299));
-async function ExportIPA(options) {
-    const script = ExportOptionsPlistHelper_1.default.Generate(options.includeBitcode);
+async function ExportIPA(outputDirectory) {
+    let workspace = '';
+    let project = '';
+    try {
+        workspace = path_1.default.join(outputDirectory, 'Unity-iPhone.xcworkspace');
+        await fs.access(workspace);
+    }
+    catch (ex) {
+        workspace = '';
+        project = path_1.default.join(outputDirectory, 'Unity-iPhone.xcodeproj');
+    }
+    const includeBitcode = core.getBooleanInput('include-bitcode');
+    const script = ExportOptionsPlistHelper_1.default.Generate(includeBitcode);
     const plist = path_1.default.join(core.getInput('temporary-directory'), 'ExportOptions.plist');
     await fs.writeFile(plist, script);
     const builder = new argument_builder_1.ArgumentBuilder()
         .Append('gym')
-        .Append('--output_directory', options.outputDirectory)
+        .Append('--output_directory', core.getInput('output-directory'))
         .Append('--scheme', 'Unity-iPhone')
         .Append('--sdk', 'iphoneos')
-        .Append('--configuration', options.configuration)
-        .Append('--include_bitcode', options.includeBitcode.toString())
-        .Append('--include_symbols', options.includeSymbols.toString())
-        .Append('--export_method', options.exportMethod)
-        .Append('--export_team_id', options.exportTeamID)
+        .Append('--configuration', core.getInput('configuration'))
+        .Append('--include_bitcode', includeBitcode.toString())
+        .Append('--include_symbols', core.getBooleanInput('include-symbols').toString())
+        .Append('--export_method', core.getInput('export-method'))
+        .Append('--export_team_id', core.getInput('team-id'))
         .Append('--export_options', plist)
         .Append('--silent');
-    if (!!options.workspace) {
-        builder.Append('--workspace', options.workspace);
+    if (!!workspace) {
+        builder.Append('--workspace', workspace);
     }
     else {
-        builder.Append('--project', options.project || path_1.default.join(__dirname, 'Unity-iPhone.xcodeproj'));
+        builder.Append('--project', project || path_1.default.join(__dirname, 'Unity-iPhone.xcodeproj'));
     }
-    if (!!options.outputName) {
-        builder.Append('--output_name', options.outputName);
+    if (!!core.getInput('output-name')) {
+        builder.Append('--output_name', core.getInput('output-name'));
     }
     core.startGroup('Run fastlane "gym"');
     await exec.exec('fastlane', builder.Build());
@@ -8172,24 +8183,7 @@ async function Run() {
         const outputName = core.getInput('output-name');
         await BuildUnityProject(outputDirectory);
         if (core.getInput('build-target').toLowerCase() === 'ios') {
-            const options = {
-                outputDirectory: core.getInput('output-directory'),
-                outputName: outputName,
-                configuration: core.getInput('configuration'),
-                includeBitcode: core.getBooleanInput('include-bitcode'),
-                includeSymbols: core.getBooleanInput('include-symbols'),
-                exportMethod: core.getInput('export-method'),
-                exportTeamID: core.getInput('team-id')
-            };
-            try {
-                options.workspace = path_1.default.join(outputDirectory, 'Unity-iPhone.xcworkspace');
-                await fs.access(options.workspace);
-            }
-            catch (ex) {
-                options.workspace = undefined;
-                options.project = path_1.default.join(outputDirectory, 'Unity-iPhone.xcodeproj');
-            }
-            await ExportIPA(options);
+            await ExportIPA(core.getInput('output-directory'));
         }
     }
     catch (ex) {

@@ -9,58 +9,46 @@ import { ArgumentBuilder } from '@akiojin/argument-builder'
 import UnityBuildScriptHelper from './UnityBuildScriptHelper'
 import ExportOptionsPlistHelper from './ExportOptionsPlistHelper'
 
-/**
- * interface for ExportIPA
- */
-interface ExportOptions
+async function ExportIPA(outputDirectory: string): Promise<void>
 {
-	/** Xcode workspace path */
-	workspace?: string
-	/** Xcode project path */
-	project?: string
-	/** Output directory path of ipa file */
-	outputDirectory: string
-	/** ipa file name */
-	outputName: string
-	/** Configuratin ('Debug' or 'Release') */
-	configuration: string
-	/** ipa file include bitcode? */
-	includeBitcode: boolean
-	/** ipa file include symbols? */
-	includeSymbols: boolean
-	/** Export method (appstore, adhoc, development, enterprise, developer_id, mac_installer_distribution) */
-	exportMethod: string
-	/** Team ID */
-	exportTeamID: string
-}
+	let workspace = ''
+	let project = ''
 
-async function ExportIPA(options: ExportOptions): Promise<void>
-{
-	const script = ExportOptionsPlistHelper.Generate(options.includeBitcode)
+	try {
+		workspace = path.join(outputDirectory, 'Unity-iPhone.xcworkspace')
+		await fs.access(workspace)
+	} catch (ex: any) {
+		workspace = ''
+		project = path.join(outputDirectory, 'Unity-iPhone.xcodeproj')
+	}
+
+	const includeBitcode = core.getBooleanInput('include-bitcode')
+
+	const script = ExportOptionsPlistHelper.Generate(includeBitcode)
 	const plist = path.join(core.getInput('temporary-directory'), 'ExportOptions.plist')
 	await fs.writeFile(plist, script)
 
 	const builder = new ArgumentBuilder()
 		.Append('gym')
-		.Append('--output_directory', options.outputDirectory)
+		.Append('--output_directory', core.getInput('output-directory'))
 		.Append('--scheme', 'Unity-iPhone')
 		.Append('--sdk', 'iphoneos')
-		.Append('--configuration', options.configuration)
-		.Append('--include_bitcode', options.includeBitcode.toString())
-		.Append('--include_symbols', options.includeSymbols.toString())
-		.Append('--export_method', options.exportMethod)
-		.Append('--export_team_id', options.exportTeamID)
+		.Append('--configuration', core.getInput('configuration'))
+		.Append('--include_bitcode', includeBitcode.toString())
+		.Append('--include_symbols', core.getBooleanInput('include-symbols').toString())
+		.Append('--export_method', core.getInput('export-method'))
+		.Append('--export_team_id', core.getInput('team-id'))
 		.Append('--export_options', plist)
 		.Append('--silent')
 
-	if (!!options.workspace) {
-		builder.Append('--workspace', options.workspace)
+	if (!!workspace) {
+		builder.Append('--workspace', workspace)
 	} else {
-		builder.Append('--project', options.project || path.join(__dirname, 'Unity-iPhone.xcodeproj'))
+		builder.Append('--project', project || path.join(__dirname, 'Unity-iPhone.xcodeproj'))
 	}
 
-	if (!!options.outputName) {
-		builder.Append('--output_name', options.outputName)
+	if (!!core.getInput('output-name')) {
+		builder.Append('--output_name', core.getInput('output-name'))
 	}
 
 	core.startGroup('Run fastlane "gym"')
@@ -133,25 +121,7 @@ async function Run()
 		await BuildUnityProject(outputDirectory)
 
 		if (core.getInput('build-target').toLowerCase() === 'ios') {
-			const options: ExportOptions = {
-				outputDirectory: core.getInput('output-directory'),
-				outputName: outputName,
-				configuration: core.getInput('configuration'),
-				includeBitcode: core.getBooleanInput('include-bitcode'),
-				includeSymbols: core.getBooleanInput('include-symbols'),
-				exportMethod: core.getInput('export-method'),
-				exportTeamID: core.getInput('team-id')
-			}
-
-			try {
-				options.workspace = path.join(outputDirectory, 'Unity-iPhone.xcworkspace')
-				await fs.access(options.workspace)
-			} catch (ex: any) {
-				options.workspace = undefined
-				options.project = path.join(outputDirectory, 'Unity-iPhone.xcodeproj')
-			}
-
-			await ExportIPA(options)
+			await ExportIPA(core.getInput('output-directory'))
 		}
 	} catch (ex: any) {
 		core.setFailed(ex.message)
