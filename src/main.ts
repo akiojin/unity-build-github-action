@@ -28,7 +28,6 @@ async function ExportIPA(
 
 	const plist = await ExportOptionsPlistHelper.Export(
 		core.getInput('temporary-directory'),
-		core.getInput('team-id'),
 		includeBitcode,
 		!core.getBooleanInput('include-symbols'))
 

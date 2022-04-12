@@ -8,16 +8,17 @@ export default class ExportOptionsPlistHelper
      * Output ExportOptions.plist.
      * 
      * @param outputDirctory Output directory.
+     * @param teamID Export Team ID
      * @param compileBitcode Output Bitcode?
+     * @param stripSwiftSymbols Output Symbols?
      * @returns Path of ExportOptions.plist
      */
     static async Export(
         outputDirctory: string,
-        teamID: string,
         compileBitcode: boolean,
         stripSwiftSymbols: boolean): Promise<string>
     {
-        const script = ExportOptionsPlistHelper.Generate(teamID, compileBitcode, stripSwiftSymbols)
+        const script = ExportOptionsPlistHelper.Generate(compileBitcode, stripSwiftSymbols)
         const plist = path.join(outputDirctory, 'ExportOptions.plist')
         await fs.writeFile(plist, script)
     
@@ -29,7 +30,6 @@ export default class ExportOptionsPlistHelper
     }
     
     static Generate(
-        teamID: string,
         compileBitcode: boolean,
         stripSwiftSymbols: boolean): string
     {
@@ -41,11 +41,9 @@ export default class ExportOptionsPlistHelper
     <${compileBitcode}/>
     <key>stripSwiftSymbols</key>
     <${stripSwiftSymbols}/>
-    <key>teamID</key>
-    <string>${teamID}</string>
     <key>thinning</key>
     <string>&lt;none&gt;</string>
-  </dic>
+  </dict>
 </plist>`;
     }
 }

@@ -7969,11 +7969,13 @@ class ExportOptionsPlistHelper {
      * Output ExportOptions.plist.
      *
      * @param outputDirctory Output directory.
+     * @param teamID Export Team ID
      * @param compileBitcode Output Bitcode?
+     * @param stripSwiftSymbols Output Symbols?
      * @returns Path of ExportOptions.plist
      */
-    static async Export(outputDirctory, teamID, compileBitcode, stripSwiftSymbols) {
-        const script = ExportOptionsPlistHelper.Generate(teamID, compileBitcode, stripSwiftSymbols);
+    static async Export(outputDirctory, compileBitcode, stripSwiftSymbols) {
+        const script = ExportOptionsPlistHelper.Generate(compileBitcode, stripSwiftSymbols);
         const plist = path_1.default.join(outputDirctory, 'ExportOptions.plist');
         await fs.writeFile(plist, script);
         core.startGroup('Generate "ExportOptions.plist"');
@@ -7981,7 +7983,7 @@ class ExportOptionsPlistHelper {
         core.endGroup();
         return plist;
     }
-    static Generate(teamID, compileBitcode, stripSwiftSymbols) {
+    static Generate(compileBitcode, stripSwiftSymbols) {
         return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -7990,11 +7992,9 @@ class ExportOptionsPlistHelper {
     <${compileBitcode}/>
     <key>stripSwiftSymbols</key>
     <${stripSwiftSymbols}/>
-    <key>teamID</key>
-    <string>${teamID}</string>
     <key>thinning</key>
     <string>&lt;none&gt;</string>
-  </dic>
+  </dict>
 </plist>`;
     }
 }
@@ -8165,7 +8165,7 @@ async function ExportIPA(projectDirectory, outputDirectory) {
         project = path_1.default.join(projectDirectory, 'Unity-iPhone.xcodeproj');
     }
     const includeBitcode = core.getBooleanInput('include-bitcode');
-    const plist = await ExportOptionsPlistHelper_1.default.Export(core.getInput('temporary-directory'), core.getInput('team-id'), includeBitcode, !core.getBooleanInput('include-symbols'));
+    const plist = await ExportOptionsPlistHelper_1.default.Export(core.getInput('temporary-directory'), includeBitcode, !core.getBooleanInput('include-symbols'));
     const builder = new argument_builder_1.ArgumentBuilder()
         .Append('gym')
         .Append('--output_directory', outputDirectory)
