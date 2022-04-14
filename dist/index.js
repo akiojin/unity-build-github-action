@@ -8231,7 +8231,7 @@ async function Run() {
         const isiOS = core.getInput('build-target').toLowerCase() === 'ios';
         const outputDirectory = core.getInput(!!isiOS ? 'temporary-directory' : 'output-directory');
         await BuildUnityProject(outputDirectory);
-        if (!!isiOS) {
+        if (!!isiOS && (!!core.getInput('team-id') && !!core.getInput('provisioning-profile-uuid'))) {
             await ExportIPA(core.getInput('temporary-directory'), core.getInput('output-directory'));
         }
     }

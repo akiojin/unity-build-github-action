@@ -123,7 +123,7 @@ async function Run()
 
 		await BuildUnityProject(outputDirectory)
 
-		if (!!isiOS) {
+		if (!!isiOS && (!!core.getInput('team-id') && !!core.getInput('provisioning-profile-uuid'))) {
 			await ExportIPA(
 				core.getInput('temporary-directory'),
 				core.getInput('output-directory'))
