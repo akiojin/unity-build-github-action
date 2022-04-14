@@ -4,25 +4,11 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   Test:
     runs-on: macos-latest
     timeout-minutes: 5
-    strategy:
-      matrix:
-        target: [ "iOS", "Android" ]
-        configuration: [ "Debug", "Release" ]
 
     steps:
       - uses: actions/checkout@v2
-
-      - uses: ./
-        with:
-          build-target: ${{ matrix.target }}
-          configuration: ${{ matrix.configuration }}
-          project-directory: ${{ github.workspace }}/unity
-          output-directory: ${{ runner.temp }}/${{ matrix.target }}/${{ matrix.configuration }}/Unity
