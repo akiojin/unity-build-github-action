@@ -64,7 +64,6 @@ inputs:
     description: >
       Define the profile type,
       can be appstore, adhoc, development, enterprise, developer_id, mac_installer_distribution
-
       Required for iOS builds.
     required: false
     default: 'development'
@@ -72,7 +71,6 @@ inputs:
     description: >
       Should the ipa file include bitcode?
       Defaults to false.
-
       Required for iOS builds.
     required: false
     default: false
@@ -80,7 +78,6 @@ inputs:
     description: >
       Should the ipa file include symbols?
       Defaults to false.
-
       Required for iOS builds.
     required: false
     default: false
@@ -103,10 +100,9 @@ inputs:
   keystore:
     description: >
       Specify the path to the keystore file.
-      For Android, if `keystore` or `keystore-base64`, `keystore-password`, `keystore-alias`,
-      `keystore-alias-password` is not specified, will be signed with a debug key.
-
-      Required for Android builds.
+      If a custom keystore is used, it must be specified; however, if it is included in the project settings in advance, it need not be specified.
+      If you use a custom keystore, you must specify `keystore-password`, `keystore-alias`, and `keystore-alias-password`.
+      Used during Android build.
     required: false
     default: ''
   keystore-base64:
@@ -114,29 +110,28 @@ inputs:
       Specifies Base64 data for the keystore.
       If you do not specify a file path in `keystore`, you must specify this parameter.
       Also, if this value is specified, the value of `keystore` is ignored.
-
-      Required for Android builds.
+      Used during Android build.
     required: false
     default: ''
   keystore-password:
     description: >
       Specify the password for the keystore.
-
-      Required for Android builds.
+      If a custom keystore is used, it must be specified.
+      Used during Android build.
     required: false
     default: ''
   keystore-alias:
     description: >
       Specifies the name of the keystore alias.
-
-      Required for Android builds.
+      If a custom keystore is used, it must be specified.
+      Used during Android build.
     required: false
     default: ''
   keystore-alias-password:
     description: >
       Specify the password for the keystore alias.
-
-      Required for Android builds.
+      If a custom keystore is used, it must be specified.
+      Used during Android build.
     required: false
     default: ''
   temporary-directory:

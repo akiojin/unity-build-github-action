@@ -8066,18 +8066,22 @@ public class UnityBuildScript
 
         if (!string.IsNullOrWhiteSpace(Keystore)) {
             PlayerSettings.Android.keystoreName = Keystore;
-			PlayerSettings.Android.useCustomKeystore = true;
         }
 
-        if (!string.IsNullOrWhiteSpace(KeystorePassword)) {
+        PlayerSettings.Android.useCustomKeystore = !string.IsNullOrWhiteSpace(PlayerSettings.Android.keystoreName);
+
+        if (!!PlayerSettings.Android.useCustomKeystore) {
+            if (!!string.IsNullOrWhiteSpace(KeystorePassword) ||
+                !!string.IsNullOrWhiteSpace(KeystoreAliasPassword)) {
+                throw new Exception("Keystore password or keystore alias password not specified.");
+            }
+
             PlayerSettings.Android.keystorePass = KeystorePassword;
-        }
 
-        if (!string.IsNullOrWhiteSpace(KeystoreAlias)) {
-            PlayerSettings.Android.keyaliasName = KeystoreAlias;
-        }
+            if (!string.IsNullOrWhiteSpace(KeystoreAlias)) {
+                PlayerSettings.Android.keyaliasName = KeystoreAlias;
+            }
 
-        if (!string.IsNullOrWhiteSpace(KeystoreAliasPassword)) {
             PlayerSettings.Android.keyaliasPass = KeystoreAliasPassword;
         }
     }
