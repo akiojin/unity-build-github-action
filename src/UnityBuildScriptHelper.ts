@@ -66,6 +66,7 @@ public class UnityBuildScript
 
         if (!string.IsNullOrWhiteSpace(Keystore)) {
             PlayerSettings.Android.keystoreName = Keystore;
+			PlayerSettings.Android.useCustomKeystore = true;
         }
 
         if (!string.IsNullOrWhiteSpace(KeystorePassword)) {
