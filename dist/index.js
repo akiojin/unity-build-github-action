@@ -8054,7 +8054,7 @@ public class UnityBuildScript
         return options;
     }
 
-    static void Configure()
+    static void ConfigureForiOS()
     {
         if (!string.IsNullOrWhiteSpace(TeamID)) {
             PlayerSettings.iOS.appleDeveloperTeamID = TeamID;
@@ -8063,7 +8063,10 @@ public class UnityBuildScript
         if (!string.IsNullOrWhiteSpace(ProvisioningProfileUUID)) {
             PlayerSettings.iOS.iOSManualProvisioningProfileID = ProvisioningProfileUUID;
         }
+    }
 
+    static void ConfigureForAndroid()
+    {
         if (!string.IsNullOrWhiteSpace(Keystore)) {
             PlayerSettings.Android.keystoreName = Keystore;
         }
@@ -8083,6 +8086,18 @@ public class UnityBuildScript
             }
 
             PlayerSettings.Android.keyaliasPass = KeystoreAliasPassword;
+        }
+    }
+
+    static void Configure()
+    {
+        switch (EditorUserBuildSettings.activeBuildTarget) {
+        case BuildTarget.iOS:
+            ConfigureForiOS();
+            break;
+        case BuildTarget.Android:
+            ConfigureForAndroid();
+            break;
         }
     }
 
