@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "commitmsg": "commitlint -e $GIT_PARAMS"
   },
   "repository": {
     "type": "git",
@@ -24,8 +25,11 @@
     "@akiojin/unity-command": "^1.0.4"
   },
   "devDependencies": {
+    "@commitlint/cli": "^16.2.3",
+    "@commitlint/config-conventional": "^16.2.1",
     "@types/node": "^17.0.21",
     "@types/tmp": "^0.2.3",
+    "husky": "^7.0.4",
     "tmp": "^0.2.1"
   }
 }
