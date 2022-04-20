@@ -8010,7 +8010,7 @@ exports["default"] = ExportOptionsPlistHelper;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 class UnityBuildScriptHelper {
-    static GenerateUnityBuildScript(outputDirectory, outputFileName, development = false, teamID, provisioningProfileUUID, keystore, keystorePassword, keystoreAlias, keystoreAliasPassword) {
+    static GenerateUnityBuildScript(outputDirectory, outputFileName, buildTarget, development = false, teamID, provisioningProfileUUID, keystore, keystorePassword, keystoreAlias, keystoreAliasPassword) {
         return `using System;
 using System.IO;
 using System.Linq;
@@ -8022,6 +8022,7 @@ public class UnityBuildScript
 {
     const string OutputFileName = "${outputFileName}";
     const string OutputDirectory = @"${outputDirectory}";
+    const string BuildTarget = "${buildTarget}";
     const bool Development = ${development};
 
     // for iOS
@@ -8035,14 +8036,23 @@ public class UnityBuildScript
     const string KeystoreAliasPassword = "${keystoreAliasPassword}";
 
     static string GetBuildTargetOutputFileName()
-        => EditorUserBuildSettings.activeBuildTarget switch {
+        => GetBuildTarget() switch {
             BuildTarget.Android => $"{OutputFileName}.apk",
             BuildTarget.StandaloneWindows => $"{OutputFileName}.exe",
             BuildTarget.StandaloneWindows64 => $"{OutputFileName}.exe",
-            BuildTarget.StandaloneOSX => $"{OutputFileName}.app",
+            BuildTarget.StandaloneOSX => throw new System.NotSupportedException(),
             _ => string.Empty
         };
 
+    static BuildTarget GetBuildTarget()
+        => BuildTarget switch {
+            "iOS" => BuildTarget.iOS,
+            "Android" => BuildTarget.Android,
+            "Win" => BuildTarget.StandaloneWindows,
+            "Win64" => BuildTarget.StandaloneWindows64,
+            _ => throw new System.NotSupportedException(),
+        };
+    
     static BuildOptions GetBuildOptions()
     {
         var options = BuildOptions.None;
@@ -8091,7 +8101,7 @@ public class UnityBuildScript
 
     static void Configure()
     {
-        switch (EditorUserBuildSettings.activeBuildTarget) {
+        switch (GetBuildTarget()) {
         case BuildTarget.iOS:
             ConfigureForiOS();
             break;
@@ -8101,7 +8111,7 @@ public class UnityBuildScript
         }
     }
 
-    private static void PerformBuild()
+    static void PerformBuild()
     {
         try {
             Configure();
@@ -8109,7 +8119,7 @@ public class UnityBuildScript
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
                 scenes = EditorBuildSettings.scenes.Select(x => x.path).ToArray(),
                 locationPathName = Path.Combine(OutputDirectory, GetBuildTargetOutputFileName()),
-                target = EditorUserBuildSettings.activeBuildTarget,
+                target = GetBuildTarget(),
                 options = GetBuildOptions(),
             });
 
@@ -8174,16 +8184,6 @@ const argument_builder_1 = __nccwpck_require__(4582);
 const UnityBuildScriptHelper_1 = __importDefault(__nccwpck_require__(5043));
 const ExportOptionsPlistHelper_1 = __importDefault(__nccwpck_require__(8299));
 async function ExportIPA(projectDirectory, outputDirectory) {
-    let workspace = '';
-    let project = '';
-    try {
-        workspace = path_1.default.join(projectDirectory, 'Unity-iPhone.xcworkspace');
-        await fs.access(workspace);
-    }
-    catch (ex) {
-        workspace = '';
-        project = path_1.default.join(projectDirectory, 'Unity-iPhone.xcodeproj');
-    }
     const includeBitcode = core.getBooleanInput('include-bitcode');
     const plist = await ExportOptionsPlistHelper_1.default.Export(core.getInput('temporary-directory'), includeBitcode, !core.getBooleanInput('include-symbols'));
     const builder = new argument_builder_1.ArgumentBuilder()
@@ -8199,11 +8199,13 @@ async function ExportIPA(projectDirectory, outputDirectory) {
         .Append('--export_options', plist)
         .Append('--skip_build_archive', `false`)
         .Append('--silent');
-    if (!!workspace) {
+    try {
+        const workspace = path_1.default.join(projectDirectory, 'Unity-iPhone.xcworkspace');
+        await fs.access(workspace);
         builder.Append('--workspace', workspace);
     }
-    else {
-        builder.Append('--project', project || path_1.default.join(__dirname, 'Unity-iPhone.xcodeproj'));
+    catch (ex) {
+        builder.Append('--project', path_1.default.join(projectDirectory, 'Unity-iPhone.xcodeproj'));
     }
     if (!!core.getInput('output-name')) {
         builder.Append('--output_name', core.getInput('output-name'));
@@ -8227,7 +8229,7 @@ async function BuildUnityProject(outputDirectory) {
             keystore = tmp.tmpNameSync() + '.keystore';
             await fs.writeFile(keystore, Buffer.from(core.getInput('keystore-base64'), 'base64'));
         }
-        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(outputDirectory, core.getInput('output-name'), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
+        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(outputDirectory, core.getInput('output-name'), core.getInput('build-target'), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
         const cs = path_1.default.join(core.getInput('project-directory'), 'Assets', 'Editor', 'UnityBuildScript.cs');
         await fs.mkdir(path_1.default.dirname(cs), { recursive: true });
         await fs.writeFile(cs, script);

@@ -13,17 +13,6 @@ async function ExportIPA(
     projectDirectory: string,
     outputDirectory: string): Promise<void>
 {
-    let workspace = ''
-    let project = ''
-
-    try {
-        workspace = path.join(projectDirectory, 'Unity-iPhone.xcworkspace')
-        await fs.access(workspace)
-    } catch (ex: any) {
-        workspace = ''
-        project = path.join(projectDirectory, 'Unity-iPhone.xcodeproj')
-    }
-
     const includeBitcode = core.getBooleanInput('include-bitcode')
 
     const plist = await ExportOptionsPlistHelper.Export(
@@ -45,10 +34,12 @@ async function ExportIPA(
         .Append('--skip_build_archive', `false`)
         .Append('--silent')
 
-    if (!!workspace) {
+    try {
+        const workspace = path.join(projectDirectory, 'Unity-iPhone.xcworkspace')
+        await fs.access(workspace)
         builder.Append('--workspace', workspace)
-    } else {
-        builder.Append('--project', project || path.join(__dirname, 'Unity-iPhone.xcodeproj'))
+    } catch (ex: any) {
+        builder.Append('--project', path.join(projectDirectory, 'Unity-iPhone.xcodeproj'))
     }
 
     if (!!core.getInput('output-name')) {
@@ -82,6 +73,7 @@ async function BuildUnityProject(outputDirectory: string)
         const script = UnityBuildScriptHelper.GenerateUnityBuildScript(
             outputDirectory,
             core.getInput('output-name'),
+            core.getInput('build-target'),
             core.getInput('configuration').toLowerCase() === 'debug',
             core.getInput('team-id'),
             core.getInput('provisioning-profile-uuid'),

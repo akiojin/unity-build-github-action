@@ -3,6 +3,7 @@ export default class UnityBuildScriptHelper
     static GenerateUnityBuildScript(
         outputDirectory: string,
         outputFileName: string,
+        buildTarget: string,
         development: boolean = false,
         teamID?: string,
         provisioningProfileUUID?: string,
@@ -22,6 +23,7 @@ public class UnityBuildScript
 {
     const string OutputFileName = "${outputFileName}";
     const string OutputDirectory = @"${outputDirectory}";
+    const string BuildTarget = "${buildTarget}";
     const bool Development = ${development};
 
     // for iOS
@@ -35,14 +37,23 @@ public class UnityBuildScript
     const string KeystoreAliasPassword = "${keystoreAliasPassword}";
 
     static string GetBuildTargetOutputFileName()
-        => EditorUserBuildSettings.activeBuildTarget switch {
+        => GetBuildTarget() switch {
             BuildTarget.Android => $"{OutputFileName}.apk",
             BuildTarget.StandaloneWindows => $"{OutputFileName}.exe",
             BuildTarget.StandaloneWindows64 => $"{OutputFileName}.exe",
-            BuildTarget.StandaloneOSX => $"{OutputFileName}.app",
+            BuildTarget.StandaloneOSX => throw new System.NotSupportedException(),
             _ => string.Empty
         };
 
+    static BuildTarget GetBuildTarget()
+        => BuildTarget switch {
+            "iOS" => BuildTarget.iOS,
+            "Android" => BuildTarget.Android,
+            "Win" => BuildTarget.StandaloneWindows,
+            "Win64" => BuildTarget.StandaloneWindows64,
+            _ => throw new System.NotSupportedException(),
+        };
+    
     static BuildOptions GetBuildOptions()
     {
         var options = BuildOptions.None;
@@ -91,7 +102,7 @@ public class UnityBuildScript
 
     static void Configure()
     {
-        switch (EditorUserBuildSettings.activeBuildTarget) {
+        switch (GetBuildTarget()) {
         case BuildTarget.iOS:
             ConfigureForiOS();
             break;
@@ -101,7 +112,7 @@ public class UnityBuildScript
         }
     }
 
-    private static void PerformBuild()
+    static void PerformBuild()
     {
         try {
             Configure();
@@ -109,7 +120,7 @@ public class UnityBuildScript
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
                 scenes = EditorBuildSettings.scenes.Select(x => x.path).ToArray(),
                 locationPathName = Path.Combine(OutputDirectory, GetBuildTargetOutputFileName()),
-                target = EditorUserBuildSettings.activeBuildTarget,
+                target = GetBuildTarget(),
                 options = GetBuildOptions(),
             });
 
