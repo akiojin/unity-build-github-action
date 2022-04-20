@@ -139,7 +139,7 @@ inputs:
       Specify a temporary folder for the Xcode project files that Unity outputs during iOS build.
       No change is required unless there is a specific reason.
     required: false
-    default: ${{ runner.temp }}
+    default: ${{ runner.temp }}/temp
 runs:
   using: 'node16'
   main: 'dist/index.js'
