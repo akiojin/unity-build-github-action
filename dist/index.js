@@ -8022,7 +8022,7 @@ public class UnityBuildScript
 {
     const string OutputFileName = "${outputFileName}";
     const string OutputDirectory = @"${outputDirectory}";
-    const string BuildTarget = "${buildTarget}";
+    const string Target = "${buildTarget}";
     const bool Development = ${development};
 
     // for iOS
@@ -8045,7 +8045,7 @@ public class UnityBuildScript
         };
 
     static BuildTarget GetBuildTarget()
-        => BuildTarget switch {
+        => Target switch {
             "iOS" => BuildTarget.iOS,
             "Android" => BuildTarget.Android,
             "Win" => BuildTarget.StandaloneWindows,
