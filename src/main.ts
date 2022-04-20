@@ -61,7 +61,7 @@ async function BuildUnityProject(outputDirectory: string)
     if (!!core.getInput('execute-method')) {
         builder.SetExecuteMethod(core.getInput('execute-method'))
     } else {
-        builder.SetExecuteMethod('UnityBuildScript.PerformBuild')
+        builder.SetExecuteMethod('unity_build_github_action.UnityBuildScript.PerformBuild')
 
         var keystore = core.getInput('keystore')
 
