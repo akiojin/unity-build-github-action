@@ -57,6 +57,7 @@ async function BuildUnityProject(outputDirectory: string)
         .SetBuildTarget(core.getInput('build-target'))
         .SetProjectPath(core.getInput('project-directory'))
         .SetLogFile(core.getInput('log-file'))
+        .EnablePackageManagerTraces()
 
     if (!!core.getInput('execute-method')) {
         builder.SetExecuteMethod(core.getInput('execute-method'))

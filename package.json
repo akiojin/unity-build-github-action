@@ -22,7 +22,7 @@
     "@actions/core": "^1.6.0",
     "@actions/exec": "^1.1.0",
     "@akiojin/argument-builder": "^1.0.0",
-    "@akiojin/unity-command": "^1.0.4"
+    "@akiojin/unity-command": "^1.0.7"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.3",
