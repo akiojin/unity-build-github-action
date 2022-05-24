@@ -1,10 +1,13 @@
 # unity-build-github-action
+
 This action builds Unity and outputs ipa for iOS and apk for Android.
 
 ## Requirement
+
 You will need to install [fastlane][1]
 
 ### Installation
+
 ```sh
 brew install fastlane
 ```
@@ -12,13 +15,17 @@ brew install fastlane
 ## Usage
 
 ### Simple usage
+
 #### iOS builds
+
 ```yml
 - uses: akiojin/unity-build-github-action@v3
   with:
     build-target: 'iOS'
 ```
+
 #### Team ID & Provisioning Profile UUID
+
 ```yml
 - uses: akiojin/setup-xcode-environment-github-action@v2
   id: setup-xcode-environment
@@ -43,6 +50,7 @@ brew install fastlane
 ```
 
 #### Android builds
+
 ```yml
 - uses: akiojin/unity-build-github-action@v3
   with:
@@ -52,6 +60,7 @@ brew install fastlane
 ```
 
 #### Keystore
+
 ```yml
 - uses: akiojin/unity-build-github-action@v3
   with:
@@ -65,7 +74,9 @@ brew install fastlane
 ```
 
 ## Arguments
+
 ### Common
+
 |Name|Required|Type|Default|Description|
 |:--|:--|:--|:--|:--|
 |additional-arguments|`false`|`string`|""|Specify additional required arguments.|
@@ -79,6 +90,7 @@ brew install fastlane
 |unity-version|`false`|`string`|""|Specify the Unity version to be used.<br>If omitted, the project version is used.|
 
 ### iOS
+
 |Name|Required|Type|Default|Description|
 |:--|:--|:--|:--|:--|
 |export-method|`false`|`string`|development|Define the profile type, can be appstore, adhoc, development, enterprise, developer_id, mac_installer_distribution.|
@@ -89,6 +101,7 @@ brew install fastlane
 |team-id|`false`|`string`|""|The ID of your Developer Portal team if you're in multiple teams.|
 
 ### Android
+
 |Name|Required|Type|Default|Description|
 |:--|:--|:--|:--|:--|
 |keystore|`false`|`string`|""|Specify the path to the keystore file.<br>For Android, if `keystore` or `keystore-base64`, `keystore-password`, `keystore-alias`,`keystore-alias-password` is not specified, will be signed with a debug key.|
@@ -97,8 +110,8 @@ brew install fastlane
 |keystore-alias|`false`|`string`|""|Specifies the name of the keystore alias.|
 |keystore-alias-password|`false`|`string`|""|Specify the password for the keystore alias.|
 
-
 ## License
+
 Any contributions made under this project will be governed by the [MIT License][3].
 
 [0]: https://github.com/akiojin/unity-build-github-action/actions/workflows/Test.yml/badge.svg
