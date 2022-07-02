@@ -14,11 +14,12 @@ async function ExportIPA(
     outputDirectory: string): Promise<void>
 {
     const includeBitcode = core.getBooleanInput('include-bitcode')
+    const includeSymbols = core.getBooleanInput('include-symbols');
 
     const plist = await ExportOptionsPlistHelper.Export(
         core.getInput('temporary-directory'),
         includeBitcode,
-        !core.getBooleanInput('include-symbols'))
+        !includeSymbols)
 
     const builder = new ArgumentBuilder()
         .Append('gym')
@@ -27,7 +28,7 @@ async function ExportIPA(
         .Append('--sdk', 'iphoneos')
         .Append('--configuration', core.getInput('configuration'))
         .Append('--include_bitcode', includeBitcode.toString())
-        .Append('--include_symbols', core.getBooleanInput('include-symbols').toString())
+        .Append('--include_symbols', includeSymbols.toString())
         .Append('--export_method', core.getInput('export-method'))
         .Append('--export_team_id', core.getInput('team-id'))
         .Append('--export_options', plist)
