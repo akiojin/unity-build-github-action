@@ -97,6 +97,11 @@ inputs:
       Required for iOS builds.
     required: false
     default: ''
+  enable-app-bundle:
+    description: >
+      Specify "true" to enable the Android App Bundle.
+    required: false
+    default: false
   keystore:
     description: >
       Specify the path to the keystore file.

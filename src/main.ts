@@ -77,6 +77,7 @@ async function BuildUnityProject(outputDirectory: string)
             core.getInput('output-name'),
             core.getInput('build-target'),
             core.getInput('configuration').toLowerCase() === 'debug',
+            core.getBooleanInput('enable-app-bundle'),
             core.getInput('team-id'),
             core.getInput('provisioning-profile-uuid'),
             keystore,

@@ -5,6 +5,7 @@ export default class UnityBuildScriptHelper
         outputFileName: string,
         buildTarget: string,
         development: boolean = false,
+        enableAppBundle: boolean = false,
         teamID?: string,
         provisioningProfileUUID?: string,
         keystore?: string,
@@ -33,14 +34,18 @@ export default class UnityBuildScriptHelper
         const string ProvisioningProfileUUID = "${provisioningProfileUUID}";
 
         // for Android
+        const bool EnableAppBundle = ${enableAppBundle};
         const string Keystore = @"${keystore}";
         const string KeystorePassword = "${keystorePassword}";
         const string KeystoreAlias = "${keystoreAlias}";
         const string KeystoreAliasPassword = "${keystoreAliasPassword}";
 
+        static string GetAndroidExtensions(bool enableAppBundle)
+            => !!enableAppBundle ? "aab" : "apk";
+
         static string GetBuildTargetOutputFileName()
             => GetBuildTarget() switch {
-                BuildTarget.Android => $"{OutputFileName}.apk",
+                BuildTarget.Android => $"{OutputFileName}.{GetAndroidExtensions(EnableAppBundle)}",
                 BuildTarget.StandaloneWindows => $"{OutputFileName}.exe",
                 BuildTarget.StandaloneWindows64 => $"{OutputFileName}.exe",
                 BuildTarget.StandaloneOSX => throw new System.NotSupportedException(),
@@ -120,6 +125,8 @@ export default class UnityBuildScriptHelper
 
                 PlayerSettings.Android.keyaliasPass = KeystoreAliasPassword;
             }
+
+            EditorUserBuildSettings.buildAppBundle = EnableAppBundle;
         }
 
         static void Configure()
