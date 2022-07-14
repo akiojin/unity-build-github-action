@@ -48,7 +48,7 @@ export default class UnityBuildScriptHelper
                 BuildTarget.Android => $"{OutputFileName}.{GetAndroidExtensions(EnableAppBundle)}",
                 BuildTarget.StandaloneWindows => $"{OutputFileName}.exe",
                 BuildTarget.StandaloneWindows64 => $"{OutputFileName}.exe",
-                BuildTarget.StandaloneOSX => throw new System.NotSupportedException(),
+                BuildTarget.StandaloneOSX => $"{OutputFileName}.app",
                 _ => string.Empty
             };
 
@@ -58,6 +58,7 @@ export default class UnityBuildScriptHelper
                 "Android" => BuildTarget.Android,
                 "Win" => BuildTarget.StandaloneWindows,
                 "Win64" => BuildTarget.StandaloneWindows64,
+                "macOS" => BuildTarget.StandaloneOSX,
                 _ => throw new System.NotSupportedException(),
             };
 
