@@ -58,7 +58,7 @@ export default class UnityBuildScriptHelper
                 "Android" => BuildTarget.Android,
                 "Win" => BuildTarget.StandaloneWindows,
                 "Win64" => BuildTarget.StandaloneWindows64,
-                "macOS" => BuildTarget.StandaloneOSX,
+                "OSXUniversal" => BuildTarget.StandaloneOSX,
                 _ => throw new System.NotSupportedException(),
             };
 
