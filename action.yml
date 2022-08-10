@@ -62,9 +62,8 @@ inputs:
     default: ''
   export-method:
     description: >
-      Define the profile type,
-      can be appstore, adhoc, development, enterprise, developer_id, mac_installer_distribution
-      Required for iOS builds.
+      Method used to export the archive.
+      Valid values are: app-store, validation, ad-hoc, package, enterprise, development, developer-id and mac-application
     required: false
     default: 'development'
   include-bitcode:
