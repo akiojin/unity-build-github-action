@@ -8615,6 +8615,9 @@ class UnityBuildScriptHelper {
             if (!string.IsNullOrWhiteSpace(ProvisioningProfileUUID)) {
                 PlayerSettings.iOS.iOSManualProvisioningProfileID = ProvisioningProfileUUID;
             }
+
+            PlayerSettings.iOS.iOSManualProvisioningProfileType = !!Development ?
+                ProvisioningProfileType.Development : ProvisioningProfileType.Distribution;
         }
 
         static void ConfigureForAndroid()
