@@ -4,7 +4,7 @@ import * as os from 'os'
 import * as fs from 'fs/promises'
 import * as tmp from 'tmp'
 import path from 'path'
-import { Unity, UnityCommandBuilder } from '@akiojin/unity-command'
+import { UnityUtils, UnityCommandBuilder } from '@akiojin/unity-command'
 import { ArgumentBuilder } from '@akiojin/argument-builder'
 import UnityBuildScriptHelper from './UnityBuildScriptHelper'
 import ExportOptionsPlistHelper from './ExportOptionsPlistHelper'
@@ -101,11 +101,11 @@ async function BuildUnityProject(outputDirectory: string)
     var version = core.getInput('unity-version')
 
     if (version === 'project') {
-        version = await Unity.GetVersion(core.getInput('project-directory'))
+        version = await UnityUtils.GetVersion(core.getInput('project-directory'))
     }
 
     core.startGroup('Run Unity')
-    await exec.exec(Unity.GetExecutePath(os.platform(), version), builder.Build())
+    await exec.exec(UnityUtils.GetExecutePath(os.platform(), version), builder.Build())
     core.endGroup()
 }
 
