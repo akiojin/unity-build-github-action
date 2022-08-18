@@ -9306,6 +9306,8 @@ class UnityBuildScriptHelper {
             case BuildTarget.Android:
                 ConfigureForAndroid();
                 break;
+            default:
+                throw new NotSupportedException($"Target={GetBuildTarget()}")
             }
         }
 
