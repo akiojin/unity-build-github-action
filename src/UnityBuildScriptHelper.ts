@@ -101,10 +101,8 @@ export default class UnityBuildScriptHelper
 
             if (!string.IsNullOrWhiteSpace(ProvisioningProfileUUID)) {
                 PlayerSettings.iOS.iOSManualProvisioningProfileID = ProvisioningProfileUUID;
+                PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType.Automatic;
             }
-
-            PlayerSettings.iOS.iOSManualProvisioningProfileType = !!Development ?
-                ProvisioningProfileType.Development : ProvisioningProfileType.Distribution;
         }
 
         static void ConfigureForAndroid()
