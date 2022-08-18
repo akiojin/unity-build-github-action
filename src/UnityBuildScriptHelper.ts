@@ -138,7 +138,7 @@ export default class UnityBuildScriptHelper
                 ConfigureForAndroid();
                 break;
             default:
-                throw new NotSupportedException($"Target={GetBuildTarget()}")
+                throw new NotSupportedException($"Target={GetBuildTarget()}");
             }
         }
 
