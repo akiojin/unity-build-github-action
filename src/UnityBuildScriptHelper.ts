@@ -109,10 +109,7 @@ export default class UnityBuildScriptHelper
 
         static void ConfigureForAndroid()
         {
-            if (!string.IsNullOrWhiteSpace(Keystore)) {
-                PlayerSettings.Android.keystoreName = Keystore;
-            }
-
+            PlayerSettings.Android.keystoreName = Keystore;
             PlayerSettings.Android.useCustomKeystore = !string.IsNullOrWhiteSpace(PlayerSettings.Android.keystoreName);
 
             if (!!PlayerSettings.Android.useCustomKeystore) {
