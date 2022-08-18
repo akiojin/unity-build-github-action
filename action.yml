@@ -20,6 +20,13 @@ inputs:
       Possible options are:
       Standalone, Win, Win64, OSXUniversal, Linux, Linux64, LinuxUniversal, iOS, Android, Web, WebStreamed, WebGL, XboxOne, PS4, WindowsStoreApps, Switch, N3DS, tvOS.
     required: true
+  revision:
+    description: >
+      Specify the revision.
+      This value is set to PlayerSettings.iOS.buildNumber or PlayerSettings.Android.bundleVersionCode.
+      If omitted, github.run_number is set.
+    required: false
+    default: ${{ github.run_number }}
   configuration:
     description: >
       The configuration to use when building the app.
@@ -96,11 +103,6 @@ inputs:
       Required for iOS builds.
     required: false
     default: ''
-  enable-app-bundle:
-    description: >
-      Specify "true" to enable the Android App Bundle.
-    required: false
-    default: false
   keystore:
     description: >
       Specify the path to the keystore file.

@@ -1,11 +1,13 @@
+import internal from "stream";
+
 export default class UnityBuildScriptHelper
 {
     static GenerateUnityBuildScript(
         outputDirectory: string,
         outputFileName: string,
         buildTarget: string,
+        revision: number,
         development: boolean = false,
-        enableAppBundle: boolean = false,
         teamID?: string,
         provisioningProfileUUID?: string,
         keystore?: string,
@@ -28,24 +30,21 @@ export default class UnityBuildScriptHelper
         const string OutputDirectory = @"${outputDirectory}";
         const string Target = "${buildTarget}";
         const bool Development = ${development};
+        const int Revision = ${revision};
 
         // for iOS
         const string TeamID = "${teamID}";
         const string ProvisioningProfileUUID = "${provisioningProfileUUID}";
 
         // for Android
-        const bool EnableAppBundle = ${enableAppBundle};
         const string Keystore = @"${keystore}";
         const string KeystorePassword = "${keystorePassword}";
         const string KeystoreAlias = "${keystoreAlias}";
         const string KeystoreAliasPassword = "${keystoreAliasPassword}";
 
-        static string GetAndroidExtensions(bool enableAppBundle)
-            => !!enableAppBundle ? "aab" : "apk";
-
         static string GetBuildTargetOutputFileName()
             => GetBuildTarget() switch {
-                BuildTarget.Android => $"{OutputFileName}.{GetAndroidExtensions(EnableAppBundle)}",
+                BuildTarget.Android => $"{OutputFileName}.aab",
                 BuildTarget.StandaloneWindows => $"{OutputFileName}.exe",
                 BuildTarget.StandaloneWindows64 => $"{OutputFileName}.exe",
                 BuildTarget.StandaloneOSX => $"{OutputFileName}.app",
@@ -95,6 +94,11 @@ export default class UnityBuildScriptHelper
 
         static void ConfigureForiOS()
         {
+            PlayerSettings.iOS.buildNumber = Revision.ToString();
+
+            EditorUserBuildSettings.iOSXcodeBuildConfig = !!Development ?
+                XcodeBuildConfig.Debug : XcodeBuildConfig.Release;
+
             if (!string.IsNullOrWhiteSpace(TeamID)) {
                 PlayerSettings.iOS.appleDeveloperTeamID = TeamID;
             }
@@ -107,6 +111,11 @@ export default class UnityBuildScriptHelper
 
         static void ConfigureForAndroid()
         {
+            PlayerSettings.Android.bundleVersionCode = Revision;
+
+            EditorUserBuildSettings.androidBuildType = !!Development ?
+                AndroidBuildType.Debug : AndroidBuildType.Release;
+
             PlayerSettings.Android.keystoreName = Keystore;
             PlayerSettings.Android.useCustomKeystore = !string.IsNullOrWhiteSpace(PlayerSettings.Android.keystoreName);
 
@@ -125,11 +134,20 @@ export default class UnityBuildScriptHelper
                 PlayerSettings.Android.keyaliasPass = KeystoreAliasPassword;
             }
 
-            EditorUserBuildSettings.buildAppBundle = EnableAppBundle;
+            EditorUserBuildSettings.buildAppBundle = true;
         }
 
         static void Configure()
         {
+            PlayerSettings.SetScriptingBackend(GetBuildTargetGroup(), ScriptingImplementation.IL2CPP);
+            PlayerSettings.SetArchitecture(GetBuildTargetGroup(), 1);
+
+            EditorUserBuildSettings.development = Development;
+            EditorUserBuildSettings.allowDebugging = Development;
+            EditorUserBuildSettings.connectProfiler = Development;
+            EditorUserBuildSettings.symlinkSources = Development;
+            EditorUserBuildSettings.buildWithDeepProfilingSupport = Development;
+
             switch (GetBuildTarget()) {
             case BuildTarget.iOS:
                 ConfigureForiOS();
