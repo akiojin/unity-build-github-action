@@ -9326,6 +9326,9 @@ class UnityBuildScriptHelper {
                 throw new NotSupportedException($"Target={GetBuildTarget()}");
             }
 
+            var keystorePassword = !string.IsNullOrWhiteSpace(PlayerSettings.Android.keystorePass) ? "****" : string.Empty;
+            var keystoreAliasPassword = !string.IsNullOrWhiteSpace(PlayerSettings.Android.keyaliasPass) ? "****" : string.Empty;
+
             Debug.Log($"Settings {{\\n" +
                 $"  PlayerSettings.ApiCompatibilityLevel: {PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)}\\n" +
                 $"  PlayerSettings.applicationIdentifier: {PlayerSettings.applicationIdentifier}\\n" +
