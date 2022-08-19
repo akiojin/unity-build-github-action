@@ -9200,7 +9200,7 @@ class UnityBuildScriptHelper {
         // for iOS
         const string TeamID = "${teamID}";
         const string ProvisioningProfileUUID = "${provisioningProfileUUID}";
-        const ProvisioningProfileType ProvisioningProfileType = ProvisioningProfileType.${provisioningProfileType};
+        const ProvisioningProfileType Type = ProvisioningProfileType.${provisioningProfileType};
 
         // for Android
         const string Keystore = @"${keystore}";
@@ -9273,7 +9273,7 @@ class UnityBuildScriptHelper {
                 PlayerSettings.iOS.iOSManualProvisioningProfileID = ProvisioningProfileUUID;
             }
 
-            PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType;
+            PlayerSettings.iOS.iOSManualProvisioningProfileType = Type;
         }
 
         static void ConfigureForAndroid()
