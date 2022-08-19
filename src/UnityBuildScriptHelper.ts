@@ -162,7 +162,7 @@ export default class UnityBuildScriptHelper
                 throw new NotSupportedException($"Target={GetBuildTarget()}");
             }
 
-            Debug.Log($"Settings {{\n" +
+            Debug.Log($"Settings {{\\n" +
                 $"  PlayerSettings.ApiCompatibilityLevel: {PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)}\\n" +
                 $"  PlayerSettings.applicationIdentifier: {PlayerSettings.applicationIdentifier}\\n" +
                 $"  PlayerSettings.bundleVersion: {PlayerSettings.bundleVersion}\\n" +
