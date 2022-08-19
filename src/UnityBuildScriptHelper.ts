@@ -10,6 +10,7 @@ export default class UnityBuildScriptHelper
         development: boolean = false,
         teamID?: string,
         provisioningProfileUUID?: string,
+        provisioningProfileType?: string,
         keystore?: string,
         keystorePassword?: string,
         keystoreAlias?: string,
@@ -35,6 +36,7 @@ export default class UnityBuildScriptHelper
         // for iOS
         const string TeamID = "${teamID}";
         const string ProvisioningProfileUUID = "${provisioningProfileUUID}";
+        const ProvisioningProfileType ProvisioningProfileType = ProvisioningProfileType.${provisioningProfileType};
 
         // for Android
         const string Keystore = @"${keystore}";
@@ -105,8 +107,9 @@ export default class UnityBuildScriptHelper
 
             if (!string.IsNullOrWhiteSpace(ProvisioningProfileUUID)) {
                 PlayerSettings.iOS.iOSManualProvisioningProfileID = ProvisioningProfileUUID;
-                PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType.Automatic;
             }
+
+            PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType;
         }
 
         static void ConfigureForAndroid()

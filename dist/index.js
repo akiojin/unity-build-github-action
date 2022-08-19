@@ -9179,7 +9179,7 @@ exports["default"] = ExportOptionsPlistHelper;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 class UnityBuildScriptHelper {
-    static GenerateUnityBuildScript(outputDirectory, outputFileName, buildTarget, revision, development = false, teamID, provisioningProfileUUID, keystore, keystorePassword, keystoreAlias, keystoreAliasPassword) {
+    static GenerateUnityBuildScript(outputDirectory, outputFileName, buildTarget, revision, development = false, teamID, provisioningProfileUUID, provisioningProfileType, keystore, keystorePassword, keystoreAlias, keystoreAliasPassword) {
         return `namespace unity_build_github_action
 {
     using System;
@@ -9200,6 +9200,7 @@ class UnityBuildScriptHelper {
         // for iOS
         const string TeamID = "${teamID}";
         const string ProvisioningProfileUUID = "${provisioningProfileUUID}";
+        const ProvisioningProfileType ProvisioningProfileType = ProvisioningProfileType.${provisioningProfileType};
 
         // for Android
         const string Keystore = @"${keystore}";
@@ -9270,8 +9271,9 @@ class UnityBuildScriptHelper {
 
             if (!string.IsNullOrWhiteSpace(ProvisioningProfileUUID)) {
                 PlayerSettings.iOS.iOSManualProvisioningProfileID = ProvisioningProfileUUID;
-                PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType.Automatic;
             }
+
+            PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType;
         }
 
         static void ConfigureForAndroid()
@@ -9447,7 +9449,7 @@ async function BuildUnityProject(outputDirectory) {
             keystore = tmp.tmpNameSync() + '.keystore';
             await fs.writeFile(keystore, Buffer.from(core.getInput('keystore-base64'), 'base64'));
         }
-        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(outputDirectory, core.getInput('output-name'), core.getInput('build-target'), Number(core.getInput('revision')), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
+        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(outputDirectory, core.getInput('output-name'), core.getInput('build-target'), Number(core.getInput('revision')), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('provisioning-profile-type'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
         const cs = path_1.default.join(core.getInput('project-directory'), 'Assets', 'Editor', 'UnityBuildScript.cs');
         await fs.mkdir(path_1.default.dirname(cs), { recursive: true });
         await fs.writeFile(cs, script);

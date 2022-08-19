@@ -80,6 +80,7 @@ async function BuildUnityProject(outputDirectory: string)
             core.getInput('configuration').toLowerCase() === 'debug',
             core.getInput('team-id'),
             core.getInput('provisioning-profile-uuid'),
+            core.getInput('provisioning-profile-type'),
             keystore,
             core.getInput('keystore-password'),
             core.getInput('keystore-alias'),

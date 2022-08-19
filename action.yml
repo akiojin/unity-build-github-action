@@ -39,7 +39,7 @@ inputs:
   output-directory:
     description: >
       Specifies the output directory.
-      Defaults to $RUNNER_TEMP
+      If omitted, runner.temp is set.
     required: false
     default: ${{ runner.temp }}
   output-name:
@@ -97,6 +97,14 @@ inputs:
       Required for iOS builds.
     required: false
     default: ''
+  provisioning-profile-type:
+    description: >
+      Specify the type of provisioning profile.
+      Required for iOS builds.
+      If omitted, Automatic is set.
+      Valid values are: Automatic, Development, Distribution
+    required: false
+    default: 'Automatic'
   team-id:
     description: >
       The ID of your Developer Portal team if you're in multiple teams.
