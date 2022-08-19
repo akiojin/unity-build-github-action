@@ -169,7 +169,7 @@ export default class UnityBuildScriptHelper
             var keystorePassword = !string.IsNullOrWhiteSpace(PlayerSettings.Android.keystorePass) ? "****" : string.Empty;
             var keystoreAliasPassword = !string.IsNullOrWhiteSpace(PlayerSettings.Android.keyaliasPass) ? "****" : string.Empty;
 
-            Debug.Log($"Settings {{\\n" +
+            Debug.Log($"[UnityBuildScript] Output PlayerSettings {{\\n" +
                 $"  PlayerSettings.ApiCompatibilityLevel: {PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)}\\n" +
                 $"  PlayerSettings.applicationIdentifier: {PlayerSettings.applicationIdentifier}\\n" +
                 $"  PlayerSettings.bundleVersion: {PlayerSettings.bundleVersion}\\n" +
