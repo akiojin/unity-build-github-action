@@ -163,56 +163,56 @@ export default class UnityBuildScriptHelper
             }
 
             Debug.Log($"Settings {{\n" +
-                $"  PlayerSettings.ApiCompatibilityLevel: {PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)}\n" +
-                $"  PlayerSettings.applicationIdentifier: {PlayerSettings.applicationIdentifier}\n" +
-                $"  PlayerSettings.bundleVersion: {PlayerSettings.bundleVersion}\n" +
-                $"  PlayerSettings.companyName: {PlayerSettings.companyName}\n" +
-                $"  PlayerSettings.ManagedStrippingLevel: {PlayerSettings.GetManagedStrippingLevel(EditorUserBuildSettings.selectedBuildTargetGroup)}\n" +
-                $"  PlayerSettings.productName: {PlayerSettings.productName}\n" +
-                $"  PlayerSettings.stripEngineCode: {PlayerSettings.stripEngineCode}\n" +
-                $"  PlayerSettings.stripUnusedMeshComponents: {PlayerSettings.stripUnusedMeshComponents}\n" +
-                $"  iOS {{\n" +
-                $"    PlayerSettings.iOS.applicationDisplayName: {PlayerSettings.iOS.applicationDisplayName}\n" +
-                $"    PlayerSettings.iOS.appleEnableAutomaticSigning: {PlayerSettings.iOS.appleEnableAutomaticSigning}\n" +
-                $"    PlayerSettings.iOS.appleDeveloperTeamID: {PlayerSettings.iOS.appleDeveloperTeamID}\n" +
-                $"    PlayerSettings.iOS.buildNumber: {PlayerSettings.iOS.buildNumber}\n" +
-                $"    PlayerSettings.iOS.iOSManualProvisioningProfileType: {PlayerSettings.iOS.iOSManualProvisioningProfileType}\n" +
-                $"    PlayerSettings.iOS.iOSManualProvisioningProfileID: {PlayerSettings.iOS.iOSManualProvisioningProfileID}\n" +
-                $"    PlayerSettings.iOS.scriptCallOptimization: {PlayerSettings.iOS.scriptCallOptimization}\n" +
-                $"  }}\n" +
-                $"  Android {{\n" +
-                $"    PlayerSettings.Android.androidIsGame: {PlayerSettings.Android.androidIsGame}\n" +
-                $"    PlayerSettings.Android.bundleVersionCode: {PlayerSettings.Android.bundleVersionCode}\n" +
-                $"    PlayerSettings.Android.keystoreName: {PlayerSettings.Android.keystoreName}\n" +
-                $"    PlayerSettings.Android.keyaliasName: {PlayerSettings.Android.keyaliasName}\n" +
-                $"    PlayerSettings.Android.keystorePass: {keystorePassword}\n" +
-                $"    PlayerSettings.Android.keyaliasPass: {keystoreAliasPassword}\n" +
-                $"    PlayerSettings.Android.Minify {{\n" +
-                $"        R8: {PlayerSettings.Android.minifyWithR8}\n" +
-                $"        Release: {PlayerSettings.Android.minifyRelease}\n" +
-                $"        Debug: {PlayerSettings.Android.minifyDebug}\n" +
-                $"    }}\n" +
-                $"    PlayerSettings.Android.minSdkVersion: {PlayerSettings.Android.minSdkVersion}\n" +
-                $"    PlayerSettings.Android.targetSdkVersion: {PlayerSettings.Android.targetSdkVersion}\n" +
-                $"    PlayerSettings.Android.targetArchitectures: {PlayerSettings.Android.targetArchitectures}\n" +
-                $"    PlayerSettings.Android.useCustomKeystore: {PlayerSettings.Android.useCustomKeystore}\n" +
-                $"  }}\n" +
-                $"  Editor {{\n" +
-                $"    CacheServerEnabled: {EditorPrefs.GetBool("CacheServerEnabled")}\n" +
-                $"    CacheServerIPAddress: {EditorPrefs.GetString("CacheServerIPAddress")}\n" +
-                $"    EditorUserBuildSettings.allowDebugging: {EditorUserBuildSettings.allowDebugging}\n" +
-                $"    EditorUserBuildSettings.androidBuildType: {EditorUserBuildSettings.androidBuildType}\n" +
-                $"    EditorUserBuildSettings.androidBuildSystem: {EditorUserBuildSettings.androidBuildSystem}\n" +
-                $"    EditorUserBuildSettings.buildWithDeepProfilingSupport: {EditorUserBuildSettings.buildWithDeepProfilingSupport}\n" +
-                $"    EditorUserBuildSettings.development: {EditorUserBuildSettings.development}\n" +
+                $"  PlayerSettings.ApiCompatibilityLevel: {PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)}\\n" +
+                $"  PlayerSettings.applicationIdentifier: {PlayerSettings.applicationIdentifier}\\n" +
+                $"  PlayerSettings.bundleVersion: {PlayerSettings.bundleVersion}\\n" +
+                $"  PlayerSettings.companyName: {PlayerSettings.companyName}\\n" +
+                $"  PlayerSettings.ManagedStrippingLevel: {PlayerSettings.GetManagedStrippingLevel(EditorUserBuildSettings.selectedBuildTargetGroup)}\\n" +
+                $"  PlayerSettings.productName: {PlayerSettings.productName}\\n" +
+                $"  PlayerSettings.stripEngineCode: {PlayerSettings.stripEngineCode}\\n" +
+                $"  PlayerSettings.stripUnusedMeshComponents: {PlayerSettings.stripUnusedMeshComponents}\\n" +
+                $"  iOS {{\\n" +
+                $"    PlayerSettings.iOS.applicationDisplayName: {PlayerSettings.iOS.applicationDisplayName}\\n" +
+                $"    PlayerSettings.iOS.appleEnableAutomaticSigning: {PlayerSettings.iOS.appleEnableAutomaticSigning}\\n" +
+                $"    PlayerSettings.iOS.appleDeveloperTeamID: {PlayerSettings.iOS.appleDeveloperTeamID}\\n" +
+                $"    PlayerSettings.iOS.buildNumber: {PlayerSettings.iOS.buildNumber}\\n" +
+                $"    PlayerSettings.iOS.iOSManualProvisioningProfileType: {PlayerSettings.iOS.iOSManualProvisioningProfileType}\\n" +
+                $"    PlayerSettings.iOS.iOSManualProvisioningProfileID: {PlayerSettings.iOS.iOSManualProvisioningProfileID}\\n" +
+                $"    PlayerSettings.iOS.scriptCallOptimization: {PlayerSettings.iOS.scriptCallOptimization}\\n" +
+                $"  }}\\n" +
+                $"  Android {{\\n" +
+                $"    PlayerSettings.Android.androidIsGame: {PlayerSettings.Android.androidIsGame}\\n" +
+                $"    PlayerSettings.Android.bundleVersionCode: {PlayerSettings.Android.bundleVersionCode}\\n" +
+                $"    PlayerSettings.Android.keystoreName: {PlayerSettings.Android.keystoreName}\\n" +
+                $"    PlayerSettings.Android.keyaliasName: {PlayerSettings.Android.keyaliasName}\\n" +
+                $"    PlayerSettings.Android.keystorePass: {keystorePassword}\\n" +
+                $"    PlayerSettings.Android.keyaliasPass: {keystoreAliasPassword}\\n" +
+                $"    PlayerSettings.Android.Minify {{\\n" +
+                $"        R8: {PlayerSettings.Android.minifyWithR8}\\n" +
+                $"        Release: {PlayerSettings.Android.minifyRelease}\\n" +
+                $"        Debug: {PlayerSettings.Android.minifyDebug}\\n" +
+                $"    }}\\n" +
+                $"    PlayerSettings.Android.minSdkVersion: {PlayerSettings.Android.minSdkVersion}\\n" +
+                $"    PlayerSettings.Android.targetSdkVersion: {PlayerSettings.Android.targetSdkVersion}\\n" +
+                $"    PlayerSettings.Android.targetArchitectures: {PlayerSettings.Android.targetArchitectures}\\n" +
+                $"    PlayerSettings.Android.useCustomKeystore: {PlayerSettings.Android.useCustomKeystore}\\n" +
+                $"  }}\\n" +
+                $"  Editor {{\\n" +
+                $"    CacheServerEnabled: {EditorPrefs.GetBool("CacheServerEnabled")}\\n" +
+                $"    CacheServerIPAddress: {EditorPrefs.GetString("CacheServerIPAddress")}\\n" +
+                $"    EditorUserBuildSettings.allowDebugging: {EditorUserBuildSettings.allowDebugging}\\n" +
+                $"    EditorUserBuildSettings.androidBuildType: {EditorUserBuildSettings.androidBuildType}\\n" +
+                $"    EditorUserBuildSettings.androidBuildSystem: {EditorUserBuildSettings.androidBuildSystem}\\n" +
+                $"    EditorUserBuildSettings.buildWithDeepProfilingSupport: {EditorUserBuildSettings.buildWithDeepProfilingSupport}\\n" +
+                $"    EditorUserBuildSettings.development: {EditorUserBuildSettings.development}\\n" +
 #if UNITY_2022_1_OR_NEWER
-                $"    EditorUserBuildSettings.il2CppCodeGeneration: {PlayerSettings.GetIl2CppCodeGeneration(BuildTargetSettings.CurrentTarget)}\n" +
+                $"    EditorUserBuildSettings.il2CppCodeGeneration: {PlayerSettings.GetIl2CppCodeGeneration(BuildTargetSettings.CurrentTarget)}\\n" +
 #else
-                $"    EditorUserBuildSettings.il2CppCodeGeneration: {EditorUserBuildSettings.il2CppCodeGeneration}\n" +
+                $"    EditorUserBuildSettings.il2CppCodeGeneration: {EditorUserBuildSettings.il2CppCodeGeneration}\\n" +
 #endif
-                $"    EditorUserBuildSettings.iOSXcodeBuildConfig: {EditorUserBuildSettings.iOSXcodeBuildConfig}\n" +
-                $"    EditorUserBuildSettings.symlinkSources: {EditorUserBuildSettings.symlinkSources}\n" +
-                $"  }}\n" +
+                $"    EditorUserBuildSettings.iOSXcodeBuildConfig: {EditorUserBuildSettings.iOSXcodeBuildConfig}\\n" +
+                $"    EditorUserBuildSettings.symlinkSources: {EditorUserBuildSettings.symlinkSources}\\n" +
+                $"  }}\\n" +
                 $"}}");
         }
 
