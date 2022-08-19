@@ -154,6 +154,9 @@ inputs:
       No change is required unless there is a specific reason.
     required: false
     default: ${{ runner.temp }}/temp
+outputs:
+  output-path:
+    description: 'Path of the output binary'
 runs:
   using: 'node16'
   main: 'dist/index.js'

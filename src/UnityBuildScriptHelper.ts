@@ -158,6 +158,10 @@ export default class UnityBuildScriptHelper
             case BuildTarget.Android:
                 ConfigureForAndroid();
                 break;
+            case BuildTarget.StandaloneWindows:
+            case BuildTarget.StandaloneWindows64:
+            case BuildTarget.StandaloneOSX:
+                break;
             default:
                 throw new NotSupportedException($"Target={GetBuildTarget()}");
             }
