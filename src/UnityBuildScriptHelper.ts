@@ -238,6 +238,7 @@ export default class UnityBuildScriptHelper
                     throw new Exception();
                 }
             } catch (Exception ex) {
+                Debug.LogError($"!!!Error!!! Message={ex.Message}");
                 Debug.LogException(ex);
                 EditorApplication.Exit(1);
             }
