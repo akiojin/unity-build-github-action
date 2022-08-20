@@ -57,18 +57,21 @@ async function ExportIPA(
 function GetOutputPath(): string
 {
     const outputPath = path.join(core.getInput('output-directory'), core.getInput('output-name'))
-    switch (core.getInput('build-target').toLowerCase()) {
+    const buildTarget = core.getInput('build-target').toLowerCase()
+
+    switch (buildTarget) {
     case 'ios':
         return `${outputPath}.ipa`
     case 'android':
         return `${outputPath}.aab`
-    case 'Win':
-    case 'Win64':
+    case 'win':
+    case 'win64':
         return `${outputPath}.exe`
     case 'osxuniversal':
         return `${outputPath}.app`
     }
 
+    throw Error(`Not supported platform. Target=${buildTarget}`)
     return ""
 }
 
@@ -145,6 +148,7 @@ async function Run()
         }
 
         core.setOutput('output-path', GetOutputPath())
+        core.info(`Output Path: ${GetOutputPath()}`)
     } catch (ex: any) {
         core.setFailed(ex.message)
     }

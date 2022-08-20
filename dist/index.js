@@ -9499,17 +9499,19 @@ async function ExportIPA(projectDirectory, outputDirectory) {
 }
 function GetOutputPath() {
     const outputPath = path_1.default.join(core.getInput('output-directory'), core.getInput('output-name'));
-    switch (core.getInput('build-target').toLowerCase()) {
+    const buildTarget = core.getInput('build-target').toLowerCase();
+    switch (buildTarget) {
         case 'ios':
             return `${outputPath}.ipa`;
         case 'android':
             return `${outputPath}.aab`;
-        case 'Win':
-        case 'Win64':
+        case 'win':
+        case 'win64':
             return `${outputPath}.exe`;
         case 'osxuniversal':
             return `${outputPath}.app`;
     }
+    throw Error(`Not supported platform. Target=${buildTarget}`);
     return "";
 }
 async function BuildUnityProject(outputDirectory) {
@@ -9556,6 +9558,7 @@ async function Run() {
             await ExportIPA(core.getInput('temporary-directory'), core.getInput('output-directory'));
         }
         core.setOutput('output-path', GetOutputPath());
+        core.info(`Output Path: ${GetOutputPath()}`);
     }
     catch (ex) {
         core.setFailed(ex.message);
