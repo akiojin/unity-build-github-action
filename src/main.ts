@@ -52,6 +52,24 @@ async function ExportIPA(
     core.endGroup()
 }
 
+function GetOutputPath(): string
+{
+    const outputPath = path.join(core.getInput('output-directory'), core.getInput('output-name'))
+    switch (core.getInput('build-target').toLowerCase()) {
+    case 'ios':
+        return `${outputPath}.ipa`
+    case 'android':
+        return `${outputPath}.aab`
+    case 'Win':
+    case 'Win64':
+        return `${outputPath}.exe`
+    case 'osxuniversal':
+        return `${outputPath}.app`
+    }
+
+    return ""
+}
+
 async function BuildUnityProject(outputDirectory: string)
 {
     const builder = new UnityCommandBuilder()
@@ -123,6 +141,8 @@ async function Run()
                 core.getInput('temporary-directory'),
                 core.getInput('output-directory'))
         }
+
+        core.setOutput('output-path', GetOutputPath())
     } catch (ex: any) {
         core.setFailed(ex.message)
     }
