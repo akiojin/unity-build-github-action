@@ -8,6 +8,6 @@ export default class ExportOptionsPlistHelper {
      * @param stripSwiftSymbols Output Symbols?
      * @returns Path of ExportOptions.plist
      */
-    static Export(outputDirctory: string, compileBitcode: boolean, stripSwiftSymbols: boolean): Promise<string>;
-    static Generate(compileBitcode: boolean, stripSwiftSymbols: boolean): string;
+    static Export(outputDirctory: string, compileBitcode: boolean, uploadSymbols: boolean, stripSwiftSymbols: boolean): Promise<string>;
+    static Generate(compileBitcode: boolean, uploadSymbols: boolean, stripSwiftSymbols: boolean): string;
 }

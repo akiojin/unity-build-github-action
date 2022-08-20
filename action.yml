@@ -87,6 +87,12 @@ inputs:
       Required for iOS builds.
     required: false
     default: false
+  strip-swift-symbols:
+    description: >
+      If set to true, it will truncate symbols from the Swift library in the IPA file,
+      reducing the size of the IPA file.
+    required: false
+    default: true
   provisioning-profile-base64:
     description: ''
     required: false

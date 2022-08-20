@@ -19,21 +19,23 @@ async function ExportIPA(
     const plist = await ExportOptionsPlistHelper.Export(
         core.getInput('temporary-directory'),
         includeBitcode,
-        !includeSymbols)
+        !includeSymbols,
+        core.getBooleanInput('strip-swift-symbols'))
 
     const builder = new ArgumentBuilder()
         .Append('gym')
-        .Append('--output_directory', outputDirectory)
         .Append('--scheme', 'Unity-iPhone')
-        .Append('--sdk', 'iphoneos')
+        .Append('--clean')
+        .Append('--output_directory', outputDirectory)
         .Append('--configuration', core.getInput('configuration'))
+        .Append('--silent')
         .Append('--include_bitcode', includeBitcode.toString())
         .Append('--include_symbols', includeSymbols.toString())
         .Append('--export_method', core.getInput('export-method'))
-        .Append('--export_team_id', core.getInput('team-id'))
         .Append('--export_options', plist)
         .Append('--skip_build_archive', `false`)
-        .Append('--silent')
+        .Append('--sdk', 'iphoneos')
+        .Append('--export_team_id', core.getInput('team-id'))
 
     try {
         const workspace = path.join(projectDirectory, 'Unity-iPhone.xcworkspace')

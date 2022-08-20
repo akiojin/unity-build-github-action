@@ -16,9 +16,10 @@ export default class ExportOptionsPlistHelper
     static async Export(
         outputDirctory: string,
         compileBitcode: boolean,
+        uploadSymbols: boolean,
         stripSwiftSymbols: boolean): Promise<string>
     {
-        const script = ExportOptionsPlistHelper.Generate(compileBitcode, stripSwiftSymbols)
+        const script = ExportOptionsPlistHelper.Generate(compileBitcode, uploadSymbols, stripSwiftSymbols)
         const plist = path.join(outputDirctory, 'ExportOptions.plist')
         await fs.writeFile(plist, script)
     
@@ -31,6 +32,7 @@ export default class ExportOptionsPlistHelper
     
     static Generate(
         compileBitcode: boolean,
+        uploadSymbols: boolean,
         stripSwiftSymbols: boolean): string
     {
         return `<?xml version="1.0" encoding="UTF-8"?>
@@ -39,6 +41,8 @@ export default class ExportOptionsPlistHelper
   <dict>
     <key>compileBitcode</key>
     <${compileBitcode}/>
+    <key>uploadSymbols</key>
+    <${uploadSymbols}/>
     <key>stripSwiftSymbols</key>
     <${stripSwiftSymbols}/>
     <key>thinning</key>
