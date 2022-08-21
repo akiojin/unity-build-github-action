@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
+import * as io from '@actions/io'
 import * as os from 'os'
 import * as fs from 'fs/promises'
 import * as tmp from 'tmp'
@@ -139,6 +140,7 @@ async function Run()
         const isiOS = core.getInput('build-target').toLowerCase() === 'ios'
         const outputDirectory = core.getInput(!!isiOS ? 'temporary-directory' : 'output-directory')
 
+        await io.mkdirP(outputDirectory);
         await BuildUnityProject(outputDirectory)
 
         if (!!isiOS && (!!core.getInput('team-id') && !!core.getInput('provisioning-profile-uuid'))) {

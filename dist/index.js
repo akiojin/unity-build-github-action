@@ -9456,6 +9456,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(4508));
 const exec = __importStar(__nccwpck_require__(3013));
+const io = __importStar(__nccwpck_require__(2957));
 const os = __importStar(__nccwpck_require__(2037));
 const fs = __importStar(__nccwpck_require__(3292));
 const tmp = __importStar(__nccwpck_require__(7612));
@@ -9553,6 +9554,7 @@ async function Run() {
     try {
         const isiOS = core.getInput('build-target').toLowerCase() === 'ios';
         const outputDirectory = core.getInput(!!isiOS ? 'temporary-directory' : 'output-directory');
+        await io.mkdirP(outputDirectory);
         await BuildUnityProject(outputDirectory);
         if (!!isiOS && (!!core.getInput('team-id') && !!core.getInput('provisioning-profile-uuid'))) {
             await ExportIPA(core.getInput('temporary-directory'), core.getInput('output-directory'));
