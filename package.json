@@ -26,7 +26,7 @@
     "@akiojin/unity-command": "^1.1.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.1.1",
+    "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.0.3",
     "@types/node": "^18.7.13",
     "@types/tmp": "^0.2.3",
