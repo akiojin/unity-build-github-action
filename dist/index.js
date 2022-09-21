@@ -9407,7 +9407,7 @@ class UnityBuildScriptHelper {
                     EditorApplication.Exit(0);
                 } else {
                     var builder = new StringBuilder();
-                    builder.AppendLine($"Time={summary.totalTime}, Error={summary.totalErrors}, Warning={summary.totalWarnings}, Path={summary.outputPath}");
+                    builder.AppendLine($"Time={report.summary.totalTime}, Error={report.summary.totalErrors}, Warning={report.summary.totalWarnings}, Path={report.summary.outputPath}");
 
                     foreach (var step in report.steps) {
                         var spaces = string.Concat(Enumerable.Repeat(" ", step.depth * 4));
