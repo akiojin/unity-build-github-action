@@ -9421,7 +9421,7 @@ class UnityBuildScriptHelper {
                             case LogType.Error:
                                 case LogType.Assert:
                                 case LogType.Exception:
-                                    builder.AppendLine($"{spaces}- {message.type}: {message.content.Replace("\n", "\\n")}");
+                                    builder.AppendLine($"{spaces}- {message.type}: {message.content.Replace("\\n", "\\\\n")}");
                                     break;
                             }
                         }
