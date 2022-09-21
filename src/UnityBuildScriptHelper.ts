@@ -244,12 +244,19 @@ export default class UnityBuildScriptHelper
                     builder.AppendLine($"Time={summary.totalTime}, Error={summary.totalErrors}, Warning={summary.totalWarnings}, Path={summary.outputPath}");
 
                     foreach (var step in report.steps) {
-                        var spaces = Enumerable.Repeat(" ", step.depth);
+                        var spaces = string.Concat(Enumerable.Repeat(" ", step.depth * 4));
                         builder.AppendLine($"{spaces}Build Step: {step.name}");
 
                         foreach (var message in step.messages) {
-                            if (message.type == LogType.Error || message.type == LogType.Exception) {
-                                builder.AppendLine($"{spaces}  Message: Type={message.type}, Content={message.content}");
+                            switch (message.type) {
+                            default:
+                                // LogType.Log or LogType.Warning
+                                break;
+                            case LogType.Error:
+                                case LogType.Assert:
+                                case LogType.Exception:
+                                    builder.AppendLine($"{spaces}- {message.type}: {message.content.Replace("\n", "\\n")}");
+                                    break;
                             }
                         }
                     }
