@@ -1,6 +1,6 @@
 # unity-build-github-action
 
-This action builds Unity and outputs ipa for iOS and apk for Android.
+This action builds Unity and outputs ipa for iOS and apk/aab for Android.
 
 ## Requirement
 

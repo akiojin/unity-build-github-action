@@ -271,7 +271,6 @@ export default class UnityBuildScriptHelper
                 }
             } catch (Exception ex) {
                 Debug.LogError($"[UnityBuildScript] Build Failed: Message={ex.Message}");
-                Debug.LogException(ex);
                 EditorApplication.Exit(1);
             }
         }
