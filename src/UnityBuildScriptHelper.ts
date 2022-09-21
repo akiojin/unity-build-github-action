@@ -237,12 +237,27 @@ export default class UnityBuildScriptHelper
                 });
 
                 if (report.summary.result == BuildResult.Succeeded) {
+                    Debug.Log($"[UnityBuildScript] Build Succeede: Size={report.summary.totalSize}, Time={report.summary.totalTime}, Error={report.summary.totalErrors}, Warning={report.summary.totalWarnings}");
                     EditorApplication.Exit(0);
                 } else {
-                    throw new Exception();
+                    var builder = new StringBuilder();
+                    builder.AppendLine($"Time={summary.totalTime}, Error={summary.totalErrors}, Warning={summary.totalWarnings}, Path={summary.outputPath}");
+
+                    foreach (var step in report.steps) {
+                        var spaces = Enumerable.Repeat(" ", step.depth);
+                        builder.AppendLine($"{spaces}Build Step: {step.name}");
+
+                        foreach (var message in step.messages) {
+                            if (message.type == LogType.Error || message.type == LogType.Exception) {
+                                builder.AppendLine($"{spaces}  Message: Type={message.type}, Content={message.content}");
+                            }
+                        }
+                    }
+
+                    throw new Exception(builder.ToString());
                 }
             } catch (Exception ex) {
-                Debug.LogError($"!!!Error!!! Message={ex.Message}");
+                Debug.LogError($"[UnityBuildScript] Build Failed: Message={ex.Message}");
                 Debug.LogException(ex);
                 EditorApplication.Exit(1);
             }
