@@ -9187,6 +9187,7 @@ class UnityBuildScriptHelper {
     using System;
     using System.IO;
     using System.Linq;
+    using System.Text;
     using UnityEditor;
     using UnityEditor.Build.Reporting;
     using UnityEngine;
@@ -9394,9 +9395,14 @@ class UnityBuildScriptHelper {
             try {
                 Configure();
 
+                var scenes = EditorBuildSettings.scenes.Select(x => x.path).ToArray();
+                var locationPathName = Path.Combine(OutputDirectory, GetBuildTargetOutputFileName());
+
+                Debug.Log($"[UnityBuildScript] BuildPipeline.BuildPlayer: locationPathName={locationPathName}, target={GetBuildTarget()}, targetGroup={GetBuildTargetGroup()}");
+
                 var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
-                    scenes = EditorBuildSettings.scenes.Select(x => x.path).ToArray(),
-                    locationPathName = Path.Combine(OutputDirectory, GetBuildTargetOutputFileName()),
+                    scenes = scenes,
+                    locationPathName = locationPathName,
                     target = GetBuildTarget(),
                     targetGroup = GetBuildTargetGroup(),
                     options = GetBuildOptions(),
