@@ -110,12 +110,13 @@ async function BuildUnityProject(outputDirectory: string)
             core.getInput('keystore-alias'),
             core.getInput('keystore-alias-password'))
 
-        const cs = path.join(core.getInput('project-directory'), 'Assets', 'Editor', 'UnityBuildScript.cs')
+        const buildScriptName = 'UnityBuildScript.cs'
+        const cs = path.join(core.getInput('project-directory'), 'Assets', 'Editor', buildScriptName)
         await fs.mkdir(path.dirname(cs), {recursive: true})
         await fs.writeFile(cs, script)
 
-        core.startGroup('Generate "UnityBuildScript.cs"')
-        core.info(`UnityBuildScript.cs:\n${script}`)
+        core.startGroup(`Generate "${buildScriptName}"`)
+        core.info(`${buildScriptName}:\n${script}`)
         core.endGroup()
     }
 

@@ -9560,11 +9560,12 @@ async function BuildUnityProject(outputDirectory) {
             await fs.writeFile(keystore, Buffer.from(core.getInput('keystore-base64'), 'base64'));
         }
         const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(outputDirectory, core.getInput('output-name'), core.getInput('build-target'), Number(core.getInput('revision')), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('provisioning-profile-type'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
-        const cs = path_1.default.join(core.getInput('project-directory'), 'Assets', 'Editor', 'UnityBuildScript.cs');
+        const buildScriptName = 'UnityBuildScript.cs';
+        const cs = path_1.default.join(core.getInput('project-directory'), 'Assets', 'Editor', buildScriptName);
         await fs.mkdir(path_1.default.dirname(cs), { recursive: true });
         await fs.writeFile(cs, script);
-        core.startGroup('Generate "UnityBuildScript.cs"');
-        core.info(`UnityBuildScript.cs:\n${script}`);
+        core.startGroup(`Generate "${buildScriptName}"`);
+        core.info(`${buildScriptName}:\n${script}`);
         core.endGroup();
     }
     if (!!core.getInput('additional-arguments')) {
