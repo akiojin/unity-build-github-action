@@ -9303,6 +9303,11 @@ class UnityBuildScriptHelper {
             EditorUserBuildSettings.buildAppBundle = true;
 #endif
 
+#if UNITY_ANDROID
+            var keystorePass = !string.IsNullOrWhiteSpace(PlayerSettings.Android.keystorePass) ? "****" : string.Empty;
+            var keyaliasPass = !string.IsNullOrWhiteSpace(PlayerSettings.Android.keyaliasPass) ? "****" : string.Empty;
+#endif
+
             Debug.Log($"[UnityBuildScript] Output PlayerSettings {{\\n" +
                 $"  PlayerSettings.ApiCompatibilityLevel: {PlayerSettings.GetApiCompatibilityLevel(CurrentTarget)}\\n" +
                 $"  PlayerSettings.applicationIdentifier: {PlayerSettings.applicationIdentifier}\\n" +
@@ -9328,8 +9333,8 @@ class UnityBuildScriptHelper {
                 $"    PlayerSettings.Android.bundleVersionCode: {PlayerSettings.Android.bundleVersionCode}\\n" +
                 $"    PlayerSettings.Android.keystoreName: {PlayerSettings.Android.keystoreName}\\n" +
                 $"    PlayerSettings.Android.keyaliasName: {PlayerSettings.Android.keyaliasName}\\n" +
-                $"    PlayerSettings.Android.keystorePass: {!string.IsNullOrWhiteSpace(PlayerSettings.Android.keystorePass) ? "****" : string.Empty}\\n" +
-                $"    PlayerSettings.Android.keyaliasPass: {!string.IsNullOrWhiteSpace(PlayerSettings.Android.keyaliasPass) ? "****" : string.Empty}\\n" +
+                $"    PlayerSettings.Android.keystorePass: {keystorePass}\\n" +
+                $"    PlayerSettings.Android.keyaliasPass: {keyaliasPass}\\n" +
                 $"    PlayerSettings.Android.Minify {{\\n" +
                 $"        R8: {PlayerSettings.Android.minifyWithR8}\\n" +
                 $"        Release: {PlayerSettings.Android.minifyRelease}\\n" +
