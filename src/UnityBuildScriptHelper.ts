@@ -45,43 +45,27 @@ export default class UnityBuildScriptHelper
         const string KeystoreAlias = "${keystoreAlias}";
         const string KeystoreAliasPassword = "${keystoreAliasPassword}";
 
+        static BuildTarget ActiveBuildTarget
+            => EditorUserBuildSettings.activeBuildTarget;
+
+        static BuildTargetGroup ActiveBuildTargetGroup
+            => BuildPipeline.GetBuildTargetGroup(ActiveBuildTarget);
+
+#if UNITY_2022_1_OR_NEWER
+        static NamedBuildTarget CurrentTarget
+            => NamedBuildTarget.FromBuildTargetGroup(ActiveBuildTargetGroup);
+#else
+        static BuildTargetGroup CurrentTarget
+            => ActiveBuildTargetGroup;
+#endif
+
         static string GetBuildTargetOutputFileName()
-            => GetBuildTarget() switch {
+            => ActiveBuildTarget switch {
                 BuildTarget.Android => $"{OutputFileName}.aab",
                 BuildTarget.StandaloneWindows => $"{OutputFileName}.exe",
                 BuildTarget.StandaloneWindows64 => $"{OutputFileName}.exe",
                 BuildTarget.StandaloneOSX => $"{OutputFileName}.app",
                 _ => string.Empty
-            };
-
-        static BuildTarget GetBuildTarget()
-            => Target switch {
-                "iOS" => BuildTarget.iOS,
-                "Android" => BuildTarget.Android,
-                "Win" => BuildTarget.StandaloneWindows,
-                "Win64" => BuildTarget.StandaloneWindows64,
-                "OSXUniversal" => BuildTarget.StandaloneOSX,
-                _ => throw new System.NotSupportedException(),
-            };
-
-        static BuildTargetGroup GetBuildTargetGroup()
-            => GetBuildTarget() switch {
-                BuildTarget.StandaloneOSX => BuildTargetGroup.Standalone,
-                BuildTarget.StandaloneWindows => BuildTargetGroup.Standalone,
-                BuildTarget.StandaloneWindows64 => BuildTargetGroup.Standalone,
-                BuildTarget.StandaloneLinux64 => BuildTargetGroup.Standalone,
-                BuildTarget.iOS => BuildTargetGroup.iOS,
-                BuildTarget.Android => BuildTargetGroup.Android,
-                BuildTarget.WebGL => BuildTargetGroup.WebGL,
-                BuildTarget.WSAPlayer => BuildTargetGroup.WSA,
-                BuildTarget.PS4 => BuildTargetGroup.PS4,
-                BuildTarget.PS5 => BuildTargetGroup.PS5,
-                BuildTarget.XboxOne => BuildTargetGroup.XboxOne,
-                BuildTarget.tvOS => BuildTargetGroup.tvOS,
-                BuildTarget.Switch => BuildTargetGroup.Switch,
-                BuildTarget.Lumin => BuildTargetGroup.Lumin,
-                BuildTarget.Stadia => BuildTargetGroup.Stadia,
-                _ => throw new System.NotSupportedException(),
             };
 
         static BuildOptions GetBuildOptions()
@@ -143,8 +127,8 @@ export default class UnityBuildScriptHelper
 
         static void Configure()
         {
-            PlayerSettings.SetScriptingBackend(GetBuildTargetGroup(), ScriptingImplementation.IL2CPP);
-            PlayerSettings.SetArchitecture(GetBuildTargetGroup(), 1);
+            PlayerSettings.SetScriptingBackend(CurrentTarget, ScriptingImplementation.IL2CPP);
+            PlayerSettings.SetArchitecture(CurrentTarget, 1);
 
             EditorUserBuildSettings.development = Development;
             EditorUserBuildSettings.allowDebugging = Development;
@@ -152,7 +136,7 @@ export default class UnityBuildScriptHelper
             EditorUserBuildSettings.symlinkSources = Development;
             EditorUserBuildSettings.buildWithDeepProfilingSupport = Development;
 
-            switch (GetBuildTarget()) {
+            switch (ActiveBuildTarget) {
             case BuildTarget.iOS:
                 ConfigureForiOS();
                 break;
@@ -164,18 +148,18 @@ export default class UnityBuildScriptHelper
             case BuildTarget.StandaloneOSX:
                 break;
             default:
-                throw new NotSupportedException($"Target={GetBuildTarget()}");
+                throw new NotSupportedException($"Target={ActiveBuildTarget}");
             }
 
             var keystorePassword = !string.IsNullOrWhiteSpace(PlayerSettings.Android.keystorePass) ? "****" : string.Empty;
             var keystoreAliasPassword = !string.IsNullOrWhiteSpace(PlayerSettings.Android.keyaliasPass) ? "****" : string.Empty;
 
             Debug.Log($"[UnityBuildScript] Output PlayerSettings {{\\n" +
-                $"  PlayerSettings.ApiCompatibilityLevel: {PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)}\\n" +
+                $"  PlayerSettings.ApiCompatibilityLevel: {PlayerSettings.GetApiCompatibilityLevel(CurrentTarget)}\\n" +
                 $"  PlayerSettings.applicationIdentifier: {PlayerSettings.applicationIdentifier}\\n" +
                 $"  PlayerSettings.bundleVersion: {PlayerSettings.bundleVersion}\\n" +
                 $"  PlayerSettings.companyName: {PlayerSettings.companyName}\\n" +
-                $"  PlayerSettings.ManagedStrippingLevel: {PlayerSettings.GetManagedStrippingLevel(EditorUserBuildSettings.selectedBuildTargetGroup)}\\n" +
+                $"  PlayerSettings.ManagedStrippingLevel: {PlayerSettings.GetManagedStrippingLevel(CurrentTarget)}\\n" +
                 $"  PlayerSettings.productName: {PlayerSettings.productName}\\n" +
                 $"  PlayerSettings.stripEngineCode: {PlayerSettings.stripEngineCode}\\n" +
                 $"  PlayerSettings.stripUnusedMeshComponents: {PlayerSettings.stripUnusedMeshComponents}\\n" +
@@ -214,7 +198,7 @@ export default class UnityBuildScriptHelper
                 $"    EditorUserBuildSettings.buildWithDeepProfilingSupport: {EditorUserBuildSettings.buildWithDeepProfilingSupport}\\n" +
                 $"    EditorUserBuildSettings.development: {EditorUserBuildSettings.development}\\n" +
 #if UNITY_2022_1_OR_NEWER
-                $"    EditorUserBuildSettings.il2CppCodeGeneration: {PlayerSettings.GetIl2CppCodeGeneration(BuildTargetSettings.CurrentTarget)}\\n" +
+                $"    EditorUserBuildSettings.il2CppCodeGeneration: {PlayerSettings.GetIl2CppCodeGeneration(CurrentTarget)}\\n" +
 #else
                 $"    EditorUserBuildSettings.il2CppCodeGeneration: {EditorUserBuildSettings.il2CppCodeGeneration}\\n" +
 #endif
@@ -232,13 +216,13 @@ export default class UnityBuildScriptHelper
                 var scenes = EditorBuildSettings.scenes.Select(x => x.path).ToArray();
                 var locationPathName = Path.Combine(OutputDirectory, GetBuildTargetOutputFileName());
 
-                Debug.Log($"[UnityBuildScript] BuildPipeline.BuildPlayer: locationPathName={locationPathName}, target={GetBuildTarget()}, targetGroup={GetBuildTargetGroup()}");
+                Debug.Log($"[UnityBuildScript] BuildPipeline.BuildPlayer: locationPathName={locationPathName}, target={ActiveBuildTarget}, targetGroup={ActiveBuildTargetGroup}");
 
                 var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
                     scenes = scenes,
                     locationPathName = locationPathName,
-                    target = GetBuildTarget(),
-                    targetGroup = GetBuildTargetGroup(),
+                    target = ActiveBuildTarget,
+                    targetGroup = ActiveBuildTargetGroup,
                     options = GetBuildOptions(),
                 });
 
