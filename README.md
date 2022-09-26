@@ -1,6 +1,7 @@
 # unity-build-github-action
 
 This action builds Unity and outputs ipa for iOS and apk/aab for Android.
+Supported version is Unity 2021.3 or later.
 
 ## Requirement
 

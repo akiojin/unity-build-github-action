@@ -37,16 +37,16 @@ export default class UnityBuildScriptHelper
         const bool Development = ${development};
         const int Revision = ${revision};
 
-        // for iOS
+#if UNITY_IOS
         const string TeamID = "${teamID}";
         const string ProvisioningProfileUUID = "${provisioningProfileUUID}";
         const ProvisioningProfileType Type = ProvisioningProfileType.${provisioningProfileType};
-
-        // for Android
+#elif UNITY_ANDROID
         const string Keystore = @"${keystore}";
         const string KeystorePassword = "${keystorePassword}";
         const string KeystoreAlias = "${keystoreAlias}";
         const string KeystoreAliasPassword = "${keystoreAliasPassword}";
+#endif
 
         static BuildTarget ActiveBuildTarget
             => EditorUserBuildSettings.activeBuildTarget;
@@ -63,13 +63,15 @@ export default class UnityBuildScriptHelper
 #endif
 
         static string GetBuildTargetOutputFileName()
-            => ActiveBuildTarget switch {
-                BuildTarget.Android => $"{OutputFileName}.aab",
-                BuildTarget.StandaloneWindows => $"{OutputFileName}.exe",
-                BuildTarget.StandaloneWindows64 => $"{OutputFileName}.exe",
-                BuildTarget.StandaloneOSX => $"{OutputFileName}.app",
-                _ => string.Empty
-            };
+#if UNITY_ANDROID
+            => $"{OutputFileName}.aab";
+#elif UNITY_STANDALONE_WIN
+            => $"{OutputFileName}.exe";
+#elif UNITY_STANDALONE_OSX
+            => $"{OutputFileName}.app";
+#else
+            => string.Empty;
+#endif
 
         static BuildOptions GetBuildOptions()
         {
@@ -82,8 +84,18 @@ export default class UnityBuildScriptHelper
             return options;
         }
 
-        static void ConfigureForiOS()
+        static void Configure()
         {
+            PlayerSettings.SetScriptingBackend(CurrentTarget, ScriptingImplementation.IL2CPP);
+            PlayerSettings.SetArchitecture(CurrentTarget, 1);
+
+            EditorUserBuildSettings.development = Development;
+            EditorUserBuildSettings.allowDebugging = Development;
+            EditorUserBuildSettings.connectProfiler = Development;
+            EditorUserBuildSettings.symlinkSources = Development;
+            EditorUserBuildSettings.buildWithDeepProfilingSupport = Development;
+
+#if UNITY_IOS
             PlayerSettings.iOS.appleEnableAutomaticSigning = false;
             PlayerSettings.iOS.buildNumber = Revision.ToString();
             PlayerSettings.iOS.iOSManualProvisioningProfileType = Type;
@@ -98,10 +110,7 @@ export default class UnityBuildScriptHelper
             if (!string.IsNullOrWhiteSpace(ProvisioningProfileUUID)) {
                 PlayerSettings.iOS.iOSManualProvisioningProfileID = ProvisioningProfileUUID;
             }
-        }
-
-        static void ConfigureForAndroid()
-        {
+#elif UNITY_ANDROID
             PlayerSettings.Android.bundleVersionCode = Revision;
 
             EditorUserBuildSettings.androidBuildType = !!Development ?
@@ -126,36 +135,7 @@ export default class UnityBuildScriptHelper
             }
 
             EditorUserBuildSettings.buildAppBundle = true;
-        }
-
-        static void Configure()
-        {
-            PlayerSettings.SetScriptingBackend(CurrentTarget, ScriptingImplementation.IL2CPP);
-            PlayerSettings.SetArchitecture(CurrentTarget, 1);
-
-            EditorUserBuildSettings.development = Development;
-            EditorUserBuildSettings.allowDebugging = Development;
-            EditorUserBuildSettings.connectProfiler = Development;
-            EditorUserBuildSettings.symlinkSources = Development;
-            EditorUserBuildSettings.buildWithDeepProfilingSupport = Development;
-
-            switch (ActiveBuildTarget) {
-            case BuildTarget.iOS:
-                ConfigureForiOS();
-                break;
-            case BuildTarget.Android:
-                ConfigureForAndroid();
-                break;
-            case BuildTarget.StandaloneWindows:
-            case BuildTarget.StandaloneWindows64:
-            case BuildTarget.StandaloneOSX:
-                break;
-            default:
-                throw new NotSupportedException($"Target={ActiveBuildTarget}");
-            }
-
-            var keystorePassword = !string.IsNullOrWhiteSpace(PlayerSettings.Android.keystorePass) ? "****" : string.Empty;
-            var keystoreAliasPassword = !string.IsNullOrWhiteSpace(PlayerSettings.Android.keyaliasPass) ? "****" : string.Empty;
+#endif
 
             Debug.Log($"[UnityBuildScript] Output PlayerSettings {{\\n" +
                 $"  PlayerSettings.ApiCompatibilityLevel: {PlayerSettings.GetApiCompatibilityLevel(CurrentTarget)}\\n" +
@@ -166,6 +146,7 @@ export default class UnityBuildScriptHelper
                 $"  PlayerSettings.productName: {PlayerSettings.productName}\\n" +
                 $"  PlayerSettings.stripEngineCode: {PlayerSettings.stripEngineCode}\\n" +
                 $"  PlayerSettings.stripUnusedMeshComponents: {PlayerSettings.stripUnusedMeshComponents}\\n" +
+#if UNITY_IOS
                 $"  iOS {{\\n" +
                 $"    PlayerSettings.iOS.applicationDisplayName: {PlayerSettings.iOS.applicationDisplayName}\\n" +
                 $"    PlayerSettings.iOS.appleEnableAutomaticSigning: {PlayerSettings.iOS.appleEnableAutomaticSigning}\\n" +
@@ -175,13 +156,14 @@ export default class UnityBuildScriptHelper
                 $"    PlayerSettings.iOS.iOSManualProvisioningProfileID: {PlayerSettings.iOS.iOSManualProvisioningProfileID}\\n" +
                 $"    PlayerSettings.iOS.scriptCallOptimization: {PlayerSettings.iOS.scriptCallOptimization}\\n" +
                 $"  }}\\n" +
+#elif UNITY_ANDROID
                 $"  Android {{\\n" +
                 $"    PlayerSettings.Android.androidIsGame: {PlayerSettings.Android.androidIsGame}\\n" +
                 $"    PlayerSettings.Android.bundleVersionCode: {PlayerSettings.Android.bundleVersionCode}\\n" +
                 $"    PlayerSettings.Android.keystoreName: {PlayerSettings.Android.keystoreName}\\n" +
                 $"    PlayerSettings.Android.keyaliasName: {PlayerSettings.Android.keyaliasName}\\n" +
-                $"    PlayerSettings.Android.keystorePass: {keystorePassword}\\n" +
-                $"    PlayerSettings.Android.keyaliasPass: {keystoreAliasPassword}\\n" +
+                $"    PlayerSettings.Android.keystorePass: {!string.IsNullOrWhiteSpace(PlayerSettings.Android.keystorePass) ? "****" : string.Empty}\\n" +
+                $"    PlayerSettings.Android.keyaliasPass: {!string.IsNullOrWhiteSpace(PlayerSettings.Android.keyaliasPass) ? "****" : string.Empty}\\n" +
                 $"    PlayerSettings.Android.Minify {{\\n" +
                 $"        R8: {PlayerSettings.Android.minifyWithR8}\\n" +
                 $"        Release: {PlayerSettings.Android.minifyRelease}\\n" +
@@ -192,6 +174,7 @@ export default class UnityBuildScriptHelper
                 $"    PlayerSettings.Android.targetArchitectures: {PlayerSettings.Android.targetArchitectures}\\n" +
                 $"    PlayerSettings.Android.useCustomKeystore: {PlayerSettings.Android.useCustomKeystore}\\n" +
                 $"  }}\\n" +
+#endif
                 $"  Editor {{\\n" +
                 $"    CacheServerEnabled: {EditorPrefs.GetBool("CacheServerEnabled")}\\n" +
                 $"    CacheServerIPAddress: {EditorPrefs.GetString("CacheServerIPAddress")}\\n" +
