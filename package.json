@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/akiojin/unity-bulid-github-action#readme",
   "dependencies": {
-    "@actions/core": "^1.9.1",
+    "@actions/core": "^1.10.0",
     "@actions/exec": "^1.1.0",
     "@actions/io": "^1.1.2",
     "@akiojin/argument-builder": "^1.0.0",
