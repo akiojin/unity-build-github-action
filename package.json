@@ -1,18 +1,17 @@
 {
-  "name": "unity-bulid-github-action",
+  "name": "@akiojin/unity-bulid-github-action",
   "version": "3.4.4",
   "description": "",
   "main": "dist/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0",
-    "commitmsg": "commitlint -e $GIT_PARAMS"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/akiojin/unity-bulid-github-action.git"
+    "url": "https://github.com/akiojin/unity-bulid-github-action.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "Unity",
+    "Unity3d"
+  ],
+  "author": "Akio Jinsenji <akio-jinsenji@cloud-creative-studios.com> (https://github.com/akiojin)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/akiojin/unity-build-github-action/issues"
