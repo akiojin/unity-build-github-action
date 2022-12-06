@@ -9415,10 +9415,10 @@ class UnityBuildScriptHelper {
                                 // LogType.Log or LogType.Warning
                                 break;
                             case LogType.Error:
-                                case LogType.Assert:
-                                case LogType.Exception:
-                                    builder.AppendLine($"{spaces}- {message.type}: {message.content.Replace("\\n", "\\\\n")}");
-                                    break;
+                            case LogType.Assert:
+                            case LogType.Exception:
+                                builder.AppendLine($"{spaces}- {message.type}: {message.content.Replace("\\n", "\\\\n")}");
+                                break;
                             }
                         }
                     }
@@ -9530,7 +9530,6 @@ function GetOutputPath() {
             return `${outputPath}.app`;
     }
     throw Error(`Not supported platform. Target=${buildTarget}`);
-    return "";
 }
 async function BuildUnityProject(outputDirectory) {
     const builder = new unity_command_1.UnityCommandBuilder()

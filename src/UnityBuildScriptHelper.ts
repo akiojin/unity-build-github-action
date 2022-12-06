@@ -1,5 +1,3 @@
-import internal from "stream";
-
 export default class UnityBuildScriptHelper
 {
     static GenerateUnityBuildScript(
@@ -234,10 +232,10 @@ export default class UnityBuildScriptHelper
                                 // LogType.Log or LogType.Warning
                                 break;
                             case LogType.Error:
-                                case LogType.Assert:
-                                case LogType.Exception:
-                                    builder.AppendLine($"{spaces}- {message.type}: {message.content.Replace("\\n", "\\\\n")}");
-                                    break;
+                            case LogType.Assert:
+                            case LogType.Exception:
+                                builder.AppendLine($"{spaces}- {message.type}: {message.content.Replace("\\n", "\\\\n")}");
+                                break;
                             }
                         }
                     }

@@ -73,7 +73,6 @@ function GetOutputPath(): string
     }
 
     throw Error(`Not supported platform. Target=${buildTarget}`)
-    return ""
 }
 
 async function BuildUnityProject(outputDirectory: string)
