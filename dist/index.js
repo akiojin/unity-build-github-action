@@ -3156,7 +3156,7 @@ Object.defineProperty(exports, "ArgumentBuilder", ({ enumerable: true, get: func
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 175:
+/***/ 57:
 /***/ ((module) => {
 
 /******/ (() => { // webpackBootstrap
@@ -3277,13 +3277,13 @@ Object.defineProperty(exports, "ArgumentBuilder", ({ enumerable: true, get: func
 
 /***/ }),
 
-/***/ 245:
+/***/ 323:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require2_) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const argument_builder_1 = __nccwpck_require2_(175);
+const argument_builder_1 = __nccwpck_require2_(57);
 class UnityCommandBuilder extends argument_builder_1.ArgumentBuilder {
     /**
      * Sets the default argument.
@@ -3495,7 +3495,7 @@ exports["default"] = UnityCommandBuilder;
 
 /***/ }),
 
-/***/ 322:
+/***/ 25:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require2_) {
 
 "use strict";
@@ -3512,9 +3512,10 @@ class UnityUtils {
      *
      * @param os platform name (e.g. os.platform())
      * @param unityVersion Unity version
+     * @param installDirectory Unity Hub install directory
      * @returns Execute path
      */
-    static GetExecutePath(os, unityVersion) {
+    static GetExecutePath(os, unityVersion, installDirectory) {
         switch (os) {
             default:
                 throw new Error('Unsupported platform.');
@@ -3526,7 +3527,12 @@ class UnityUtils {
                     return `/Applications/Unity/Hub/Editor/${unityVersion}/Unity.app/Contents/MacOS/Unity`;
                 }
             case 'win32':
-                return `"C:\\Program Files\\Unity\\Hub\\Editor\\${unityVersion}\\Editor\\Unity.exe"`;
+                if (!installDirectory) {
+                    return `"C:\\Program Files\\Unity\\Hub\\Editor\\${unityVersion}\\Editor\\Unity.exe"`;
+                }
+                else {
+                    return `"${installDirectory}\\${unityVersion}\\Editor\\Unity.exe"`;
+                }
         }
     }
     /**
@@ -3551,7 +3557,7 @@ exports["default"] = UnityUtils;
 
 /***/ }),
 
-/***/ 177:
+/***/ 860:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require2_) {
 
 "use strict";
@@ -3561,9 +3567,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UnityCommandBuilder = exports.UnityUtils = void 0;
-var UnityUtils_1 = __nccwpck_require2_(322);
+var UnityUtils_1 = __nccwpck_require2_(25);
 Object.defineProperty(exports, "UnityUtils", ({ enumerable: true, get: function () { return __importDefault(UnityUtils_1).default; } }));
-var UnityCommandBuilder_1 = __nccwpck_require2_(245);
+var UnityCommandBuilder_1 = __nccwpck_require2_(323);
 Object.defineProperty(exports, "UnityCommandBuilder", ({ enumerable: true, get: function () { return __importDefault(UnityCommandBuilder_1).default; } }));
 
 
@@ -3627,7 +3633,7 @@ module.exports = __nccwpck_require__(1017);
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require2_(177);
+/******/ 	var __webpack_exports__ = __nccwpck_require2_(860);
 /******/ 	module.exports = __webpack_exports__;
 /******/ 	
 /******/ })()
@@ -9557,14 +9563,17 @@ async function BuildUnityProject(outputDirectory) {
         core.endGroup();
     }
     if (!!core.getInput('additional-arguments')) {
-        builder.Append(core.getInput('additional-arguments').split(' '));
+        builder.Append(core.getInput('additional-arguments'));
     }
     var version = core.getInput('unity-version');
-    if (version === 'project') {
+    if (!version) {
+        throw new Error('Unity version is not specified.');
+    }
+    else if (version === 'project') {
         version = await unity_command_1.UnityUtils.GetVersion(core.getInput('project-directory'));
     }
     core.startGroup('Run Unity');
-    await exec.exec(unity_command_1.UnityUtils.GetExecutePath(os.platform(), version), builder.Build());
+    await exec.exec(unity_command_1.UnityUtils.GetExecutePath(os.platform(), version, core.getInput('install-directory')), builder.Build());
     core.endGroup();
 }
 async function Run() {

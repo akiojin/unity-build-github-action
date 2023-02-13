@@ -120,17 +120,19 @@ async function BuildUnityProject(outputDirectory: string)
     }
 
     if (!!core.getInput('additional-arguments')) {
-        builder.Append(core.getInput('additional-arguments').split(' '))
+        builder.Append(core.getInput('additional-arguments'))
     }
 
     var version = core.getInput('unity-version')
 
-    if (version === 'project') {
+    if (!version) {
+        throw new Error('Unity version is not specified.')
+    } else if (version === 'project') {
         version = await UnityUtils.GetVersion(core.getInput('project-directory'))
     }
 
     core.startGroup('Run Unity')
-    await exec.exec(UnityUtils.GetExecutePath(os.platform(), version), builder.Build())
+    await exec.exec(UnityUtils.GetExecutePath(os.platform(), version, core.getInput('install-directory')), builder.Build())
     core.endGroup()
 }
 
