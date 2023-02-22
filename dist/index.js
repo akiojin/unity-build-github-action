@@ -9533,7 +9533,7 @@ function GetOutputPath() {
         case 'win64':
             return `${outputPath}.exe`;
         case 'osxuniversal':
-            return `${outputPath}.app`;
+            return `${outputPath}.app.zip`;
     }
     throw Error(`Not supported platform. Target=${buildTarget}`);
 }
@@ -9579,11 +9579,18 @@ async function BuildUnityProject(outputDirectory) {
 async function Run() {
     try {
         const isiOS = core.getInput('build-target').toLowerCase() === 'ios';
+        const ismacOS = core.getInput('build-target').toLowerCase() === 'osxuniversal';
+        const isWindows = core.getInput('build-target').toLowerCase().startsWith('win');
         const outputDirectory = core.getInput(!!isiOS ? 'temporary-directory' : 'output-directory');
         await io.mkdirP(outputDirectory);
         await BuildUnityProject(outputDirectory);
         if (!!isiOS && (!!core.getInput('team-id') && !!core.getInput('provisioning-profile-uuid'))) {
             await ExportIPA(core.getInput('temporary-directory'), core.getInput('output-directory'));
+        }
+        else if (!!ismacOS) {
+            await exec.exec('zip', ['-ry', GetOutputPath(), path_1.default.join(core.getInput('output-directory'), core.getInput('output-name'), '.app')]);
+        }
+        else if (!!isWindows) {
         }
         core.setOutput('output-path', GetOutputPath());
         core.info(`Output Path: ${GetOutputPath()}`);
