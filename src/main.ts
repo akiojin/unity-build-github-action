@@ -152,7 +152,7 @@ async function Run()
                 core.getInput('temporary-directory'),
                 core.getInput('output-directory'))
         } else if (!!ismacOS) {
-            await exec.exec('zip', ['-ry', GetOutputPath(), path.join(core.getInput('output-directory'), core.getInput('output-name'), '.app')])
+            await exec.exec('zip', ['-ry', GetOutputPath(), path.join(core.getInput('output-directory'), `${core.getInput('output-name')}.app`)])
         } else if (!!isWindows) {
         }
 

@@ -9588,7 +9588,7 @@ async function Run() {
             await ExportIPA(core.getInput('temporary-directory'), core.getInput('output-directory'));
         }
         else if (!!ismacOS) {
-            await exec.exec('zip', ['-ry', GetOutputPath(), path_1.default.join(core.getInput('output-directory'), core.getInput('output-name'), '.app')]);
+            await exec.exec('zip', ['-ry', GetOutputPath(), path_1.default.join(core.getInput('output-directory'), `${core.getInput('output-name')}.app`)]);
         }
         else if (!!isWindows) {
         }
