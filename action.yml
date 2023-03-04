@@ -58,6 +58,7 @@ inputs:
   install-directory:
     description: >
       If the Unity installation location is not the default, specify the path in this parameter.
+      or in the environment variable `UNITY_HUB_INSTALL_DIRECTORY`.
       The path must exclude the version number.
       ex) E:\Unity\
     required: false
