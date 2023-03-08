@@ -1,5 +1,11 @@
 export default class UnityBuildScriptHelper
 {
+    static ToTitleCase(str?: string): string
+    {
+        str = str || '';
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+    }
+
     static GenerateUnityBuildScript(
         outputDirectory: string,
         outputFileName: string,
@@ -38,7 +44,7 @@ export default class UnityBuildScriptHelper
 #if UNITY_IOS
         const string TeamID = "${teamID}";
         const string ProvisioningProfileUUID = "${provisioningProfileUUID}";
-        const ProvisioningProfileType Type = ProvisioningProfileType.${provisioningProfileType};
+        const ProvisioningProfileType Type = ProvisioningProfileType.${this.ToTitleCase(provisioningProfileType)};
 #elif UNITY_ANDROID
         const string Keystore = @"${keystore}";
         const string KeystorePassword = "${keystorePassword}";

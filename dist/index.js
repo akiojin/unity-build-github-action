@@ -9244,6 +9244,10 @@ exports["default"] = ExportOptionsPlistHelper;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 class UnityBuildScriptHelper {
+    static ToTitleCase(str) {
+        str = str || '';
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    }
     static GenerateUnityBuildScript(outputDirectory, outputFileName, buildTarget, revision, development = false, teamID, provisioningProfileUUID, provisioningProfileType, keystore, keystorePassword, keystoreAlias, keystoreAliasPassword) {
         return `namespace unity_build_github_action
 {
@@ -9269,7 +9273,7 @@ class UnityBuildScriptHelper {
 #if UNITY_IOS
         const string TeamID = "${teamID}";
         const string ProvisioningProfileUUID = "${provisioningProfileUUID}";
-        const ProvisioningProfileType Type = ProvisioningProfileType.${provisioningProfileType};
+        const ProvisioningProfileType Type = ProvisioningProfileType.${this.ToTitleCase(provisioningProfileType)};
 #elif UNITY_ANDROID
         const string Keystore = @"${keystore}";
         const string KeystorePassword = "${keystorePassword}";
