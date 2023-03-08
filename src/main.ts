@@ -125,8 +125,6 @@ async function BuildUnityProject(outputDirectory: string)
     var version = core.getInput('unity-version')
 
     if (!version) {
-        throw new Error('Unity version is not specified.')
-    } else if (version === 'project') {
         version = await UnityUtils.GetCurrentUnityVersion(core.getInput('project-directory'))
     }
 
