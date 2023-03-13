@@ -15,6 +15,7 @@ export default class UnityBuildScriptHelper
         teamID?: string,
         provisioningProfileUUID?: string,
         provisioningProfileType?: string,
+        enableBitcode?: boolean,
         keystore?: string,
         keystorePassword?: string,
         keystoreAlias?: string,
@@ -32,9 +33,12 @@ export default class UnityBuildScriptHelper
 #endif
     using UnityEditor.Build.Reporting;
     using UnityEngine;
+    using UnityEditor.iOS.Xcode;
 
-    public class UnityBuildScript
+    public class UnityBuildScript : IPostprocessBuildWithReport
     {
+        public int callbackOrder => -100;
+
         const string OutputFileName = "${outputFileName}";
         const string OutputDirectory = @"${outputDirectory}";
         const string Target = "${buildTarget}";
@@ -76,6 +80,23 @@ export default class UnityBuildScriptHelper
 #else
             => string.Empty;
 #endif
+
+        public void OnPostprocessBuild(BuildReport report)
+        {
+            if (report.summary.platform != UnityEditor.BuildTarget.iOS) {
+                return;
+            }
+
+            var pbxPath = PBXProject.GetPBXProjectPath(report.summary.outputPath);
+            var project = new PBXProject();
+            project.ReadFromString(File.ReadAllText(pbxPath));
+
+            project.SetBuildProperty(project.GetUnityMainTargetGuid(), "ENABLE_BITCODE", "${enableBitcode ? 'YES' : 'NO'}");
+            project.SetBuildProperty(project.GetUnityFrameworkTargetGuid(), "ENABLE_BITCODE", "${enableBitcode ? 'YES' : 'NO'}");
+            project.SetBuildProperty(project.GetUnityFrameworkTargetGuid(), "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", "NO");
+
+            File.WriteAllText(pbxPath, project.WriteToString());
+        }
 
         static BuildOptions GetBuildOptions()
         {

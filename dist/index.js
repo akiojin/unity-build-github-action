@@ -9248,7 +9248,7 @@ class UnityBuildScriptHelper {
         str = str || '';
         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
     }
-    static GenerateUnityBuildScript(outputDirectory, outputFileName, buildTarget, revision, development = false, teamID, provisioningProfileUUID, provisioningProfileType, keystore, keystorePassword, keystoreAlias, keystoreAliasPassword) {
+    static GenerateUnityBuildScript(outputDirectory, outputFileName, buildTarget, revision, development = false, teamID, provisioningProfileUUID, provisioningProfileType, enableBitcode, keystore, keystorePassword, keystoreAlias, keystoreAliasPassword) {
         return `namespace unity_build_github_action
 {
     using System;
@@ -9261,9 +9261,12 @@ class UnityBuildScriptHelper {
 #endif
     using UnityEditor.Build.Reporting;
     using UnityEngine;
+    using UnityEditor.iOS.Xcode;
 
-    public class UnityBuildScript
+    public class UnityBuildScript : IPostprocessBuildWithReport
     {
+        public int callbackOrder => -100;
+
         const string OutputFileName = "${outputFileName}";
         const string OutputDirectory = @"${outputDirectory}";
         const string Target = "${buildTarget}";
@@ -9305,6 +9308,23 @@ class UnityBuildScriptHelper {
 #else
             => string.Empty;
 #endif
+
+        public void OnPostprocessBuild(BuildReport report)
+        {
+            if (report.summary.platform != UnityEditor.BuildTarget.iOS) {
+                return;
+            }
+
+            var pbxPath = PBXProject.GetPBXProjectPath(report.summary.outputPath);
+            var project = new PBXProject();
+            project.ReadFromString(File.ReadAllText(pbxPath));
+
+            project.SetBuildProperty(project.GetUnityMainTargetGuid(), "ENABLE_BITCODE", "${enableBitcode ? 'YES' : 'NO'}");
+            project.SetBuildProperty(project.GetUnityFrameworkTargetGuid(), "ENABLE_BITCODE", "${enableBitcode ? 'YES' : 'NO'}");
+            project.SetBuildProperty(project.GetUnityFrameworkTargetGuid(), "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", "NO");
+
+            File.WriteAllText(pbxPath, project.WriteToString());
+        }
 
         static BuildOptions GetBuildOptions()
         {
@@ -9599,7 +9619,7 @@ async function BuildUnityProject(outputDirectory) {
             keystore = tmp.tmpNameSync() + '.keystore';
             await fs.writeFile(keystore, Buffer.from(core.getInput('keystore-base64'), 'base64'));
         }
-        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(outputDirectory, core.getInput('output-name'), core.getInput('build-target'), Number(core.getInput('revision')), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('provisioning-profile-type'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
+        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(outputDirectory, core.getInput('output-name'), core.getInput('build-target'), Number(core.getInput('revision')), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('provisioning-profile-type'), core.getBooleanInput('include-bitcode'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
         const buildScriptName = 'UnityBuildScript.cs';
         const cs = path_1.default.join(core.getInput('project-directory'), 'Assets', 'Editor', buildScriptName);
         await fs.mkdir(path_1.default.dirname(cs), { recursive: true });

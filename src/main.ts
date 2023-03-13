@@ -103,6 +103,7 @@ async function BuildUnityProject(outputDirectory: string)
             core.getInput('team-id'),
             core.getInput('provisioning-profile-uuid'),
             core.getInput('provisioning-profile-type'),
+            core.getBooleanInput('include-bitcode'),
             keystore,
             core.getInput('keystore-password'),
             core.getInput('keystore-alias'),
