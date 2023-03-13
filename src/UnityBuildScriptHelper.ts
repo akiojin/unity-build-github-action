@@ -93,6 +93,8 @@ export default class UnityBuildScriptHelper
 
             project.SetBuildProperty(project.GetUnityMainTargetGuid(), "ENABLE_BITCODE", "${enableBitcode ? 'YES' : 'NO'}");
             project.SetBuildProperty(project.GetUnityFrameworkTargetGuid(), "ENABLE_BITCODE", "${enableBitcode ? 'YES' : 'NO'}");
+            // Invalid Bundle. The bundle at 'UnityFramework.framework' contains disallowd file 'Frameworks'.
+            // https://forum.unity.com/threads/2019-3-validation-on-upload-to-store-gives-unityframework-framework-contains-disallowed-file.751112/
             project.SetBuildProperty(project.GetUnityFrameworkTargetGuid(), "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", "NO");
 
             File.WriteAllText(pbxPath, project.WriteToString());
