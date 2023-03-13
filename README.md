@@ -12,6 +12,7 @@ The following parameters are set at iOS build time.
 `ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES` is set to UnityFrameworkTarget.
 
 See also the following URL for `ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES`.
+
 https://forum.unity.com/threads/2019-3-validation-on-upload-to-store-gives-unityframework-framework-contains-disallowed-file.751112/
 
 ## Requirement
