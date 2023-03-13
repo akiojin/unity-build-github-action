@@ -1,4 +1,4 @@
-name: 'akiojin/unity-build-github-action'
+name: 'Unity Build'
 description: 'This action performs a Unity command line build.'
 inputs:
   project-directory:
