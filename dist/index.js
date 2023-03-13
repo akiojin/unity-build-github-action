@@ -9570,6 +9570,8 @@ function GetOutputPath() {
     const outputPath = path_1.default.join(core.getInput('output-directory'), core.getInput('output-name'));
     const buildTarget = core.getInput('build-target').toLowerCase();
     switch (buildTarget) {
+        default:
+            throw Error(`Not supported platform. Target=${buildTarget}`);
         case 'ios':
             return `${outputPath}.ipa`;
         case 'android':
@@ -9578,9 +9580,8 @@ function GetOutputPath() {
         case 'win64':
             return `${outputPath}.exe`;
         case 'osxuniversal':
-            return `${outputPath}.app.zip`;
+            return `${outputPath}.app`;
     }
-    throw Error(`Not supported platform. Target=${buildTarget}`);
 }
 async function BuildUnityProject(outputDirectory) {
     const builder = new unity_command_1.UnityCommandBuilder()

@@ -60,6 +60,8 @@ function GetOutputPath(): string
     const buildTarget = core.getInput('build-target').toLowerCase()
 
     switch (buildTarget) {
+    default:
+        throw Error(`Not supported platform. Target=${buildTarget}`)
     case 'ios':
         return `${outputPath}.ipa`
     case 'android':
@@ -68,10 +70,8 @@ function GetOutputPath(): string
     case 'win64':
         return `${outputPath}.exe`
     case 'osxuniversal':
-        return `${outputPath}.app.zip`
+        return `${outputPath}.app`
     }
-
-    throw Error(`Not supported platform. Target=${buildTarget}`)
 }
 
 async function BuildUnityProject(outputDirectory: string)
