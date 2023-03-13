@@ -1,6 +1,6 @@
 {
   "name": "@akiojin/unity-bulid-github-action",
-  "version": "3.6.0",
+  "version": "3.6.1",
   "description": "",
   "main": "dist/index.js",
   "repository": {
