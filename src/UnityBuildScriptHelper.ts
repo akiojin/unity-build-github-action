@@ -28,12 +28,10 @@ export default class UnityBuildScriptHelper
     using System.Linq;
     using System.Text;
     using UnityEditor;
-#if UNITY_2022_1_OR_NEWER
     using UnityEditor.Build;
-#endif
     using UnityEditor.Build.Reporting;
-    using UnityEngine;
     using UnityEditor.iOS.Xcode;
+    using UnityEngine;
 
     public class UnityBuildScript : IPostprocessBuildWithReport
     {
