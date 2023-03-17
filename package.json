@@ -4,7 +4,7 @@
   "description": "This action builds Unity and outputs ipa for iOS and apk/aab for Android.",
   "main": "dist/index.js",
   "scripts": {
-    "build": "npm install && ncc build src/main.ts -o dist --license licenses.txt",
+    "build": "npm install && ncc build src/main.ts --license licenses.txt",
     "clean": "rimraf dist && rimraf node_modules && npm cache clean --force"
   },
   "repository": {
