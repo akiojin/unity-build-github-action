@@ -17,7 +17,7 @@ brew install fastlane
 
 ### Simple usage
 
-#### iOS builds
+#### iOS build
 
 ```yml
 - uses: akiojin/unity-build-github-action@v3
