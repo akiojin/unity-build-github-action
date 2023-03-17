@@ -3,18 +3,6 @@
 This action builds Unity and outputs ipa for iOS and apk/aab for Android.
 Supported version is Unity 2021.3 or later.
 
-The following parameters are set at iOS build time.
-
-- `ENABLE_BITCODE`
-- `ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES`
-
-`ENABLE_BITOCODE` is set for UnityMainTarget and UnityFrameworkTarget.
-`ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES` is set to UnityFrameworkTarget.
-
-See also the following URL for `ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES`.
-
-https://forum.unity.com/threads/2019-3-validation-on-upload-to-store-gives-unityframework-framework-contains-disallowed-file.751112/
-
 ## Requirement
 
 You will need to install [fastlane][1]
@@ -122,6 +110,20 @@ brew install fastlane
 |keystore-password|`false`|`string`|""|Specify the password for the keystore.|
 |keystore-alias|`false`|`string`|""|Specifies the name of the keystore alias.|
 |keystore-alias-password|`false`|`string`|""|Specify the password for the keystore alias.|
+
+## iOS build
+
+The following parameters are set at iOS build time.
+
+- `ENABLE_BITCODE`
+- `ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES`
+
+`ENABLE_BITOCODE` is set for UnityMainTarget and UnityFrameworkTarget.
+`ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES` is set to UnityFrameworkTarget.
+
+See also the following URL for `ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES`.
+
+https://forum.unity.com/threads/2019-3-validation-on-upload-to-store-gives-unityframework-framework-contains-disallowed-file.751112/
 
 ## License
 

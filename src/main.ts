@@ -9,6 +9,30 @@ import { ArgumentBuilder } from '@akiojin/argument-builder'
 import UnityBuildScriptHelper from './UnityBuildScriptHelper'
 import ExportOptionsPlistHelper from './ExportOptionsPlistHelper'
 
+function GetBuildTarget()
+{
+    const buildTarget = core.getInput('build-target')
+
+    switch (buildTarget.toLowerCase()) {
+    default:
+        throw Error(`Not supported platform. Target=${buildTarget}`)
+    case 'ios':
+    case 'iphone':
+        return 'iOS'
+    case 'android':
+        return 'Android'
+    case 'windows':
+    case 'win':
+    case 'win64':
+        return 'Win64'
+    case 'mac':
+    case 'macos':
+    case 'osx':
+    case 'osxuniversal':
+        return 'OSXUniversal'
+    }
+}
+
 async function ExportIPA(
     projectDirectory: string,
     outputDirectory: string): Promise<void>
@@ -57,19 +81,15 @@ async function ExportIPA(
 function GetOutputPath(): string
 {
     const outputPath = path.join(core.getInput('output-directory'), core.getInput('output-name'))
-    const buildTarget = core.getInput('build-target').toLowerCase()
 
-    switch (buildTarget) {
-    default:
-        throw Error(`Not supported platform. Target=${buildTarget}`)
-    case 'ios':
+    switch (GetBuildTarget()) {
+    case 'iOS':
         return `${outputPath}.ipa`
-    case 'android':
+    case 'Android':
         return `${outputPath}.aab`
-    case 'win':
-    case 'win64':
+    case 'Win64':
         return `${outputPath}.exe`
-    case 'osxuniversal':
+    case 'OSXUniversal':
         return `${outputPath}.app`
     }
 }
@@ -137,7 +157,7 @@ async function BuildUnityProject(outputDirectory: string)
 async function Run()
 {
     try {
-        const isiOS = core.getInput('build-target').toLowerCase() === 'ios'
+        const isiOS = GetBuildTarget() === 'iOS'
         const outputDirectory = core.getInput(!!isiOS ? 'temporary-directory' : 'output-directory')
 
         await io.mkdirP(outputDirectory);
