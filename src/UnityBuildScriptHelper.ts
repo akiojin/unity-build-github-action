@@ -30,7 +30,9 @@ export default class UnityBuildScriptHelper
     using UnityEditor;
     using UnityEditor.Build;
     using UnityEditor.Build.Reporting;
+#if UNITY_IOS
     using UnityEditor.iOS.Xcode;
+#endif
     using UnityEngine;
 
     public class UnityBuildScript : IPostprocessBuildWithReport
