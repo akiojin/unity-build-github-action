@@ -9,7 +9,7 @@ import { ArgumentBuilder } from '@akiojin/argument-builder'
 import UnityBuildScriptHelper from './UnityBuildScriptHelper'
 import ExportOptionsPlistHelper from './ExportOptionsPlistHelper'
 
-function GetBuildTarget()
+function ConvertBuildTargetToUnityBuildTarget()
 {
     const buildTarget = core.getInput('build-target')
 
@@ -82,7 +82,7 @@ function GetOutputPath(): string
 {
     const outputPath = path.join(core.getInput('output-directory'), core.getInput('output-name'))
 
-    switch (GetBuildTarget()) {
+    switch (ConvertBuildTargetToUnityBuildTarget()) {
     case 'iOS':
         return `${outputPath}.ipa`
     case 'Android':
@@ -157,7 +157,7 @@ async function BuildUnityProject(outputDirectory: string)
 async function Run()
 {
     try {
-        const isiOS = GetBuildTarget() === 'iOS'
+        const isiOS = ConvertBuildTargetToUnityBuildTarget() === 'iOS'
         const outputDirectory = core.getInput(!!isiOS ? 'temporary-directory' : 'output-directory')
 
         await io.mkdirP(outputDirectory);
