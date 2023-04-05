@@ -9170,8 +9170,8 @@ class ExportOptionsPlistHelper {
      * @param stripSwiftSymbols Output Symbols?
      * @returns Path of ExportOptions.plist
      */
-    static async Export(outputDirctory, compileBitcode, uploadSymbols, stripSwiftSymbols) {
-        const script = ExportOptionsPlistHelper.Generate(compileBitcode, uploadSymbols, stripSwiftSymbols);
+    static async Export(outputDirctory, appID, provisioningProfilesName, compileBitcode, uploadSymbols, stripSwiftSymbols) {
+        const script = ExportOptionsPlistHelper.Generate(appID, provisioningProfilesName, compileBitcode, uploadSymbols, stripSwiftSymbols);
         const plist = path_1.default.join(outputDirctory, 'ExportOptions.plist');
         await fs.writeFile(plist, script);
         core.startGroup('Generate "ExportOptions.plist"');
@@ -9179,19 +9179,26 @@ class ExportOptionsPlistHelper {
         core.endGroup();
         return plist;
     }
-    static Generate(compileBitcode, uploadSymbols, stripSwiftSymbols) {
+    static Generate(appID, provisioningProfilesName, compileBitcode, uploadSymbols, stripSwiftSymbols) {
         return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
     <key>compileBitcode</key>
     <${compileBitcode}/>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>${appID}</key>
+        <string>${provisioningProfilesName}</string>
+    </dict>
+    <key>thinning</key>
+    <string>&lt;none&gt;</string>
+    <key>uploadBitcode</key>
+    <${compileBitcode}/>
     <key>uploadSymbols</key>
     <${uploadSymbols}/>
     <key>stripSwiftSymbols</key>
     <${stripSwiftSymbols}/>
-    <key>thinning</key>
-    <string>&lt;none&gt;</string>
   </dict>
 </plist>`;
     }
@@ -9222,7 +9229,9 @@ class UnityBuildScriptHelper {
     using UnityEditor;
     using UnityEditor.Build;
     using UnityEditor.Build.Reporting;
+#if UNITY_IOS
     using UnityEditor.iOS.Xcode;
+#endif
     using UnityEngine;
 
     public class UnityBuildScript : IPostprocessBuildWithReport
@@ -9288,6 +9297,10 @@ class UnityBuildScriptHelper {
             project.SetBuildProperty(project.GetUnityFrameworkTargetGuid(), "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", "NO");
 
             File.WriteAllText(pbxPath, project.WriteToString());
+
+            Debug.Log($"PBX Project: {pbxPath}");
+            Debug.Log($"ENABLE_BITCODE: ${enableBitcode}");
+            Debug.Log($"ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: NO");
         }
 
         static BuildOptions GetBuildOptions()
@@ -9517,7 +9530,7 @@ const unity_command_1 = __nccwpck_require__(9088);
 const argument_builder_1 = __nccwpck_require__(782);
 const UnityBuildScriptHelper_1 = __importDefault(__nccwpck_require__(8646));
 const ExportOptionsPlistHelper_1 = __importDefault(__nccwpck_require__(6799));
-function GetBuildTarget() {
+function ConvertBuildTargetToUnityBuildTarget() {
     const buildTarget = core.getInput('build-target');
     switch (buildTarget.toLowerCase()) {
         default:
@@ -9541,7 +9554,7 @@ function GetBuildTarget() {
 async function ExportIPA(projectDirectory, outputDirectory) {
     const includeBitcode = core.getBooleanInput('include-bitcode');
     const includeSymbols = core.getBooleanInput('include-symbols');
-    const plist = await ExportOptionsPlistHelper_1.default.Export(core.getInput('temporary-directory'), includeBitcode, !includeSymbols, core.getBooleanInput('strip-swift-symbols'));
+    const plist = await ExportOptionsPlistHelper_1.default.Export(core.getInput('temporary-directory'), core.getInput('app-id'), core.getInput('provisioning-profile-name'), includeBitcode, !includeSymbols, core.getBooleanInput('strip-swift-symbols'));
     const builder = new argument_builder_1.ArgumentBuilder()
         .Append('gym')
         .Append('--scheme', 'Unity-iPhone')
@@ -9555,7 +9568,8 @@ async function ExportIPA(projectDirectory, outputDirectory) {
         .Append('--export_options', plist)
         .Append('--skip_build_archive', `false`)
         .Append('--sdk', 'iphoneos')
-        .Append('--export_team_id', core.getInput('team-id'));
+        .Append('--export_team_id', core.getInput('team-id'))
+        .Append('--skip_profile_detection');
     try {
         const workspace = path_1.default.join(projectDirectory, 'Unity-iPhone.xcworkspace');
         await fs.access(workspace);
@@ -9573,7 +9587,7 @@ async function ExportIPA(projectDirectory, outputDirectory) {
 }
 function GetOutputPath() {
     const outputPath = path_1.default.join(core.getInput('output-directory'), core.getInput('output-name'));
-    switch (GetBuildTarget()) {
+    switch (ConvertBuildTargetToUnityBuildTarget()) {
         case 'iOS':
             return `${outputPath}.ipa`;
         case 'Android':
@@ -9622,7 +9636,7 @@ async function BuildUnityProject(outputDirectory) {
 }
 async function Run() {
     try {
-        const isiOS = GetBuildTarget() === 'iOS';
+        const isiOS = ConvertBuildTargetToUnityBuildTarget() === 'iOS';
         const outputDirectory = core.getInput(!!isiOS ? 'temporary-directory' : 'output-directory');
         await io.mkdirP(outputDirectory);
         await BuildUnityProject(outputDirectory);

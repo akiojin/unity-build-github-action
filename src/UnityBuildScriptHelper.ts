@@ -95,6 +95,10 @@ export default class UnityBuildScriptHelper
             project.SetBuildProperty(project.GetUnityFrameworkTargetGuid(), "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", "NO");
 
             File.WriteAllText(pbxPath, project.WriteToString());
+
+            Debug.Log($"PBX Project: {pbxPath}");
+            Debug.Log($"ENABLE_BITCODE: ${enableBitcode}");
+            Debug.Log($"ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: NO");
 #endif
         }
 
