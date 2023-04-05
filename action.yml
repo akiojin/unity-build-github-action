@@ -1,6 +1,12 @@
 name: 'Unity Build'
 description: 'This action performs a Unity command line build.'
 inputs:
+  app-id:
+    description: >
+      Specify the App ID.
+
+      ex) com.akiojin.Sample
+    required: true
   project-directory:
     description: >
       Open the project at the given path. If the pathname contains spaces, enclose it in quotes.
@@ -107,6 +113,12 @@ inputs:
   provisioning-profile-uuid:
     description: >
       Specify the UUID of the provisioning profile.
+      Required for iOS builds.
+    required: false
+    default: ''
+  provisioning-profile-name:
+    description: >
+      Specify the Name of the provisioning profile.
       Required for iOS builds.
     required: false
     default: ''

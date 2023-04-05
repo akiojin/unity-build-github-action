@@ -15,12 +15,20 @@ export default class ExportOptionsPlistHelper
      */
     static async Export(
         outputDirctory: string,
+        appID: string,
+        provisioningProfilesName: string,
         compileBitcode: boolean,
         uploadSymbols: boolean,
         stripSwiftSymbols: boolean): Promise<string>
     {
-        const script = ExportOptionsPlistHelper.Generate(compileBitcode, uploadSymbols, stripSwiftSymbols)
+        const script = ExportOptionsPlistHelper.Generate(
+            appID,
+            provisioningProfilesName,
+            compileBitcode,
+            uploadSymbols,
+            stripSwiftSymbols)
         const plist = path.join(outputDirctory, 'ExportOptions.plist')
+
         await fs.writeFile(plist, script)
     
         core.startGroup('Generate "ExportOptions.plist"')
@@ -31,6 +39,8 @@ export default class ExportOptionsPlistHelper
     }
     
     static Generate(
+        appID: string,
+        provisioningProfilesName: string,
         compileBitcode: boolean,
         uploadSymbols: boolean,
         stripSwiftSymbols: boolean): string
@@ -41,12 +51,19 @@ export default class ExportOptionsPlistHelper
   <dict>
     <key>compileBitcode</key>
     <${compileBitcode}/>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>${appID}</key>
+        <string>${provisioningProfilesName}</string>
+    </dict>
+    <key>thinning</key>
+    <string>&lt;none&gt;</string>
+    <key>uploadBitcode</key>
+    <${compileBitcode}/>
     <key>uploadSymbols</key>
     <${uploadSymbols}/>
     <key>stripSwiftSymbols</key>
     <${stripSwiftSymbols}/>
-    <key>thinning</key>
-    <string>&lt;none&gt;</string>
   </dict>
 </plist>`;
     }
