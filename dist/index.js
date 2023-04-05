@@ -9282,10 +9282,7 @@ class UnityBuildScriptHelper {
 
         public void OnPostprocessBuild(BuildReport report)
         {
-            if (report.summary.platform != UnityEditor.BuildTarget.iOS) {
-                return;
-            }
-
+#if UNITY_IOS
             var pbxPath = PBXProject.GetPBXProjectPath(report.summary.outputPath);
             var project = new PBXProject();
             project.ReadFromString(File.ReadAllText(pbxPath));
@@ -9301,6 +9298,7 @@ class UnityBuildScriptHelper {
             Debug.Log($"PBX Project: {pbxPath}");
             Debug.Log($"ENABLE_BITCODE: ${enableBitcode}");
             Debug.Log($"ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: NO");
+#endif
         }
 
         static BuildOptions GetBuildOptions()
