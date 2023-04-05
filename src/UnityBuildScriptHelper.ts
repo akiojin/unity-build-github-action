@@ -83,10 +83,7 @@ export default class UnityBuildScriptHelper
 
         public void OnPostprocessBuild(BuildReport report)
         {
-            if (report.summary.platform != UnityEditor.BuildTarget.iOS) {
-                return;
-            }
-
+#if UNITY_IOS
             var pbxPath = PBXProject.GetPBXProjectPath(report.summary.outputPath);
             var project = new PBXProject();
             project.ReadFromString(File.ReadAllText(pbxPath));
@@ -98,6 +95,7 @@ export default class UnityBuildScriptHelper
             project.SetBuildProperty(project.GetUnityFrameworkTargetGuid(), "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", "NO");
 
             File.WriteAllText(pbxPath, project.WriteToString());
+#endif
         }
 
         static BuildOptions GetBuildOptions()
