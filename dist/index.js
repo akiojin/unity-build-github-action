@@ -9554,7 +9554,7 @@ function ConvertBuildTargetToUnityBuildTarget() {
 async function ExportIPA(projectDirectory, outputDirectory) {
     const includeBitcode = core.getBooleanInput('include-bitcode');
     const includeSymbols = core.getBooleanInput('include-symbols');
-    const plist = await ExportOptionsPlistHelper_1.default.Export(core.getInput('app-id'), core.getInput('provisioning-profile-name'), core.getInput('temporary-directory'), includeBitcode, !includeSymbols, core.getBooleanInput('strip-swift-symbols'));
+    const plist = await ExportOptionsPlistHelper_1.default.Export(core.getInput('temporary-directory'), core.getInput('app-id'), core.getInput('provisioning-profile-name'), includeBitcode, !includeSymbols, core.getBooleanInput('strip-swift-symbols'));
     const builder = new argument_builder_1.ArgumentBuilder()
         .Append('gym')
         .Append('--scheme', 'Unity-iPhone')
