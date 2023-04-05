@@ -41,9 +41,9 @@ async function ExportIPA(
     const includeSymbols = core.getBooleanInput('include-symbols');
 
     const plist = await ExportOptionsPlistHelper.Export(
+        core.getInput('temporary-directory'),
         core.getInput('app-id'),
         core.getInput('provisioning-profile-name'),
-        core.getInput('temporary-directory'),
         includeBitcode,
         !includeSymbols,
         core.getBooleanInput('strip-swift-symbols'))
