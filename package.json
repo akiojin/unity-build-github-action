@@ -1,6 +1,6 @@
 {
   "name": "@akiojin/unity-bulid-github-action",
-  "version": "3.7.2",
+  "version": "3.7.3",
   "description": "This action builds Unity and outputs ipa for iOS and apk/aab for Android.",
   "main": "dist/index.js",
   "scripts": {
