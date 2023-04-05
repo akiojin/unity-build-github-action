@@ -9568,7 +9568,8 @@ async function ExportIPA(projectDirectory, outputDirectory) {
         .Append('--export_options', plist)
         .Append('--skip_build_archive', `false`)
         .Append('--sdk', 'iphoneos')
-        .Append('--export_team_id', core.getInput('team-id'));
+        .Append('--export_team_id', core.getInput('team-id'))
+        .Append('--skip_profile_detection');
     try {
         const workspace = path_1.default.join(projectDirectory, 'Unity-iPhone.xcworkspace');
         await fs.access(workspace);
