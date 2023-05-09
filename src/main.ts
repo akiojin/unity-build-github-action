@@ -172,8 +172,10 @@ async function Run()
                 core.getInput('output-directory'))
         }
 
-        core.setOutput('output-path', GetOutputPath())
-        core.info(`Output Path: ${GetOutputPath()}`)
+        const outputPath = GetOutputPath()
+        core.setOutput('output-path', outputPath)
+        core.exportVariable('UNITY_BUILD_OUTPUT_PATH', outputPath)
+        core.info(`Output Path: ${outputPath}`)
     } catch (ex: any) {
         core.setFailed(ex.message)
     }

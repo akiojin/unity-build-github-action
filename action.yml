@@ -1,23 +1,17 @@
 name: 'Unity Build'
 description: 'This action performs a Unity command line build.'
 inputs:
+  additional-arguments:
+    description: >
+      Specify additional required arguments.
+    required: false
+    default: ''
   app-id:
     description: >
       Specify the App ID.
 
       ex) com.akiojin.Sample
     required: true
-  project-directory:
-    description: >
-      Open the project at the given path. If the pathname contains spaces, enclose it in quotes.
-    required: false
-    default: ${{ github.workspace }}
-  unity-version:
-    description: >
-      Specify the Unity version to be used.
-      If omitted, the project version is used.
-    required: false
-    default: ''
   build-target:
     description: >
       Allows the selection of an active build target before loading a project.
@@ -25,13 +19,6 @@ inputs:
       Possible options are:
       Standalone, Win, Win64, OSXUniversal, Linux, Linux64, LinuxUniversal, iOS, Android, Web, WebStreamed, WebGL, XboxOne, PS4, WindowsStoreApps, Switch, N3DS, tvOS.
     required: true
-  revision:
-    description: >
-      Specify the revision.
-      This value is set to PlayerSettings.iOS.buildNumber or PlayerSettings.Android.bundleVersionCode.
-      If omitted, github.run_number is set.
-    required: false
-    default: ${{ github.run_number }}
   configuration:
     description: >
       The configuration to use when building the app.
@@ -41,19 +28,6 @@ inputs:
       Debug, Release.
     required: false
     default: 'Debug'
-  output-directory:
-    description: >
-      Specifies the output directory.
-      If omitted, runner.temp is set.
-    required: false
-    default: ${{ runner.temp }}
-  output-name:
-    description: >
-      Specifies the output file name.
-      If an empty string is passed for this value, the product name or "ProductName" specified in the Unity Editor will be used.
-      Defaults to "Build"
-    required: false
-    default: 'Build'
   execute-method:
     description: >
       Execute the static method as soon as Unity opens the project,
@@ -75,9 +49,35 @@ inputs:
       On Windows, specify - option to make the output go to stdout, which is not the console by default.
     required: false
     default: '-'
-  additional-arguments:
+  output-directory:
     description: >
-      Specify additional required arguments.
+      Specifies the output directory.
+      If omitted, runner.temp is set.
+    required: false
+    default: ${{ runner.temp }}
+  output-name:
+    description: >
+      Specifies the output file name.
+      If an empty string is passed for this value, the product name or "ProductName" specified in the Unity Editor will be used.
+      Defaults to "Build"
+    required: false
+    default: 'Build'
+  project-directory:
+    description: >
+      Open the project at the given path. If the pathname contains spaces, enclose it in quotes.
+    required: false
+    default: ${{ github.workspace }}
+  revision:
+    description: >
+      Specify the revision.
+      This value is set to PlayerSettings.iOS.buildNumber or PlayerSettings.Android.bundleVersionCode.
+      If omitted, github.run_number is set.
+    required: false
+    default: ${{ github.run_number }}
+  unity-version:
+    description: >
+      Specify the Unity version to be used.
+      If omitted, the project version is used.
     required: false
     default: ''
   export-method:
@@ -100,12 +100,6 @@ inputs:
       Required for iOS builds.
     required: false
     default: false
-  strip-swift-symbols:
-    description: >
-      If set to true, it will truncate symbols from the Swift library in the IPA file,
-      reducing the size of the IPA file.
-    required: false
-    default: true
   provisioning-profile-base64:
     description: ''
     required: false
@@ -130,17 +124,44 @@ inputs:
       Valid values are: Automatic, Development, Distribution
     required: false
     default: 'Automatic'
+  strip-swift-symbols:
+    description: >
+      If set to true, it will truncate symbols from the Swift library in the IPA file,
+      reducing the size of the IPA file.
+      Used during iOS build.
+    required: false
+    default: true
   team-id:
     description: >
       The ID of your Developer Portal team if you're in multiple teams.
-      Required for iOS builds.
+      Required for iOS build.
     required: false
     default: ''
+  temporary-directory:
+    description: >
+      Specify a temporary folder for the Xcode project files that Unity outputs during iOS build.
+      No change is required unless there is a specific reason.
+    required: false
+    default: ${{ runner.temp }}/temp
   keystore:
     description: >
       Specify the path to the keystore file.
       If a custom keystore is used, it must be specified; however, if it is included in the project settings in advance, it need not be specified.
       If you use a custom keystore, you must specify `keystore-password`, `keystore-alias`, and `keystore-alias-password`.
+      Used during Android build.
+    required: false
+    default: ''
+  keystore-alias:
+    description: >
+      Specifies the name of the keystore alias.
+      If a custom keystore is used, it must be specified.
+      Used during Android build.
+    required: false
+    default: ''
+  keystore-alias-password:
+    description: >
+      Specify the password for the keystore alias.
+      If a custom keystore is used, it must be specified.
       Used during Android build.
     required: false
     default: ''
@@ -159,26 +180,6 @@ inputs:
       Used during Android build.
     required: false
     default: ''
-  keystore-alias:
-    description: >
-      Specifies the name of the keystore alias.
-      If a custom keystore is used, it must be specified.
-      Used during Android build.
-    required: false
-    default: ''
-  keystore-alias-password:
-    description: >
-      Specify the password for the keystore alias.
-      If a custom keystore is used, it must be specified.
-      Used during Android build.
-    required: false
-    default: ''
-  temporary-directory:
-    description: >
-      Specify a temporary folder for the Xcode project files that Unity outputs during iOS build.
-      No change is required unless there is a specific reason.
-    required: false
-    default: ${{ runner.temp }}/temp
 outputs:
   output-path:
     description: 'Path of the output binary'

@@ -9641,8 +9641,10 @@ async function Run() {
         if (!!isiOS && (!!core.getInput('team-id') && !!core.getInput('provisioning-profile-uuid'))) {
             await ExportIPA(core.getInput('temporary-directory'), core.getInput('output-directory'));
         }
-        core.setOutput('output-path', GetOutputPath());
-        core.info(`Output Path: ${GetOutputPath()}`);
+        const outputPath = GetOutputPath();
+        core.setOutput('output-path', outputPath);
+        core.exportVariable('UNITY_BUILD_OUTPUT_PATH', outputPath);
+        core.info(`Output Path: ${outputPath}`);
     }
     catch (ex) {
         core.setFailed(ex.message);
