@@ -8,9 +8,11 @@ export default class ExportOptionsPlistHelper
      * Output ExportOptions.plist.
      * 
      * @param outputDirctory Output directory.
-     * @param teamID Export Team ID
+     * @param appID Export App ID
+     * @param provisioningProfilesName Export Provisioning Profiles Name
      * @param compileBitcode Output Bitcode?
-     * @param stripSwiftSymbols Output Symbols?
+     * @param uploadSymbols Output Symbols?
+     * @param stripSwiftSymbols Strip Swift Symbols?
      * @returns Path of ExportOptions.plist
      */
     static async Export(
