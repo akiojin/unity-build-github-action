@@ -83,7 +83,8 @@ inputs:
   export-method:
     description: >
       Method used to export the archive.
-      Valid values are: app-store, validation, ad-hoc, package, enterprise, development, developer-id and mac-application
+      Valid values are: app-store, validation, ad-hoc, package, enterprise, development, developer-id and mac-application.
+      Required for iOS builds.
     required: false
     default: 'development'
   include-bitcode:

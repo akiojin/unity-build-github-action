@@ -115,9 +115,6 @@ export default class UnityBuildScriptHelper
 
         static void Configure()
         {
-            PlayerSettings.SetScriptingBackend(CurrentTarget, ScriptingImplementation.IL2CPP);
-            PlayerSettings.SetArchitecture(CurrentTarget, 1);
-
             EditorUserBuildSettings.development = Development;
             EditorUserBuildSettings.allowDebugging = Development;
             EditorUserBuildSettings.connectProfiler = Development;
@@ -142,6 +139,7 @@ export default class UnityBuildScriptHelper
 #elif UNITY_ANDROID
             PlayerSettings.Android.bundleVersionCode = Revision;
 
+            EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
             EditorUserBuildSettings.androidBuildType = !!Development ?
                 AndroidBuildType.Debug : AndroidBuildType.Release;
 
