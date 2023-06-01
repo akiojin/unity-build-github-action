@@ -32,11 +32,11 @@
     "@akiojin/argument-builder": "1.0.0",
     "@akiojin/unity-command": "1.2.1",
     "@commitlint/cli": "17.6.3",
-    "@commitlint/config-conventional": "17.6.1",
+    "@commitlint/config-conventional": "17.6.5",
     "@types/node": "20.1.0",
     "@vercel/ncc": "0.36.1",
     "husky": "8.0.3",
-    "rimraf": "5.0.0",
+    "rimraf": "5.0.1",
     "typescript": "5.0.4"
   },
   "private": true
