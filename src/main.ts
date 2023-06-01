@@ -9,7 +9,7 @@ import { ArgumentBuilder } from '@akiojin/argument-builder'
 import UnityBuildScriptHelper from './UnityBuildScriptHelper'
 import ExportOptionsPlistHelper from './ExportOptionsPlistHelper'
 
-function ConvertBuildTargetToUnityBuildTarget()
+function GetBuildTarget()
 {
     const buildTarget = core.getInput('build-target')
 
@@ -85,7 +85,7 @@ function GetOutputPath(): string
 {
     const outputPath = path.join(core.getInput('output-directory'), core.getInput('output-name'))
 
-    switch (ConvertBuildTargetToUnityBuildTarget()) {
+    switch (GetBuildTarget()) {
     case 'iOS':
         return `${outputPath}.ipa`
     case 'Android':
@@ -100,7 +100,7 @@ function GetOutputPath(): string
 async function BuildUnityProject(outputDirectory: string)
 {
     const builder = new UnityCommandBuilder()
-        .SetBuildTarget(core.getInput('build-target'))
+        .SetBuildTarget(GetBuildTarget())
         .SetProjectPath(core.getInput('project-directory'))
         .SetLogFile(core.getInput('log-file'))
         .EnablePackageManagerTraces()
@@ -120,7 +120,7 @@ async function BuildUnityProject(outputDirectory: string)
         const script = UnityBuildScriptHelper.GenerateUnityBuildScript(
             outputDirectory,
             core.getInput('output-name'),
-            core.getInput('build-target'),
+            GetBuildTarget(),
             Number(core.getInput('revision')),
             core.getInput('configuration').toLowerCase() === 'debug',
             core.getInput('team-id'),
@@ -157,7 +157,7 @@ async function BuildUnityProject(outputDirectory: string)
 async function Run()
 {
     try {
-        const isiOS = ConvertBuildTargetToUnityBuildTarget() === 'iOS'
+        const isiOS = GetBuildTarget() === 'iOS'
         const outputDirectory = core.getInput(!!isiOS ? 'temporary-directory' : 'output-directory')
 
         await io.mkdirP(outputDirectory);

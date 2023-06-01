@@ -9165,9 +9165,11 @@ class ExportOptionsPlistHelper {
      * Output ExportOptions.plist.
      *
      * @param outputDirctory Output directory.
-     * @param teamID Export Team ID
+     * @param appID Export App ID
+     * @param provisioningProfilesName Export Provisioning Profiles Name
      * @param compileBitcode Output Bitcode?
-     * @param stripSwiftSymbols Output Symbols?
+     * @param uploadSymbols Output Symbols?
+     * @param stripSwiftSymbols Strip Swift Symbols?
      * @returns Path of ExportOptions.plist
      */
     static async Export(outputDirctory, appID, provisioningProfilesName, compileBitcode, uploadSymbols, stripSwiftSymbols) {
@@ -9314,9 +9316,6 @@ class UnityBuildScriptHelper {
 
         static void Configure()
         {
-            PlayerSettings.SetScriptingBackend(CurrentTarget, ScriptingImplementation.IL2CPP);
-            PlayerSettings.SetArchitecture(CurrentTarget, 1);
-
             EditorUserBuildSettings.development = Development;
             EditorUserBuildSettings.allowDebugging = Development;
             EditorUserBuildSettings.connectProfiler = Development;
@@ -9341,6 +9340,7 @@ class UnityBuildScriptHelper {
 #elif UNITY_ANDROID
             PlayerSettings.Android.bundleVersionCode = Revision;
 
+            EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
             EditorUserBuildSettings.androidBuildType = !!Development ?
                 AndroidBuildType.Debug : AndroidBuildType.Release;
 
@@ -9528,7 +9528,7 @@ const unity_command_1 = __nccwpck_require__(9088);
 const argument_builder_1 = __nccwpck_require__(782);
 const UnityBuildScriptHelper_1 = __importDefault(__nccwpck_require__(8646));
 const ExportOptionsPlistHelper_1 = __importDefault(__nccwpck_require__(6799));
-function ConvertBuildTargetToUnityBuildTarget() {
+function GetBuildTarget() {
     const buildTarget = core.getInput('build-target');
     switch (buildTarget.toLowerCase()) {
         default:
@@ -9585,7 +9585,7 @@ async function ExportIPA(projectDirectory, outputDirectory) {
 }
 function GetOutputPath() {
     const outputPath = path_1.default.join(core.getInput('output-directory'), core.getInput('output-name'));
-    switch (ConvertBuildTargetToUnityBuildTarget()) {
+    switch (GetBuildTarget()) {
         case 'iOS':
             return `${outputPath}.ipa`;
         case 'Android':
@@ -9598,7 +9598,7 @@ function GetOutputPath() {
 }
 async function BuildUnityProject(outputDirectory) {
     const builder = new unity_command_1.UnityCommandBuilder()
-        .SetBuildTarget(core.getInput('build-target'))
+        .SetBuildTarget(GetBuildTarget())
         .SetProjectPath(core.getInput('project-directory'))
         .SetLogFile(core.getInput('log-file'))
         .EnablePackageManagerTraces();
@@ -9612,7 +9612,7 @@ async function BuildUnityProject(outputDirectory) {
             keystore = tmp.tmpNameSync() + '.keystore';
             await fs.writeFile(keystore, Buffer.from(core.getInput('keystore-base64'), 'base64'));
         }
-        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(outputDirectory, core.getInput('output-name'), core.getInput('build-target'), Number(core.getInput('revision')), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('provisioning-profile-type'), core.getBooleanInput('include-bitcode'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
+        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(outputDirectory, core.getInput('output-name'), GetBuildTarget(), Number(core.getInput('revision')), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('provisioning-profile-type'), core.getBooleanInput('include-bitcode'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
         const buildScriptName = 'UnityBuildScript.cs';
         const cs = path_1.default.join(core.getInput('project-directory'), 'Assets', 'Editor', buildScriptName);
         await fs.mkdir(path_1.default.dirname(cs), { recursive: true });
@@ -9624,17 +9624,15 @@ async function BuildUnityProject(outputDirectory) {
     if (!!core.getInput('additional-arguments')) {
         builder.Append(core.getInput('additional-arguments'));
     }
-    var version = core.getInput('unity-version');
-    if (!version) {
-        version = await unity_command_1.UnityUtils.GetCurrentUnityVersion(core.getInput('project-directory'));
-    }
+    const version = core.getInput('unity-version') ||
+        await unity_command_1.UnityUtils.GetCurrentUnityVersion(core.getInput('project-directory'));
     core.startGroup('Run Unity');
     await exec.exec(unity_command_1.UnityUtils.GetUnityPath(version, core.getInput('install-directory')), builder.Build());
     core.endGroup();
 }
 async function Run() {
     try {
-        const isiOS = ConvertBuildTargetToUnityBuildTarget() === 'iOS';
+        const isiOS = GetBuildTarget() === 'iOS';
         const outputDirectory = core.getInput(!!isiOS ? 'temporary-directory' : 'output-directory');
         await io.mkdirP(outputDirectory);
         await BuildUnityProject(outputDirectory);
