@@ -11990,7 +11990,6 @@ class ExportOptionsPlistHelper {
   <dict>
     <key>compileBitcode</key>
     <${compileBitcode}/>
-    <key>provisioningProfiles</key>
     <key>thinning</key>
     <string>&lt;none&gt;</string>
     <key>uploadBitcode</key>
