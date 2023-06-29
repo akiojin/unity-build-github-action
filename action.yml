@@ -114,7 +114,8 @@ inputs:
   provisioning-profile-name:
     description: >
       Specify the Name of the provisioning profile.
-      Required for iOS builds.
+      If app-id is specified, this parameter must be specified.
+      It will be enabled for iOS builds.
     required: false
     default: ''
   provisioning-profile-type:
