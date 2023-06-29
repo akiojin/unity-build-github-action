@@ -23,12 +23,22 @@ export default class ExportOptionsPlistHelper
         uploadSymbols: boolean,
         stripSwiftSymbols: boolean): Promise<string>
     {
-        const script = ExportOptionsPlistHelper.Generate(
-            appID,
-            provisioningProfilesName,
-            compileBitcode,
-            uploadSymbols,
-            stripSwiftSymbols)
+        let script;
+
+        if (!appID || !provisioningProfilesName) {
+            script = ExportOptionsPlistHelper.Generate(
+                compileBitcode,
+                uploadSymbols,
+                stripSwiftSymbols)
+        } else {
+            script = ExportOptionsPlistHelper.GenerateWithAppID(
+                appID,
+                provisioningProfilesName,
+                compileBitcode,
+                uploadSymbols,
+                stripSwiftSymbols)
+        }
+
         const plist = path.join(outputDirctory, 'ExportOptions.plist')
 
         await fs.writeFile(plist, script)
@@ -41,6 +51,30 @@ export default class ExportOptionsPlistHelper
     }
     
     static Generate(
+        compileBitcode: boolean,
+        uploadSymbols: boolean,
+        stripSwiftSymbols: boolean): string
+    {
+        return `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>compileBitcode</key>
+    <${compileBitcode}/>
+    <key>provisioningProfiles</key>
+    <key>thinning</key>
+    <string>&lt;none&gt;</string>
+    <key>uploadBitcode</key>
+    <${compileBitcode}/>
+    <key>uploadSymbols</key>
+    <${uploadSymbols}/>
+    <key>stripSwiftSymbols</key>
+    <${stripSwiftSymbols}/>
+  </dict>
+</plist>`;
+    }
+    
+    static GenerateWithAppID(
         appID: string,
         provisioningProfilesName: string,
         compileBitcode: boolean,

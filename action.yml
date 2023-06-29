@@ -11,7 +11,7 @@ inputs:
       Specify the App ID.
 
       ex) com.akiojin.Sample
-    required: true
+    required: false
   build-target:
     description: >
       Allows the selection of an active build target before loading a project.
