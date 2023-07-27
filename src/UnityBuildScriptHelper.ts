@@ -124,7 +124,6 @@ export default class UnityBuildScriptHelper
 #if UNITY_IOS
             PlayerSettings.iOS.appleEnableAutomaticSigning = false;
             PlayerSettings.iOS.buildNumber = Revision.ToString();
-            PlayerSettings.iOS.iOSManualProvisioningProfileType = Type;
 
             EditorUserBuildSettings.iOSXcodeBuildConfig = !!Development ?
                 XcodeBuildConfig.Debug : XcodeBuildConfig.Release;
@@ -134,7 +133,15 @@ export default class UnityBuildScriptHelper
             }
 
             if (!string.IsNullOrWhiteSpace(ProvisioningProfileUUID)) {
+                if (Type == ProvisioningProfileType.Automatic) {
+                    throw new Exception("Provisioning profile type is automatic, but provisioning profile UUID is specified.");
+                }
+
                 PlayerSettings.iOS.iOSManualProvisioningProfileID = ProvisioningProfileUUID;
+                PlayerSettings.iOS.iOSManualProvisioningProfileType = Type;
+            } else {
+                // The provisioning profile type will be determined automatically when building the Xcode project.
+                PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType.Automatic;
             }
 #elif UNITY_ANDROID
             PlayerSettings.Android.bundleVersionCode = Revision;
