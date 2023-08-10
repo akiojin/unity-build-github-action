@@ -8,13 +8,10 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - uses: gitboard-io/gitboard-action@main
-        with:
-          username: akiojin
-          key: ${{ secrets.GITBOARD_KEY }}
-
       - uses: actions/checkout@v3
+
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+          
       - run: npm run build
