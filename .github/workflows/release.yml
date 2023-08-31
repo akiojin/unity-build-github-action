@@ -1,0 +1,30 @@
+﻿name: Release
+
+on:
+  push:
+    tags:
+      - v*
+  workflow_run:
+    workflows:
+      - Creating a version tag
+    branches:
+      - main
+    types:
+      - completed
+
+jobs:
+  Release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: 🌱 Checkout to the branch
+        uses: actions/checkout@v3
+
+      - name: ⬆️ GitHub Release
+        run: gh release create ${{ github.ref_name }} --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

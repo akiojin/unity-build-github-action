@@ -1,11 +1,15 @@
 {
   "name": "@akiojin/unity-bulid-github-action",
-  "version": "3.8.9",
+  "version": "3.8.10",
   "description": "This action builds Unity and outputs ipa for iOS and apk/aab for Android.",
   "main": "dist/index.js",
   "scripts": {
     "build": "npm install && ncc build src/main.ts --license licenses.txt",
-    "clean": "rimraf dist && rimraf node_modules && npm cache clean --force"
+    "clean": "rimraf dist && rimraf node_modules && npm cache clean --force",
+    "dist-clean": "rimraf dist",
+    "release": "bash ./publish.sh",
+    "pre-release": "bash ./publish.sh prerelease",
+    "update": "bash ./update.sh"
   },
   "repository": {
     "type": "git",
