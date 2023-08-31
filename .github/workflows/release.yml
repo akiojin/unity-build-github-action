@@ -4,6 +4,13 @@ on:
   push:
     tags:
       - v*
+  workflow_run:
+    workflows:
+      - Creating a version tag
+    branches:
+      - main
+    types:
+      - completed
 
 jobs:
   Release:
@@ -12,8 +19,12 @@ jobs:
     permissions:
       contents: write
       packages: write
+
     steps:
-      - uses: actions/checkout@v3
-      - run: gh release create ${{ github.ref_name }} --generate-notes
+      - name: 🌱 Checkout to the branch
+        uses: actions/checkout@v3
+
+      - name: ⬆️ GitHub Release
+        run: gh release create ${{ github.ref_name }} --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
