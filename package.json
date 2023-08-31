@@ -5,7 +5,11 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "npm install && ncc build src/main.ts --license licenses.txt",
-    "clean": "rimraf dist && rimraf node_modules && npm cache clean --force"
+    "clean": "rimraf dist && rimraf node_modules && npm cache clean --force",
+    "dist-clean": "rimraf dist",
+    "release": "bash ./publish.sh",
+    "pre-release": "bash ./publish.sh prerelease",
+    "update": "bash ./update.sh"
   },
   "repository": {
     "type": "git",
