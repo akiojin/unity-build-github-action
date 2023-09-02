@@ -19,6 +19,16 @@ if [ "$ANSWER" != "Y" ] && [ "$ANSWER" != "y" ]; then
   exit 1
 fi
 
+npm run clean
+npm run build
+
+STATUS=$(git status --porcelain)
+
+if [ -n "$STATUS" ]; then
+    echo "Error: There are uncommitted files. Please commit them first."
+    exit 1
+fi
+
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 if [ "$1" != "prerelease" ]; then
