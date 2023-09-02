@@ -47,7 +47,7 @@ export default class ExportOptionsPlistHelper
         core.info(`ExportOptions.plist:\n${script}`)
         core.endGroup()
     
-        return plist;
+        return plist
     }
     
     static Generate(

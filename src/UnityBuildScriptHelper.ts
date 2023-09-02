@@ -2,7 +2,7 @@ export default class UnityBuildScriptHelper
 {
     static ToTitleCase(str?: string): string
     {
-        str = str || '';
+        str = str || ''
         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
     }
 

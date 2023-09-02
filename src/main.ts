@@ -14,7 +14,7 @@ async function ExportIPA(
     outputDirectory: string): Promise<void>
 {
     const includeBitcode = core.getBooleanInput('include-bitcode')
-    const includeSymbols = core.getBooleanInput('include-symbols');
+    const includeSymbols = core.getBooleanInput('include-symbols')
 
     const plist = await ExportOptionsPlistHelper.Export(
         core.getInput('temporary-directory'),
@@ -138,8 +138,16 @@ async function Run()
         const isiOS = UnityUtils.GetBuildTarget() === 'iOS'
         const outputDirectory = core.getInput(!!isiOS ? 'temporary-directory' : 'output-directory')
 
-        await io.mkdirP(outputDirectory);
+        await io.mkdirP(outputDirectory)
         await BuildUnityProject(outputDirectory)
+
+        if (core.getInput('symbols')) {
+            UnityUtils.AddDefineSymbols(
+                core.getInput('build-target'),
+                core.getInput('symbols'),
+                core.getInput('project-directory')
+            )
+        }
 
         if (!!isiOS && (!!core.getInput('team-id') && !!core.getInput('provisioning-profile-uuid'))) {
             await ExportIPA(

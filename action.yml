@@ -133,6 +133,12 @@ inputs:
       Used during iOS build.
     required: false
     default: true
+  symbols:
+    description: >
+      Specify additional definitions.
+      Separate each definition with a semicolon.
+      ex) DEBUG;TEST;DEVELOPMENT
+    required: false
   team-id:
     description: >
       The ID of your Developer Portal team if you're in multiple teams.
