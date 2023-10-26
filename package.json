@@ -40,7 +40,7 @@
     "@types/node": "20.5.8",
     "@vercel/ncc": "0.38.0",
     "husky": "8.0.3",
-    "rimraf": "5.0.1",
+    "rimraf": "5.0.5",
     "typescript": "5.2.2"
   },
   "private": true
