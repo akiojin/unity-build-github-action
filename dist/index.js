@@ -558,7 +558,7 @@ class OidcClient {
                 .catch(error => {
                 throw new Error(`Failed to get ID Token. \n 
         Error Code : ${error.statusCode}\n 
-        Error Message: ${error.result.message}`);
+        Error Message: ${error.message}`);
             });
             const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
             if (!id_token) {
@@ -12510,7 +12510,10 @@ async function Run() {
         await io.mkdirP(outputDirectory);
         await BuildUnityProject(outputDirectory);
         if (core.getInput('symbols')) {
-            unity_command_1.UnityUtils.AddDefineSymbols(core.getInput('build-target'), core.getInput('symbols'), core.getInput('project-directory'));
+            const projectSettings = await unity_command_1.UnityUtils.AddDefineSymbols(core.getInput('build-target'), core.getInput('symbols'), core.getInput('project-directory'));
+            core.startGroup('Update ProjectSettings.asset');
+            core.info(`ProjectSettings.asset:\n${projectSettings}`);
+            core.endGroup();
         }
         if (!!isiOS && (!!core.getInput('team-id') && !!core.getInput('provisioning-profile-uuid'))) {
             await ExportIPA(core.getInput('temporary-directory'), core.getInput('output-directory'));

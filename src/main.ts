@@ -142,11 +142,15 @@ async function Run()
         await BuildUnityProject(outputDirectory)
 
         if (core.getInput('symbols')) {
-            UnityUtils.AddDefineSymbols(
+            const projectSettings = await UnityUtils.AddDefineSymbols(
                 core.getInput('build-target'),
                 core.getInput('symbols'),
                 core.getInput('project-directory')
             )
+
+            core.startGroup('Update ProjectSettings.asset')
+            core.info(`ProjectSettings.asset:\n${projectSettings}`)
+            core.endGroup()
         }
 
         if (!!isiOS && (!!core.getInput('team-id') && !!core.getInput('provisioning-profile-uuid'))) {
