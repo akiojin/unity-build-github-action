@@ -12510,7 +12510,10 @@ async function Run() {
         await io.mkdirP(outputDirectory);
         await BuildUnityProject(outputDirectory);
         if (core.getInput('symbols')) {
-            unity_command_1.UnityUtils.AddDefineSymbols(core.getInput('build-target'), core.getInput('symbols'), core.getInput('project-directory'));
+            const projectSettings = await unity_command_1.UnityUtils.AddDefineSymbols(core.getInput('build-target'), core.getInput('symbols'), core.getInput('project-directory'));
+            core.startGroup('Update ProjectSettings.asset');
+            core.info(`ProjectSettings.asset:\n${projectSettings}`);
+            core.endGroup();
         }
         if (!!isiOS && (!!core.getInput('team-id') && !!core.getInput('provisioning-profile-uuid'))) {
             await ExportIPA(core.getInput('temporary-directory'), core.getInput('output-directory'));
