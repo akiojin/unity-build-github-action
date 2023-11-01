@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/akiojin/unity-build-github-action#readme",
   "dependencies": {
-    "@types/tmp": "0.2.4",
+    "@types/tmp": "0.2.5",
     "tmp": "0.2.1"
   },
   "devDependencies": {
