@@ -11986,115 +11986,6 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 6799:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(2186));
-const fs = __importStar(__nccwpck_require__(3292));
-const path_1 = __importDefault(__nccwpck_require__(1017));
-class ExportOptionsPlistHelper {
-    /**
-     * Output ExportOptions.plist.
-     *
-     * @param outputDirctory Output directory.
-     * @param appID Export App ID
-     * @param provisioningProfilesName Export Provisioning Profiles Name
-     * @param compileBitcode Output Bitcode?
-     * @param uploadSymbols Output Symbols?
-     * @param stripSwiftSymbols Strip Swift Symbols?
-     * @returns Path of ExportOptions.plist
-     */
-    static async Export(outputDirctory, appID, provisioningProfilesName, compileBitcode, uploadSymbols, stripSwiftSymbols) {
-        let script;
-        if (!appID || !provisioningProfilesName) {
-            script = ExportOptionsPlistHelper.Generate(compileBitcode, uploadSymbols, stripSwiftSymbols);
-        }
-        else {
-            script = ExportOptionsPlistHelper.GenerateWithAppID(appID, provisioningProfilesName, compileBitcode, uploadSymbols, stripSwiftSymbols);
-        }
-        const plist = path_1.default.join(outputDirctory, 'ExportOptions.plist');
-        await fs.writeFile(plist, script);
-        core.startGroup('Generate "ExportOptions.plist"');
-        core.info(`ExportOptions.plist:\n${script}`);
-        core.endGroup();
-        return plist;
-    }
-    static Generate(compileBitcode, uploadSymbols, stripSwiftSymbols) {
-        return `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-  <dict>
-    <key>compileBitcode</key>
-    <${compileBitcode}/>
-    <key>thinning</key>
-    <string>&lt;none&gt;</string>
-    <key>uploadBitcode</key>
-    <${compileBitcode}/>
-    <key>uploadSymbols</key>
-    <${uploadSymbols}/>
-    <key>stripSwiftSymbols</key>
-    <${stripSwiftSymbols}/>
-  </dict>
-</plist>`;
-    }
-    static GenerateWithAppID(appID, provisioningProfilesName, compileBitcode, uploadSymbols, stripSwiftSymbols) {
-        return `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-  <dict>
-    <key>compileBitcode</key>
-    <${compileBitcode}/>
-    <key>provisioningProfiles</key>
-    <dict>
-        <key>${appID}</key>
-        <string>${provisioningProfilesName}</string>
-    </dict>
-    <key>thinning</key>
-    <string>&lt;none&gt;</string>
-    <key>uploadBitcode</key>
-    <${compileBitcode}/>
-    <key>uploadSymbols</key>
-    <${uploadSymbols}/>
-    <key>stripSwiftSymbols</key>
-    <${stripSwiftSymbols}/>
-  </dict>
-</plist>`;
-    }
-}
-exports["default"] = ExportOptionsPlistHelper;
-
-
-/***/ }),
-
 /***/ 8646:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -12163,6 +12054,8 @@ class UnityBuildScriptHelper {
             => $"{OutputFileName}.exe";
 #elif UNITY_STANDALONE_OSX
             => $"{OutputFileName}.app";
+#elif UNITY_SWITCH
+            => Development ? $"{OutputFileName}.nspd" : $"{OutputFileName}.nsp";
 #else
             => string.Empty;
 #endif
@@ -12378,6 +12271,152 @@ exports["default"] = UnityBuildScriptHelper;
 
 /***/ }),
 
+/***/ 2533:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const exec = __importStar(__nccwpck_require__(1514));
+const fs = __importStar(__nccwpck_require__(3292));
+const path_1 = __importDefault(__nccwpck_require__(1017));
+const argument_builder_1 = __nccwpck_require__(782);
+class XcodeHelper {
+    static async ExportIPA(configuration, outputDirectory, outputName, plist, projectDirectory, scheme = 'Unity-iPhone', sdk = 'iphoneos') {
+        const builder = new argument_builder_1.ArgumentBuilder()
+            .Append('gym')
+            .Append('--configuration', configuration)
+            .Append('--clean')
+            .Append('--export_options', plist)
+            .Append('--output_directory', outputDirectory)
+            .Append('--output_name', outputName)
+            .Append('--scheme', scheme)
+            .Append('--sdk', sdk)
+            .Append('--silent')
+            .Append('--skip_build_archive', `false`)
+            .Append('--skip_profile_detection');
+        try {
+            const workspace = path_1.default.join(projectDirectory, 'Unity-iPhone.xcworkspace');
+            await fs.access(workspace);
+            builder.Append('--workspace', workspace);
+        }
+        catch (ex) {
+            builder.Append('--project', path_1.default.join(projectDirectory, 'Unity-iPhone.xcodeproj'));
+        }
+        core.startGroup('Run fastlane "gym"');
+        await exec.exec('fastlane', builder.Build());
+        core.endGroup();
+    }
+    /**
+     * Output ExportOptions.plist.
+     *
+     * @param outputDirectory Output directory.
+     * @param appID Export App ID
+     * @param teamID Export Team ID
+     * @param exportMethod Export Method
+     * @param provisioningProfilesName Export Provisioning Profiles Name
+     * @param compileBitcode Output Bitcode?
+     * @param uploadSymbols Output Symbols?
+     * @param stripSwiftSymbols Strip Swift Symbols?
+     * @returns Path of ExportOptions.plist
+     */
+    static async GenerateExportOptions(outputDirectory, appID, provisioningProfilesName, teamID, exportMethod, compileBitcode, uploadSymbols, stripSwiftSymbols) {
+        let script;
+        if (!appID || !provisioningProfilesName) {
+            script = XcodeHelper.GenerateWithoutAppID(teamID, exportMethod, compileBitcode, uploadSymbols, stripSwiftSymbols);
+        }
+        else {
+            script = XcodeHelper.GenerateWithAppID(appID, provisioningProfilesName, teamID, exportMethod, compileBitcode, uploadSymbols, stripSwiftSymbols);
+        }
+        const plist = path_1.default.join(outputDirectory, 'ExportOptions.plist');
+        await fs.writeFile(plist, script);
+        core.startGroup('Generate "ExportOptions.plist"');
+        core.info(`ExportOptions.plist:\n${script}`);
+        core.endGroup();
+        return plist;
+    }
+    static GenerateWithoutAppID(teamID, exportMethod, compileBitcode, uploadSymbols, stripSwiftSymbols) {
+        return `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>method</key>
+    <string>${exportMethod}</string>
+    <key>teamID</key>
+    <string>${teamID}</string>
+    <key>compileBitcode</key>
+    <${compileBitcode}/>
+    <key>thinning</key>
+    <string>&lt;none&gt;</string>
+    <key>uploadBitcode</key>
+    <${compileBitcode}/>
+    <key>uploadSymbols</key>
+    <${uploadSymbols}/>
+    <key>stripSwiftSymbols</key>
+    <${stripSwiftSymbols}/>
+  </dict>
+</plist>`;
+    }
+    static GenerateWithAppID(appID, provisioningProfilesName, teamID, exportMethod, compileBitcode, uploadSymbols, stripSwiftSymbols) {
+        return `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>method</key>
+    <string>${exportMethod}</string>
+    <key>teamID</key>
+    <string>${teamID}</string>
+    <key>compileBitcode</key>
+    <${compileBitcode}/>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>${appID}</key>
+        <string>${provisioningProfilesName}</string>
+    </dict>
+    <key>thinning</key>
+    <string>&lt;none&gt;</string>
+    <key>uploadBitcode</key>
+    <${compileBitcode}/>
+    <key>uploadSymbols</key>
+    <${uploadSymbols}/>
+    <key>stripSwiftSymbols</key>
+    <${stripSwiftSymbols}/>
+  </dict>
+</plist>`;
+    }
+}
+exports["default"] = XcodeHelper;
+
+
+/***/ }),
+
 /***/ 399:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -12417,43 +12456,8 @@ const fs = __importStar(__nccwpck_require__(3292));
 const tmp = __importStar(__nccwpck_require__(8517));
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const unity_command_1 = __nccwpck_require__(9088);
-const argument_builder_1 = __nccwpck_require__(782);
 const UnityBuildScriptHelper_1 = __importDefault(__nccwpck_require__(8646));
-const ExportOptionsPlistHelper_1 = __importDefault(__nccwpck_require__(6799));
-async function ExportIPA(projectDirectory, outputDirectory) {
-    const includeBitcode = core.getBooleanInput('include-bitcode');
-    const includeSymbols = core.getBooleanInput('include-symbols');
-    const plist = await ExportOptionsPlistHelper_1.default.Export(core.getInput('temporary-directory'), core.getInput('app-id'), core.getInput('provisioning-profile-name'), includeBitcode, !includeSymbols, core.getBooleanInput('strip-swift-symbols'));
-    const builder = new argument_builder_1.ArgumentBuilder()
-        .Append('gym')
-        .Append('--scheme', 'Unity-iPhone')
-        .Append('--clean')
-        .Append('--output_directory', outputDirectory)
-        .Append('--configuration', core.getInput('configuration'))
-        .Append('--silent')
-        .Append('--include_bitcode', includeBitcode.toString())
-        .Append('--include_symbols', includeSymbols.toString())
-        .Append('--export_method', core.getInput('export-method'))
-        .Append('--export_options', plist)
-        .Append('--skip_build_archive', `false`)
-        .Append('--sdk', 'iphoneos')
-        .Append('--export_team_id', core.getInput('team-id'))
-        .Append('--skip_profile_detection');
-    try {
-        const workspace = path_1.default.join(projectDirectory, 'Unity-iPhone.xcworkspace');
-        await fs.access(workspace);
-        builder.Append('--workspace', workspace);
-    }
-    catch (ex) {
-        builder.Append('--project', path_1.default.join(projectDirectory, 'Unity-iPhone.xcodeproj'));
-    }
-    if (!!core.getInput('output-name')) {
-        builder.Append('--output_name', core.getInput('output-name'));
-    }
-    core.startGroup('Run fastlane "gym"');
-    await exec.exec('fastlane', builder.Build());
-    core.endGroup();
-}
+const XcodeHelper_1 = __importDefault(__nccwpck_require__(2533));
 function GetOutputPath() {
     const outputPath = path_1.default.join(core.getInput('output-directory'), core.getInput('output-name'));
     switch (unity_command_1.UnityUtils.GetBuildTarget()) {
@@ -12481,7 +12485,7 @@ async function BuildUnityProject(outputDirectory) {
     else {
         builder.SetExecuteMethod('unity_build_github_action.UnityBuildScript.PerformBuild');
         var keystore = core.getInput('keystore');
-        if (!!core.getInput('keystore-base64')) {
+        if (core.getInput('keystore-base64')) {
             keystore = tmp.tmpNameSync() + '.keystore';
             await fs.writeFile(keystore, Buffer.from(core.getInput('keystore-base64'), 'base64'));
         }
@@ -12494,7 +12498,7 @@ async function BuildUnityProject(outputDirectory) {
         core.info(`${buildScriptName}:\n${script}`);
         core.endGroup();
     }
-    if (!!core.getInput('additional-arguments')) {
+    if (core.getInput('additional-arguments')) {
         builder.Append(core.getInput('additional-arguments'));
     }
     const version = core.getInput('unity-version') ||
@@ -12506,7 +12510,7 @@ async function BuildUnityProject(outputDirectory) {
 async function Run() {
     try {
         const isiOS = unity_command_1.UnityUtils.GetBuildTarget() === 'iOS';
-        const outputDirectory = core.getInput(!!isiOS ? 'temporary-directory' : 'output-directory');
+        const outputDirectory = core.getInput(isiOS ? 'temporary-directory' : 'output-directory');
         await io.mkdirP(outputDirectory);
         await BuildUnityProject(outputDirectory);
         if (core.getInput('symbols')) {
@@ -12515,8 +12519,9 @@ async function Run() {
             core.info(`ProjectSettings.asset:\n${projectSettings}`);
             core.endGroup();
         }
-        if (!!isiOS && (!!core.getInput('team-id') && !!core.getInput('provisioning-profile-uuid'))) {
-            await ExportIPA(core.getInput('temporary-directory'), core.getInput('output-directory'));
+        if (isiOS && (core.getInput('team-id') && core.getInput('provisioning-profile-name'))) {
+            const plist = await XcodeHelper_1.default.GenerateExportOptions(core.getInput('temporary-directory'), core.getInput('app-id'), core.getInput("provisioning-profile-name"), core.getInput('team-id'), core.getInput('export-method'), core.getBooleanInput('include-bitcode'), core.getBooleanInput('include-symbols'), core.getBooleanInput('strip-swift-symbols'));
+            await XcodeHelper_1.default.ExportIPA(core.getInput('configuration'), core.getInput('output-directory'), core.getInput('output-name'), plist, core.getInput('temporary-directory'));
         }
         const outputPath = GetOutputPath();
         core.setOutput('output-path', outputPath);

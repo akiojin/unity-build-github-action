@@ -1,6 +1,6 @@
 {
   "name": "@akiojin/unity-bulid-github-action",
-  "version": "3.8.14",
+  "version": "3.9.1",
   "description": "This action builds Unity and outputs ipa for iOS and apk/aab for Android.",
   "main": "dist/index.js",
   "scripts": {
@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/akiojin/unity-build-github-action#readme",
   "dependencies": {
-    "@types/tmp": "0.2.4",
+    "@types/tmp": "0.2.5",
     "tmp": "0.2.1"
   },
   "devDependencies": {
@@ -37,10 +37,10 @@
     "@akiojin/unity-command": "1.2.7",
     "@commitlint/cli": "17.7.2",
     "@commitlint/config-conventional": "17.7.0",
-    "@types/node": "20.5.8",
-    "@vercel/ncc": "0.36.1",
+    "@types/node": "20.8.10",
+    "@vercel/ncc": "0.38.0",
     "husky": "8.0.3",
-    "rimraf": "5.0.1",
+    "rimraf": "5.0.5",
     "typescript": "5.2.2"
   },
   "private": true

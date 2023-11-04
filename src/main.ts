@@ -5,57 +5,8 @@ import * as fs from 'fs/promises'
 import * as tmp from 'tmp'
 import path from 'path'
 import { UnityUtils, UnityCommandBuilder } from '@akiojin/unity-command'
-import { ArgumentBuilder } from '@akiojin/argument-builder'
 import UnityBuildScriptHelper from './UnityBuildScriptHelper'
-import ExportOptionsPlistHelper from './ExportOptionsPlistHelper'
-
-async function ExportIPA(
-    projectDirectory: string,
-    outputDirectory: string): Promise<void>
-{
-    const includeBitcode = core.getBooleanInput('include-bitcode')
-    const includeSymbols = core.getBooleanInput('include-symbols')
-
-    const plist = await ExportOptionsPlistHelper.Export(
-        core.getInput('temporary-directory'),
-        core.getInput('app-id'),
-        core.getInput('provisioning-profile-name'),
-        includeBitcode,
-        !includeSymbols,
-        core.getBooleanInput('strip-swift-symbols'))
-
-    const builder = new ArgumentBuilder()
-        .Append('gym')
-        .Append('--scheme', 'Unity-iPhone')
-        .Append('--clean')
-        .Append('--output_directory', outputDirectory)
-        .Append('--configuration', core.getInput('configuration'))
-        .Append('--silent')
-        .Append('--include_bitcode', includeBitcode.toString())
-        .Append('--include_symbols', includeSymbols.toString())
-        .Append('--export_method', core.getInput('export-method'))
-        .Append('--export_options', plist)
-        .Append('--skip_build_archive', `false`)
-        .Append('--sdk', 'iphoneos')
-        .Append('--export_team_id', core.getInput('team-id'))
-        .Append('--skip_profile_detection')
-
-    try {
-        const workspace = path.join(projectDirectory, 'Unity-iPhone.xcworkspace')
-        await fs.access(workspace)
-        builder.Append('--workspace', workspace)
-    } catch (ex: any) {
-        builder.Append('--project', path.join(projectDirectory, 'Unity-iPhone.xcodeproj'))
-    }
-
-    if (!!core.getInput('output-name')) {
-        builder.Append('--output_name', core.getInput('output-name'))
-    }
-
-    core.startGroup('Run fastlane "gym"')
-    await exec.exec('fastlane', builder.Build())
-    core.endGroup()
-}
+import XcodeHelper from './XcodeHelper'
 
 function GetOutputPath(): string
 {
@@ -90,7 +41,7 @@ async function BuildUnityProject(outputDirectory: string)
 
         var keystore = core.getInput('keystore')
 
-        if (!!core.getInput('keystore-base64')) {
+        if (core.getInput('keystore-base64')) {
             keystore = tmp.tmpNameSync() + '.keystore'
             await fs.writeFile(keystore, Buffer.from(core.getInput('keystore-base64'), 'base64'))
         }
@@ -120,7 +71,7 @@ async function BuildUnityProject(outputDirectory: string)
         core.endGroup()
     }
 
-    if (!!core.getInput('additional-arguments')) {
+    if (core.getInput('additional-arguments')) {
         builder.Append(core.getInput('additional-arguments'))
     }
 
@@ -136,7 +87,7 @@ async function Run()
 {
     try {
         const isiOS = UnityUtils.GetBuildTarget() === 'iOS'
-        const outputDirectory = core.getInput(!!isiOS ? 'temporary-directory' : 'output-directory')
+        const outputDirectory = core.getInput(isiOS ? 'temporary-directory' : 'output-directory')
 
         await io.mkdirP(outputDirectory)
         await BuildUnityProject(outputDirectory)
@@ -153,10 +104,23 @@ async function Run()
             core.endGroup()
         }
 
-        if (!!isiOS && (!!core.getInput('team-id') && !!core.getInput('provisioning-profile-uuid'))) {
-            await ExportIPA(
+        if (isiOS && (core.getInput('team-id') && core.getInput('provisioning-profile-name'))) {
+            const plist = await XcodeHelper.GenerateExportOptions(
                 core.getInput('temporary-directory'),
-                core.getInput('output-directory'))
+                core.getInput('app-id'),
+                core.getInput("provisioning-profile-name"),
+                core.getInput('team-id'),
+                core.getInput('export-method'),
+                core.getBooleanInput('include-bitcode'),
+                core.getBooleanInput('include-symbols'),
+                core.getBooleanInput('strip-swift-symbols'))
+
+            await XcodeHelper.ExportIPA(
+                core.getInput('configuration'),
+                core.getInput('output-directory'),
+                core.getInput('output-name'),
+                plist,
+                core.getInput('temporary-directory'))
         }
 
         const outputPath = GetOutputPath()
