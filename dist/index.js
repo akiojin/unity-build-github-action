@@ -12047,21 +12047,18 @@ class UnityBuildScriptHelper {
             => ActiveBuildTargetGroup;
 #endif
 
-        static string GetExtension()
+        static string GetBuildTargetOutputFileName()
 #if UNITY_ANDROID
-            => ".aab";
+            => $"{OutputFileName}.aab";
 #elif UNITY_STANDALONE_WIN
-            => ".exe";
+            => $"{OutputFileName}.exe";
 #elif UNITY_STANDALONE_OSX
-            => ".app";
+            => $"{OutputFileName}.app";
 #elif UNITY_SWITCH
-            => Development ? ".nspd" : ".nsp";
+            => Development ? $"{OutputFileName}.nspd" : $"{OutputFileName}.nsp";
 #else
             => string.Empty;
 #endif
-
-        static string GetBuildTargetOutputFileName()
-            => $"{OutputFileName}{GetExtension()}";
 
         public void OnPostprocessBuild(BuildReport report)
         {
