@@ -77,6 +77,8 @@ export default class UnityBuildScriptHelper
             => $"{OutputFileName}.exe";
 #elif UNITY_STANDALONE_OSX
             => $"{OutputFileName}.app";
+#elif UNITY_SWITCH
+            => Development ? $"{OutputFileName}.nspd" : $"{OutputFileName}.nsp";
 #else
             => string.Empty;
 #endif
