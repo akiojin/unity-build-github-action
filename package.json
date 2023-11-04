@@ -38,7 +38,7 @@
     "@commitlint/cli": "17.7.2",
     "@commitlint/config-conventional": "17.7.0",
     "@types/node": "20.8.10",
-    "@vercel/ncc": "0.38.0",
+    "@vercel/ncc": "0.38.1",
     "husky": "8.0.3",
     "rimraf": "5.0.5",
     "typescript": "5.2.2"
