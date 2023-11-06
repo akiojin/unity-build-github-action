@@ -11986,6 +11986,115 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 6085:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const exec = __importStar(__nccwpck_require__(1514));
+const fs = __importStar(__nccwpck_require__(3292));
+const tmp_1 = __importDefault(__nccwpck_require__(8517));
+const argument_builder_1 = __nccwpck_require__(782);
+class MacOSHelper {
+    static async ExportPKG(appID, rootDirectory, installLocation, packageNumber, outputPath, plist) {
+        const builder = new argument_builder_1.ArgumentBuilder()
+            .Append('--root', rootDirectory)
+            .Append('--component-plist', plist)
+            .Append('--identifier', appID)
+            .Append('--version', packageNumber.toString())
+            .Append('--install-location', installLocation)
+            .Append(outputPath);
+        core.setOutput('output-path', outputPath);
+        core.info(`Output Path: ${outputPath}`);
+        core.startGroup('Run pkgbuild');
+        await exec.exec('pkgbuild', builder.Build());
+        core.endGroup();
+    }
+    /**
+     * Output Package.plist.
+     *
+     * @param rootRelativeBundlePath Path to bundle relative to the destination root
+     * @returns Path of generate .plist
+     */
+    static async GeneratePackagePlist(rootRelativeBundlePath) {
+        const script = this.Generate(rootRelativeBundlePath);
+        const plist = `${tmp_1.default.tmpNameSync()}.plist`;
+        await fs.writeFile(plist, script);
+        core.startGroup('Generate "Package.plist"');
+        core.info(`Package.plist:\n${script}`);
+        core.endGroup();
+        return plist;
+    }
+    /**
+     * Generate Package plist
+     *
+     * @param rootRelativeBundlePath Path to bundle relative to the destination root
+     * @param bundleHasStrictIdentifier Don't install bundle if identifier doesn't match?
+     * @param bundleIsRelocatable Install bundle over previous version if moved by user?
+     * @param bundleIsVersionChecked Don't install bundle if newer version on disk?
+     * @param bundleOverwriteAction How to treat existing on-disk version of bundle
+     * @param bundlePostInstallScriptPath Relative path to bundle-specific postinstall script ChildBundles Bundles under this bundle
+     * @param bundlePreInstallScriptPath Relative path to bundle-specific preinstall script
+     * @returns
+     */
+    static Generate(rootRelativeBundlePath, bundleHasStrictIdentifier = true, bundleIsRelocatable = false, bundleIsVersionChecked = true, bundleOverwriteAction = true, bundlePostInstallScriptPath = '', bundlePreInstallScriptPath = '') {
+        return `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+  <dict>
+    <key>BundleHasStrictIdentifier</key>
+    <${bundleHasStrictIdentifier}/>
+    <key>BundleIsRelocatable</key>
+    <${bundleIsRelocatable}/>
+    <key>BundleIsVersionChecked</key>
+    <${bundleIsVersionChecked}/>
+    <key>BundleOverwriteAction</key>
+    <string>${bundleOverwriteAction ? 'upgrade' : 'update'}</string>
+    <key>RootRelativeBundlePath</key>
+    <string>${rootRelativeBundlePath}</string>
+    <key>BundlePostInstallScriptPath</key>
+    <string>${bundlePostInstallScriptPath}</string>
+    <key>BundlePreInstallScriptPath</key>
+    <string>${bundlePreInstallScriptPath}</string>
+  </dict>
+</array>
+</plist>`;
+    }
+}
+exports["default"] = MacOSHelper;
+
+
+/***/ }),
+
 /***/ 8646:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -12458,6 +12567,7 @@ const path_1 = __importDefault(__nccwpck_require__(1017));
 const unity_command_1 = __nccwpck_require__(9088);
 const UnityBuildScriptHelper_1 = __importDefault(__nccwpck_require__(8646));
 const XcodeHelper_1 = __importDefault(__nccwpck_require__(2533));
+const MacOSHelper_1 = __importDefault(__nccwpck_require__(6085));
 function GetOutputPath() {
     const outputPath = path_1.default.join(core.getInput('output-directory'), core.getInput('output-name'));
     switch (unity_command_1.UnityUtils.GetBuildTarget()) {
@@ -12511,9 +12621,10 @@ async function Run() {
     try {
         const isiOS = unity_command_1.UnityUtils.GetBuildTarget() === 'iOS';
         const isWindows = unity_command_1.UnityUtils.GetBuildTarget() === 'Win64';
-        const outputDirectory = core.getInput(isiOS || isWindows ? 'temporary-directory' : 'output-directory');
-        await io.mkdirP(outputDirectory);
-        await BuildUnityProject(outputDirectory);
+        const ismacOS = unity_command_1.UnityUtils.GetBuildTarget() === 'OSXUniversal';
+        const unityOutputDirectory = core.getInput(isiOS || isWindows || ismacOS ? 'temporary-directory' : 'output-directory');
+        await io.mkdirP(unityOutputDirectory);
+        await BuildUnityProject(unityOutputDirectory);
         if (core.getInput('symbols')) {
             const projectSettings = await unity_command_1.UnityUtils.AddDefineSymbols(core.getInput('build-target'), core.getInput('symbols'), core.getInput('project-directory'));
             core.startGroup('Update ProjectSettings.asset');
@@ -12525,12 +12636,18 @@ async function Run() {
             await XcodeHelper_1.default.ExportIPA(core.getInput('configuration'), core.getInput('output-directory'), core.getInput('output-name'), plist, core.getInput('temporary-directory'));
         }
         else if (isWindows) {
-            exec.exec('powershell', [
+            await fs.mkdir(core.getInput('output-directory'), { recursive: true });
+            await exec.exec('powershell', [
                 'compress-archive',
                 '-Force',
-                `${outputDirectory}/*`,
+                `${core.getInput('temporary-directory')}/*`,
                 `${core.getInput('output-directory')}/${core.getInput('output-name')}`
             ]);
+        }
+        else if (ismacOS) {
+            const plist = await MacOSHelper_1.default.GeneratePackagePlist(path_1.default.basename(core.getInput('output-name'), '.app'));
+            await fs.mkdir(core.getInput('output-directory'), { recursive: true });
+            await MacOSHelper_1.default.ExportPKG(core.getInput('app-id'), core.getInput('temporary-directory'), '/Applications', Number(core.getInput('revision')), core.getInput('output-directory'), plist);
         }
         const outputPath = GetOutputPath();
         core.setOutput('output-path', outputPath);
