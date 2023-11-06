@@ -12468,7 +12468,7 @@ function GetOutputPath() {
         case 'Android':
             return `${outputPath}.aab`;
         case 'Win64':
-            return `${outputPath}.exe`;
+            return `${outputPath}.zip`;
         case 'OSXUniversal':
             return `${outputPath}.app`;
     }
@@ -12510,7 +12510,8 @@ async function BuildUnityProject(outputDirectory) {
 async function Run() {
     try {
         const isiOS = unity_command_1.UnityUtils.GetBuildTarget() === 'iOS';
-        const outputDirectory = core.getInput(isiOS ? 'temporary-directory' : 'output-directory');
+        const isWindows = unity_command_1.UnityUtils.GetBuildTarget() === 'Win64';
+        const outputDirectory = core.getInput(isiOS || isWindows ? 'temporary-directory' : 'output-directory');
         await io.mkdirP(outputDirectory);
         await BuildUnityProject(outputDirectory);
         if (core.getInput('symbols')) {
@@ -12522,6 +12523,14 @@ async function Run() {
         if (isiOS && (core.getInput('team-id') && core.getInput('provisioning-profile-name'))) {
             const plist = await XcodeHelper_1.default.GenerateExportOptions(core.getInput('temporary-directory'), core.getInput('app-id'), core.getInput("provisioning-profile-name"), core.getInput('team-id'), core.getInput('export-method'), core.getBooleanInput('include-bitcode'), core.getBooleanInput('include-symbols'), core.getBooleanInput('strip-swift-symbols'));
             await XcodeHelper_1.default.ExportIPA(core.getInput('configuration'), core.getInput('output-directory'), core.getInput('output-name'), plist, core.getInput('temporary-directory'));
+        }
+        else if (isWindows) {
+            exec.exec('powershell', [
+                'compress-archive',
+                '-Force',
+                `${outputDirectory}/*`,
+                `${core.getInput('output-directory')}/${core.getInput('output-name')}`
+            ]);
         }
         const outputPath = GetOutputPath();
         core.setOutput('output-path', outputPath);
