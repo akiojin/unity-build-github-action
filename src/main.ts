@@ -7,6 +7,7 @@ import path from 'path'
 import { UnityUtils, UnityCommandBuilder } from '@akiojin/unity-command'
 import UnityBuildScriptHelper from './UnityBuildScriptHelper'
 import XcodeHelper from './XcodeHelper'
+import MacOSHelper from './MacOSHelper'
 
 function GetOutputPath(): string
 {
@@ -88,10 +89,11 @@ async function Run()
   try {
     const isiOS = UnityUtils.GetBuildTarget() === 'iOS'
     const isWindows = UnityUtils.GetBuildTarget() === 'Win64'
-    const outputDirectory = core.getInput(isiOS || isWindows ? 'temporary-directory' : 'output-directory')
+    const ismacOS = UnityUtils.GetBuildTarget() === 'OSXUniversal'
+    const unityOutputDirectory = core.getInput(isiOS || isWindows || ismacOS ? 'temporary-directory' : 'output-directory')
 
-    await io.mkdirP(outputDirectory)
-    await BuildUnityProject(outputDirectory)
+    await io.mkdirP(unityOutputDirectory)
+    await BuildUnityProject(unityOutputDirectory)
 
     if (core.getInput('symbols')) {
       const projectSettings = await UnityUtils.AddDefineSymbols(
@@ -123,14 +125,26 @@ async function Run()
         plist,
         core.getInput('temporary-directory'))
     } else if (isWindows) {
-      exec.exec(
+      await fs.mkdir(core.getInput('output-directory'), {recursive: true})
+      await exec.exec(
         'powershell',
         [
           'compress-archive',
           '-Force',
-          `${outputDirectory}/*`,
+          `${core.getInput('temporary-directory')}/*`,
           `${core.getInput('output-directory')}/${core.getInput('output-name')}`
         ])
+    } else if (ismacOS) {
+      const plist = await MacOSHelper.GeneratePackagePlist(path.basename(core.getInput('output-name'), '.app'))
+
+      await fs.mkdir(core.getInput('output-directory'), {recursive: true})
+      await MacOSHelper.ExportPKG(
+        core.getInput('app-id'),
+        core.getInput('temporary-directory'),
+        '/Applications',
+        Number(core.getInput('revision')),
+        core.getInput('output-directory'),
+        plist)
     }
 
     const outputPath = GetOutputPath()
