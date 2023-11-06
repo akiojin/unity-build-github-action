@@ -12639,7 +12639,7 @@ async function PostprocessMacOS() {
         return;
     }
     const plist = await MacOSHelper_1.default.GeneratePackagePlist(core.getInput('output-name'));
-    await MacOSHelper_1.default.ExportPKG(core.getInput('app-id'), core.getInput('temporary-directory'), core.getInput('install-location'), Number(core.getInput('revision')), core.getInput('output-directory'), plist);
+    await MacOSHelper_1.default.ExportPKG(core.getInput('app-id'), core.getInput('temporary-directory'), core.getInput('install-location'), Number(core.getInput('revision')), GetOutputPath(), plist);
 }
 function IsPostprocess() {
     switch (unity_command_1.UnityUtils.GetBuildTarget()) {
@@ -12651,29 +12651,34 @@ function IsPostprocess() {
             return true;
     }
 }
+async function Preprocess() {
+    await io.mkdirP(core.getInput('temporary-directory'));
+    await io.mkdirP(core.getInput('output-directory'));
+    if (core.getInput('symbols')) {
+        const projectSettings = await unity_command_1.UnityUtils.AddDefineSymbols(core.getInput('build-target'), core.getInput('symbols'), core.getInput('project-directory'));
+        core.startGroup('Update ProjectSettings.asset');
+        core.info(`ProjectSettings.asset:\n${projectSettings}`);
+        core.endGroup();
+    }
+}
+async function Postprocess() {
+    switch (unity_command_1.UnityUtils.GetBuildTarget()) {
+        case 'iOS':
+            await PostprocessIOS();
+            break;
+        case 'Win64':
+            await PostprocessWindows();
+            break;
+        case 'OSXUniversal':
+            await PostprocessMacOS();
+            break;
+    }
+}
 async function Run() {
     try {
-        const unityOutputDirectory = core.getInput(IsPostprocess() ? 'temporary-directory' : 'output-directory');
-        await io.mkdirP(core.getInput('temporary-directory'));
-        await io.mkdirP(core.getInput('output-directory'));
-        if (core.getInput('symbols')) {
-            const projectSettings = await unity_command_1.UnityUtils.AddDefineSymbols(core.getInput('build-target'), core.getInput('symbols'), core.getInput('project-directory'));
-            core.startGroup('Update ProjectSettings.asset');
-            core.info(`ProjectSettings.asset:\n${projectSettings}`);
-            core.endGroup();
-        }
-        await BuildUnityProject(unityOutputDirectory);
-        switch (unity_command_1.UnityUtils.GetBuildTarget()) {
-            case 'iOS':
-                await PostprocessIOS();
-                break;
-            case 'Win64':
-                await PostprocessWindows();
-                break;
-            case 'OSXUniversal':
-                await PostprocessMacOS();
-                break;
-        }
+        await Preprocess();
+        await BuildUnityProject(core.getInput(IsPostprocess() ? 'temporary-directory' : 'output-directory'));
+        await Postprocess();
         const outputPath = GetOutputPath();
         core.setOutput('output-path', outputPath);
         core.exportVariable('UNITY_BUILD_OUTPUT_PATH', outputPath);
