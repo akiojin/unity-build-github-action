@@ -137,7 +137,7 @@ async function PostprocessMacOS(): Promise<void>
     core.getInput('temporary-directory'),
     core.getInput('install-location'),
     Number(core.getInput('revision')),
-    core.getInput('output-directory'),
+    GetOutputPath(),
     plist)
 }
 
@@ -153,39 +153,45 @@ function IsPostprocess(): boolean
   }
 }
 
+async function Preprocess(): Promise<void>
+{
+  await io.mkdirP(core.getInput('temporary-directory'))
+  await io.mkdirP(core.getInput('output-directory'))
+
+  if (core.getInput('symbols')) {
+    const projectSettings = await UnityUtils.AddDefineSymbols(
+      core.getInput('build-target'),
+      core.getInput('symbols'),
+      core.getInput('project-directory')
+    )
+
+    core.startGroup('Update ProjectSettings.asset')
+    core.info(`ProjectSettings.asset:\n${projectSettings}`)
+    core.endGroup()
+  }
+}
+
+async function Postprocess(): Promise<void>
+{
+  switch (UnityUtils.GetBuildTarget()) {
+  case 'iOS':
+    await PostprocessIOS()
+    break
+  case 'Win64':
+    await PostprocessWindows()
+    break
+  case 'OSXUniversal':
+    await PostprocessMacOS()
+    break
+  }
+}
+
 async function Run()
 {
   try {
-    const unityOutputDirectory = core.getInput(IsPostprocess() ? 'temporary-directory' : 'output-directory')
-
-    await io.mkdirP(core.getInput('temporary-directory'))
-    await io.mkdirP(core.getInput('output-directory'))
-
-    if (core.getInput('symbols')) {
-      const projectSettings = await UnityUtils.AddDefineSymbols(
-        core.getInput('build-target'),
-        core.getInput('symbols'),
-        core.getInput('project-directory')
-      )
-
-      core.startGroup('Update ProjectSettings.asset')
-      core.info(`ProjectSettings.asset:\n${projectSettings}`)
-      core.endGroup()
-    }
-
-    await BuildUnityProject(unityOutputDirectory)
-
-    switch (UnityUtils.GetBuildTarget()) {
-    case 'iOS':
-      await PostprocessIOS()
-      break
-    case 'Win64':
-      await PostprocessWindows()
-      break
-    case 'OSXUniversal':
-      await PostprocessMacOS()
-      break
-    }
+    await Preprocess()
+    await BuildUnityProject(core.getInput(IsPostprocess() ? 'temporary-directory' : 'output-directory'))
+    await Postprocess()
 
     const outputPath = GetOutputPath()
     core.setOutput('output-path', outputPath)
