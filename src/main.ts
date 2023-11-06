@@ -35,7 +35,7 @@ async function BuildUnityProject(outputDirectory: string)
     .SetLogFile(core.getInput('log-file'))
     .EnablePackageManagerTraces()
 
-  if (!!core.getInput('execute-method')) {
+  if (core.getInput('execute-method')) {
     builder.SetExecuteMethod(core.getInput('execute-method'))
   } else {
     builder.SetExecuteMethod('unity_build_github_action.UnityBuildScript.PerformBuild')
@@ -64,7 +64,7 @@ async function BuildUnityProject(outputDirectory: string)
 
     const buildScriptName = 'UnityBuildScript.cs'
     const cs = path.join(core.getInput('project-directory'), 'Assets', 'Editor', buildScriptName)
-    await fs.mkdir(path.dirname(cs), {recursive: true})
+    await io.mkdirP(path.dirname(cs))
     await fs.writeFile(cs, script)
 
     core.startGroup(`Generate "${buildScriptName}"`)
