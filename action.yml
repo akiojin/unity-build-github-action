@@ -145,12 +145,6 @@ inputs:
       Required for iOS build.
     required: false
     default: ''
-  temporary-directory:
-    description: >
-      Specify a temporary folder for the Xcode project files that Unity outputs during iOS build.
-      No change is required unless there is a specific reason.
-    required: false
-    default: ${{ runner.temp }}/temp
   keystore:
     description: >
       Specify the path to the keystore file.
@@ -188,6 +182,19 @@ inputs:
       Used during Android build.
     required: false
     default: ''
+  install-location:
+    description: >
+      The directory where the package is to be installed.
+      If omitted, '/Applications' is specified.
+      Required for macOS builds.
+    required: false
+    default: /Applications
+  temporary-directory:
+    description: >
+      Specify a temporary folder for the Xcode project files that Unity outputs during iOS build.
+      No change is required unless there is a specific reason.
+    required: false
+    default: ${{ runner.temp }}/temp
 outputs:
   output-path:
     description: 'Path of the output binary'

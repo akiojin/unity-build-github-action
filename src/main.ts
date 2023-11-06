@@ -23,7 +23,7 @@ function GetOutputPath(): string
   case 'Win64':
     return `${outputPath}.zip`
   case 'OSXUniversal':
-    return `${outputPath}.app`
+    return `${outputPath}.pkg`
   }
 }
 
@@ -84,16 +84,82 @@ async function BuildUnityProject(outputDirectory: string)
   core.endGroup()
 }
 
+async function PostprocessIOS(): Promise<void>
+{
+  if (!core.getInput('team-id') || !core.getInput('provisioning-profile-name')) {
+    return
+  }
+
+  const plist = await XcodeHelper.GenerateExportOptions(
+    core.getInput('temporary-directory'),
+    core.getInput('app-id'),
+    core.getInput("provisioning-profile-name"),
+    core.getInput('team-id'),
+    core.getInput('export-method'),
+    core.getBooleanInput('include-bitcode'),
+    core.getBooleanInput('include-symbols'),
+    core.getBooleanInput('strip-swift-symbols'))
+
+  await XcodeHelper.ExportIPA(
+    core.getInput('configuration'),
+    core.getInput('output-directory'),
+    core.getInput('output-name'),
+    plist,
+    core.getInput('temporary-directory'))
+}
+
+async function PostprocessWindows(): Promise<void>
+{
+  core.startGroup('Run compress-archive')
+
+  await exec.exec(
+    'powershell',
+    [
+      'compress-archive',
+      '-Force',
+      `${core.getInput('temporary-directory')}/*`,
+      `${core.getInput('output-directory')}/${core.getInput('output-name')}`
+    ])
+
+  core.endGroup()
+}
+
+async function PostprocessMacOS(): Promise<void>
+{
+  if (!core.getInput('app-id')) {
+    return
+  }
+
+  const plist = await MacOSHelper.GeneratePackagePlist(core.getInput('output-name'))
+
+  await MacOSHelper.ExportPKG(
+    core.getInput('app-id'),
+    core.getInput('temporary-directory'),
+    core.getInput('install-location'),
+    Number(core.getInput('revision')),
+    core.getInput('output-directory'),
+    plist)
+}
+
+function IsPostprocess(): boolean
+{
+  switch (UnityUtils.GetBuildTarget()) {
+  default:
+    return false
+  case 'iOS':
+  case 'Win64':
+  case 'OSXUniversal':
+    return true
+  }
+}
+
 async function Run()
 {
   try {
-    const isiOS = UnityUtils.GetBuildTarget() === 'iOS'
-    const isWindows = UnityUtils.GetBuildTarget() === 'Win64'
-    const ismacOS = UnityUtils.GetBuildTarget() === 'OSXUniversal'
-    const unityOutputDirectory = core.getInput(isiOS || isWindows || ismacOS ? 'temporary-directory' : 'output-directory')
+    const unityOutputDirectory = core.getInput(IsPostprocess() ? 'temporary-directory' : 'output-directory')
 
-    await io.mkdirP(unityOutputDirectory)
-    await BuildUnityProject(unityOutputDirectory)
+    await io.mkdirP(core.getInput('temporary-directory'))
+    await io.mkdirP(core.getInput('output-directory'))
 
     if (core.getInput('symbols')) {
       const projectSettings = await UnityUtils.AddDefineSymbols(
@@ -107,44 +173,18 @@ async function Run()
       core.endGroup()
     }
 
-    if (isiOS && (core.getInput('team-id') && core.getInput('provisioning-profile-name'))) {
-      const plist = await XcodeHelper.GenerateExportOptions(
-        core.getInput('temporary-directory'),
-        core.getInput('app-id'),
-        core.getInput("provisioning-profile-name"),
-        core.getInput('team-id'),
-        core.getInput('export-method'),
-        core.getBooleanInput('include-bitcode'),
-        core.getBooleanInput('include-symbols'),
-        core.getBooleanInput('strip-swift-symbols'))
+    await BuildUnityProject(unityOutputDirectory)
 
-      await XcodeHelper.ExportIPA(
-        core.getInput('configuration'),
-        core.getInput('output-directory'),
-        core.getInput('output-name'),
-        plist,
-        core.getInput('temporary-directory'))
-    } else if (isWindows) {
-      await fs.mkdir(core.getInput('output-directory'), {recursive: true})
-      await exec.exec(
-        'powershell',
-        [
-          'compress-archive',
-          '-Force',
-          `${core.getInput('temporary-directory')}/*`,
-          `${core.getInput('output-directory')}/${core.getInput('output-name')}`
-        ])
-    } else if (ismacOS) {
-      const plist = await MacOSHelper.GeneratePackagePlist(path.basename(core.getInput('output-name'), '.app'))
-
-      await fs.mkdir(core.getInput('output-directory'), {recursive: true})
-      await MacOSHelper.ExportPKG(
-        core.getInput('app-id'),
-        core.getInput('temporary-directory'),
-        '/Applications',
-        Number(core.getInput('revision')),
-        core.getInput('output-directory'),
-        plist)
+    switch (UnityUtils.GetBuildTarget()) {
+    case 'iOS':
+      await PostprocessIOS()
+      break
+    case 'Win64':
+      await PostprocessWindows()
+      break
+    case 'OSXUniversal':
+      await PostprocessMacOS()
+      break
     }
 
     const outputPath = GetOutputPath()
