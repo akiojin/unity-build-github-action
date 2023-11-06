@@ -130,7 +130,8 @@ async function PostprocessMacOS(): Promise<void>
     return
   }
 
-  const plist = await MacOSHelper.GeneratePackagePlist(core.getInput('output-name'))
+  const outputName = `${core.getInput('output-name')}.app`
+  const plist = await MacOSHelper.GeneratePackagePlist(outputName)
 
   await MacOSHelper.ExportPKG(
     core.getInput('app-id'),
