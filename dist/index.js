@@ -12638,7 +12638,8 @@ async function PostprocessMacOS() {
     if (!core.getInput('app-id')) {
         return;
     }
-    const plist = await MacOSHelper_1.default.GeneratePackagePlist(core.getInput('output-name'));
+    const outputName = `${core.getInput('output-name')}.app`;
+    const plist = await MacOSHelper_1.default.GeneratePackagePlist(outputName);
     await MacOSHelper_1.default.ExportPKG(core.getInput('app-id'), core.getInput('temporary-directory'), core.getInput('install-location'), Number(core.getInput('revision')), GetOutputPath(), plist);
 }
 function IsPostprocess() {
