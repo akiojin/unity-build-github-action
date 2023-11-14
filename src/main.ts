@@ -27,6 +27,15 @@ function GetOutputPath(): string
   }
 }
 
+function GetAppID(): string
+{
+  if (UnityUtils.GetBuildTarget() === 'Android') {
+    return core.getInput('app-id').replace('-', '')
+  } else {
+    return core.getInput('app-id')
+  }
+}
+
 async function BuildUnityProject(outputDirectory: string)
 {
   const builder = new UnityCommandBuilder()
@@ -35,7 +44,7 @@ async function BuildUnityProject(outputDirectory: string)
     .SetLogFile(core.getInput('log-file'))
     .EnablePackageManagerTraces()
 
-  if (!!core.getInput('execute-method')) {
+  if (core.getInput('execute-method')) {
     builder.SetExecuteMethod(core.getInput('execute-method'))
   } else {
     builder.SetExecuteMethod('unity_build_github_action.UnityBuildScript.PerformBuild')
@@ -48,6 +57,7 @@ async function BuildUnityProject(outputDirectory: string)
     }
 
     const script = UnityBuildScriptHelper.GenerateUnityBuildScript(
+      GetAppID(),
       outputDirectory,
       core.getInput('output-name'),
       UnityUtils.GetBuildTarget(),
@@ -64,7 +74,7 @@ async function BuildUnityProject(outputDirectory: string)
 
     const buildScriptName = 'UnityBuildScript.cs'
     const cs = path.join(core.getInput('project-directory'), 'Assets', 'Editor', buildScriptName)
-    await fs.mkdir(path.dirname(cs), {recursive: true})
+    await io.mkdirP(path.dirname(cs))
     await fs.writeFile(cs, script)
 
     core.startGroup(`Generate "${buildScriptName}"`)
@@ -92,7 +102,7 @@ async function PostprocessIOS(): Promise<void>
 
   const plist = await XcodeHelper.GenerateExportOptions(
     core.getInput('temporary-directory'),
-    core.getInput('app-id'),
+    GetAppID(),
     core.getInput("provisioning-profile-name"),
     core.getInput('team-id'),
     core.getInput('export-method'),
@@ -126,7 +136,7 @@ async function PostprocessWindows(): Promise<void>
 
 async function PostprocessMacOS(): Promise<void>
 {
-  if (!core.getInput('app-id')) {
+  if (!GetAppID()) {
     return
   }
 
@@ -134,7 +144,7 @@ async function PostprocessMacOS(): Promise<void>
   const plist = await MacOSHelper.GeneratePackagePlist(outputName)
 
   await MacOSHelper.ExportPKG(
-    core.getInput('app-id'),
+    GetAppID(),
     core.getInput('temporary-directory'),
     core.getInput('install-location'),
     Number(core.getInput('revision')),
