@@ -7,6 +7,7 @@ export default class UnityBuildScriptHelper
     }
 
     static GenerateUnityBuildScript(
+        appID: string,
         outputDirectory: string,
         outputFileName: string,
         buildTarget: string,
@@ -39,6 +40,7 @@ export default class UnityBuildScriptHelper
     {
         public int callbackOrder => -100;
 
+        const string AppID = "${appID}";
         const string OutputFileName = "${outputFileName}";
         const string OutputDirectory = @"${outputDirectory}";
         const string Target = "${buildTarget}";
@@ -122,6 +124,10 @@ export default class UnityBuildScriptHelper
             EditorUserBuildSettings.connectProfiler = Development;
             EditorUserBuildSettings.symlinkSources = Development;
             EditorUserBuildSettings.buildWithDeepProfilingSupport = Development;
+
+            if (!string.IsNullOrWhiteSpace(AppID)) {
+                PlayerSettings.applicationIdentifier = AppID;
+            }
 
 #if UNITY_IOS
             PlayerSettings.iOS.appleEnableAutomaticSigning = false;

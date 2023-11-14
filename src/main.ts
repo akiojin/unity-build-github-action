@@ -27,6 +27,15 @@ function GetOutputPath(): string
   }
 }
 
+function GetAppID(): string
+{
+  if (UnityUtils.GetBuildTarget() === 'Android') {
+    return core.getInput('app-id').replace('-', '')
+  } else {
+    return core.getInput('app-id')
+  }
+}
+
 async function BuildUnityProject(outputDirectory: string)
 {
   const builder = new UnityCommandBuilder()
@@ -48,6 +57,7 @@ async function BuildUnityProject(outputDirectory: string)
     }
 
     const script = UnityBuildScriptHelper.GenerateUnityBuildScript(
+      GetAppID(),
       outputDirectory,
       core.getInput('output-name'),
       UnityUtils.GetBuildTarget(),
@@ -92,7 +102,7 @@ async function PostprocessIOS(): Promise<void>
 
   const plist = await XcodeHelper.GenerateExportOptions(
     core.getInput('temporary-directory'),
-    core.getInput('app-id'),
+    GetAppID(),
     core.getInput("provisioning-profile-name"),
     core.getInput('team-id'),
     core.getInput('export-method'),
@@ -126,7 +136,7 @@ async function PostprocessWindows(): Promise<void>
 
 async function PostprocessMacOS(): Promise<void>
 {
-  if (!core.getInput('app-id')) {
+  if (!GetAppID()) {
     return
   }
 
@@ -134,7 +144,7 @@ async function PostprocessMacOS(): Promise<void>
   const plist = await MacOSHelper.GeneratePackagePlist(outputName)
 
   await MacOSHelper.ExportPKG(
-    core.getInput('app-id'),
+    GetAppID(),
     core.getInput('temporary-directory'),
     core.getInput('install-location'),
     Number(core.getInput('revision')),

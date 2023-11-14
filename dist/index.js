@@ -12106,7 +12106,7 @@ class UnityBuildScriptHelper {
         str = str || '';
         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
     }
-    static GenerateUnityBuildScript(outputDirectory, outputFileName, buildTarget, revision, development = false, teamID, provisioningProfileUUID, provisioningProfileType, enableBitcode, keystore, keystorePassword, keystoreAlias, keystoreAliasPassword) {
+    static GenerateUnityBuildScript(appID, outputDirectory, outputFileName, buildTarget, revision, development = false, teamID, provisioningProfileUUID, provisioningProfileType, enableBitcode, keystore, keystorePassword, keystoreAlias, keystoreAliasPassword) {
         return `namespace unity_build_github_action
 {
     using System;
@@ -12125,6 +12125,7 @@ class UnityBuildScriptHelper {
     {
         public int callbackOrder => -100;
 
+        const string AppID = "${appID}";
         const string OutputFileName = "${outputFileName}";
         const string OutputDirectory = @"${outputDirectory}";
         const string Target = "${buildTarget}";
@@ -12208,6 +12209,10 @@ class UnityBuildScriptHelper {
             EditorUserBuildSettings.connectProfiler = Development;
             EditorUserBuildSettings.symlinkSources = Development;
             EditorUserBuildSettings.buildWithDeepProfilingSupport = Development;
+
+            if (!string.IsNullOrWhiteSpace(AppID)) {
+                PlayerSettings.applicationIdentifier = AppID;
+            }
 
 #if UNITY_IOS
             PlayerSettings.iOS.appleEnableAutomaticSigning = false;
@@ -12583,13 +12588,21 @@ function GetOutputPath() {
             return `${outputPath}.pkg`;
     }
 }
+function GetAppID() {
+    if (unity_command_1.UnityUtils.GetBuildTarget() === 'Android') {
+        return core.getInput('app-id').replace('-', '');
+    }
+    else {
+        return core.getInput('app-id');
+    }
+}
 async function BuildUnityProject(outputDirectory) {
     const builder = new unity_command_1.UnityCommandBuilder()
         .SetBuildTarget(unity_command_1.UnityUtils.GetBuildTarget())
         .SetProjectPath(core.getInput('project-directory'))
         .SetLogFile(core.getInput('log-file'))
         .EnablePackageManagerTraces();
-    if (!!core.getInput('execute-method')) {
+    if (core.getInput('execute-method')) {
         builder.SetExecuteMethod(core.getInput('execute-method'));
     }
     else {
@@ -12599,10 +12612,10 @@ async function BuildUnityProject(outputDirectory) {
             keystore = tmp.tmpNameSync() + '.keystore';
             await fs.writeFile(keystore, Buffer.from(core.getInput('keystore-base64'), 'base64'));
         }
-        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(outputDirectory, core.getInput('output-name'), unity_command_1.UnityUtils.GetBuildTarget(), Number(core.getInput('revision')), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('provisioning-profile-type'), core.getBooleanInput('include-bitcode'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
+        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(GetAppID(), outputDirectory, core.getInput('output-name'), unity_command_1.UnityUtils.GetBuildTarget(), Number(core.getInput('revision')), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('provisioning-profile-type'), core.getBooleanInput('include-bitcode'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
         const buildScriptName = 'UnityBuildScript.cs';
         const cs = path_1.default.join(core.getInput('project-directory'), 'Assets', 'Editor', buildScriptName);
-        await fs.mkdir(path_1.default.dirname(cs), { recursive: true });
+        await io.mkdirP(path_1.default.dirname(cs));
         await fs.writeFile(cs, script);
         core.startGroup(`Generate "${buildScriptName}"`);
         core.info(`${buildScriptName}:\n${script}`);
@@ -12621,7 +12634,7 @@ async function PostprocessIOS() {
     if (!core.getInput('team-id') || !core.getInput('provisioning-profile-name')) {
         return;
     }
-    const plist = await XcodeHelper_1.default.GenerateExportOptions(core.getInput('temporary-directory'), core.getInput('app-id'), core.getInput("provisioning-profile-name"), core.getInput('team-id'), core.getInput('export-method'), core.getBooleanInput('include-bitcode'), core.getBooleanInput('include-symbols'), core.getBooleanInput('strip-swift-symbols'));
+    const plist = await XcodeHelper_1.default.GenerateExportOptions(core.getInput('temporary-directory'), GetAppID(), core.getInput("provisioning-profile-name"), core.getInput('team-id'), core.getInput('export-method'), core.getBooleanInput('include-bitcode'), core.getBooleanInput('include-symbols'), core.getBooleanInput('strip-swift-symbols'));
     await XcodeHelper_1.default.ExportIPA(core.getInput('configuration'), core.getInput('output-directory'), core.getInput('output-name'), plist, core.getInput('temporary-directory'));
 }
 async function PostprocessWindows() {
@@ -12635,12 +12648,12 @@ async function PostprocessWindows() {
     core.endGroup();
 }
 async function PostprocessMacOS() {
-    if (!core.getInput('app-id')) {
+    if (!GetAppID()) {
         return;
     }
     const outputName = `${core.getInput('output-name')}.app`;
     const plist = await MacOSHelper_1.default.GeneratePackagePlist(outputName);
-    await MacOSHelper_1.default.ExportPKG(core.getInput('app-id'), core.getInput('temporary-directory'), core.getInput('install-location'), Number(core.getInput('revision')), GetOutputPath(), plist);
+    await MacOSHelper_1.default.ExportPKG(GetAppID(), core.getInput('temporary-directory'), core.getInput('install-location'), Number(core.getInput('revision')), GetOutputPath(), plist);
 }
 function IsPostprocess() {
     switch (unity_command_1.UnityUtils.GetBuildTarget()) {
