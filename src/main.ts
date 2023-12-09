@@ -9,6 +9,11 @@ import UnityBuildScriptHelper from './UnityBuildScriptHelper'
 import XcodeHelper from './XcodeHelper'
 import MacOSHelper from './MacOSHelper'
 
+function IsDevelopment(): boolean
+{
+  return core.getInput('configuration').toLowerCase() === 'debug'
+}
+
 function GetOutputPath(): string
 {
   const outputPath = path.join(core.getInput('output-directory'), core.getInput('output-name'))
@@ -24,6 +29,8 @@ function GetOutputPath(): string
     return `${outputPath}.zip`
   case 'OSXUniversal':
     return `${outputPath}.pkg`
+  case 'Switch':
+    return IsDevelopment() ? `${outputPath}.nspd` : `${outputPath}.nsp`
   }
 }
 
@@ -62,7 +69,7 @@ async function BuildUnityProject(outputDirectory: string)
       core.getInput('output-name'),
       UnityUtils.GetBuildTarget(),
       Number(core.getInput('revision')),
-      core.getInput('configuration').toLowerCase() === 'debug',
+      IsDevelopment(),
       core.getInput('team-id'),
       core.getInput('provisioning-profile-uuid'),
       core.getInput('provisioning-profile-type'),
