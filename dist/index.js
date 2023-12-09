@@ -5956,10 +5956,18 @@ class UnityCommandBuilder extends argument_builder_1.ArgumentBuilder {
      */
     constructor() {
         super();
-        this.Append('-quit')
-            .Append('-batchmode')
+        this.Append('-batchmode')
             .Append('-nographics')
             .Append('-silent-crashes');
+    }
+    /**
+     * Exit the Unity editor after the command has finished executing.
+     *
+     * @returns this
+     */
+    Quit() {
+        this.Append('-quit');
+        return this;
     }
     /**
      * Disable Graphics Processing Unit (GPU) skinning at startup.
