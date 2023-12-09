@@ -6213,6 +6213,8 @@ class UnityUtils {
             case 'osx':
             case 'osxuniversal':
                 return 'OSXUniversal';
+            case 'switch':
+                return 'Switch';
         }
     }
     /**
@@ -12573,6 +12575,9 @@ const unity_command_1 = __nccwpck_require__(9088);
 const UnityBuildScriptHelper_1 = __importDefault(__nccwpck_require__(8646));
 const XcodeHelper_1 = __importDefault(__nccwpck_require__(2533));
 const MacOSHelper_1 = __importDefault(__nccwpck_require__(6085));
+function IsDevelopment() {
+    return core.getInput('configuration').toLowerCase() === 'debug';
+}
 function GetOutputPath() {
     const outputPath = path_1.default.join(core.getInput('output-directory'), core.getInput('output-name'));
     switch (unity_command_1.UnityUtils.GetBuildTarget()) {
@@ -12586,6 +12591,8 @@ function GetOutputPath() {
             return `${outputPath}.zip`;
         case 'OSXUniversal':
             return `${outputPath}.pkg`;
+        case 'Switch':
+            return IsDevelopment() ? `${outputPath}.nspd` : `${outputPath}.nsp`;
     }
 }
 function GetAppID() {
@@ -12612,7 +12619,7 @@ async function BuildUnityProject(outputDirectory) {
             keystore = tmp.tmpNameSync() + '.keystore';
             await fs.writeFile(keystore, Buffer.from(core.getInput('keystore-base64'), 'base64'));
         }
-        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(GetAppID(), outputDirectory, core.getInput('output-name'), unity_command_1.UnityUtils.GetBuildTarget(), Number(core.getInput('revision')), core.getInput('configuration').toLowerCase() === 'debug', core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('provisioning-profile-type'), core.getBooleanInput('include-bitcode'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
+        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(GetAppID(), outputDirectory, core.getInput('output-name'), unity_command_1.UnityUtils.GetBuildTarget(), Number(core.getInput('revision')), IsDevelopment(), core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('provisioning-profile-type'), core.getBooleanInput('include-bitcode'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
         const buildScriptName = 'UnityBuildScript.cs';
         const cs = path_1.default.join(core.getInput('project-directory'), 'Assets', 'Editor', buildScriptName);
         await io.mkdirP(path_1.default.dirname(cs));
