@@ -12116,7 +12116,7 @@ class UnityBuildScriptHelper {
         str = str || '';
         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
     }
-    static GenerateUnityBuildScript(appID, outputDirectory, outputFileName, buildTarget, revision, development = false, teamID, provisioningProfileUUID, provisioningProfileType, enableBitcode, keystore, keystorePassword, keystoreAlias, keystoreAliasPassword) {
+    static GenerateUnityBuildScript(appID, outputDirectory, outputFileName, buildTarget, revision, development = false, bundleVersion = '', teamID, provisioningProfileUUID, provisioningProfileType, enableBitcode, keystore, keystorePassword, keystoreAlias, keystoreAliasPassword) {
         return `namespace unity_build_github_action
 {
     using System;
@@ -12141,6 +12141,7 @@ class UnityBuildScriptHelper {
         const string Target = "${buildTarget}";
         const bool Development = ${development};
         const int Revision = ${revision};
+        const string BundleVersion = "${bundleVersion}";
 
 #if UNITY_IOS
         const string TeamID = "${teamID}";
@@ -12222,6 +12223,10 @@ class UnityBuildScriptHelper {
 
             if (!string.IsNullOrWhiteSpace(AppID)) {
                 PlayerSettings.applicationIdentifier = AppID;
+            }
+
+            if (!string.IsNullOrWhiteSpace(BundleVersion)) {
+                PlayerSettings.bundleVersion = BundleVersion;
             }
 
 #if UNITY_IOS
@@ -12627,7 +12632,7 @@ async function BuildUnityProject(outputDirectory) {
             keystore = tmp.tmpNameSync() + '.keystore';
             await fs.writeFile(keystore, Buffer.from(core.getInput('keystore-base64'), 'base64'));
         }
-        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(GetAppID(), outputDirectory, core.getInput('output-name'), unity_command_1.UnityUtils.GetBuildTarget(), Number(core.getInput('revision')), IsDevelopment(), core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('provisioning-profile-type'), core.getBooleanInput('include-bitcode'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
+        const script = UnityBuildScriptHelper_1.default.GenerateUnityBuildScript(GetAppID(), outputDirectory, core.getInput('output-name'), unity_command_1.UnityUtils.GetBuildTarget(), Number(core.getInput('revision')), IsDevelopment(), core.getInput('bundle-version'), core.getInput('team-id'), core.getInput('provisioning-profile-uuid'), core.getInput('provisioning-profile-type'), core.getBooleanInput('include-bitcode'), keystore, core.getInput('keystore-password'), core.getInput('keystore-alias'), core.getInput('keystore-alias-password'));
         const buildScriptName = 'UnityBuildScript.cs';
         const cs = path_1.default.join(core.getInput('project-directory'), 'Assets', 'Editor', buildScriptName);
         await io.mkdirP(path_1.default.dirname(cs));
