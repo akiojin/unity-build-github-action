@@ -204,7 +204,7 @@ outputs:
   output-path:
     description: 'Path of the output binary'
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
 branding:
   icon: "box"
