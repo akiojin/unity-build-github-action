@@ -12,6 +12,11 @@ inputs:
 
       ex) com.akiojin.Sample
     required: false
+  bundle-version:
+    description: >
+      Specify the bundle version.
+      This value is set to PlayerSettings.bundleVersion
+      If omitted, the value set in PlayerSettings.bundleVersion is used as is.
   build-target:
     description: >
       Allows the selection of an active build target before loading a project.
@@ -199,7 +204,7 @@ outputs:
   output-path:
     description: 'Path of the output binary'
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
 branding:
   icon: "box"

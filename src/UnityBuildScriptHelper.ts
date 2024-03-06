@@ -13,6 +13,7 @@ export default class UnityBuildScriptHelper
         buildTarget: string,
         revision: number,
         development: boolean = false,
+        bundleVersion: string = '',
         teamID?: string,
         provisioningProfileUUID?: string,
         provisioningProfileType?: string,
@@ -46,6 +47,7 @@ export default class UnityBuildScriptHelper
         const string Target = "${buildTarget}";
         const bool Development = ${development};
         const int Revision = ${revision};
+        const string BundleVersion = "${bundleVersion}";
 
 #if UNITY_IOS
         const string TeamID = "${teamID}";
@@ -127,6 +129,10 @@ export default class UnityBuildScriptHelper
 
             if (!string.IsNullOrWhiteSpace(AppID)) {
                 PlayerSettings.applicationIdentifier = AppID;
+            }
+
+            if (!string.IsNullOrWhiteSpace(BundleVersion)) {
+                PlayerSettings.bundleVersion = BundleVersion;
             }
 
 #if UNITY_IOS

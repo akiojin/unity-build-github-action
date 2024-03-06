@@ -1,7 +1,17 @@
 # unity-build-github-action
 
-This action builds Unity and outputs ipa for iOS and apk/aab for Android.
+This action will build in Unity.
+Output is available on iOS/Android/Windows/macOS platforms.
 Supported version is Unity 2021.3 or later.
+
+## Supported Platforms
+
+| Platform | Output |
+| -------- | ------ |
+| iOS      | ipa    |
+| Android  | aab    |
+| Windows  | zip    |
+| macOS    | pkg    |
 
 ## Requirement
 
@@ -116,6 +126,17 @@ brew install fastlane
 | `keystore-password`       | `false`  | `string` | ""      | Specify the password for the keystore.                                                                                                                                                                        |
 | `keystore-alias`          | `false`  | `string` | ""      | Specifies the name of the keystore alias.                                                                                                                                                                     |
 | `keystore-alias-password` | `false`  | `string` | ""      | Specify the password for the keystore alias.                                                                                                                                                                  |
+
+### Windows
+
+|           Name            | Required |   Type   | Default |                                                                                                  Description                                                                                                  |
+| ------------------------- | -------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+
+### macOS
+
+| Name                      | Required | Type     | Default         | Description                                                                                                                                                                                           |
+| ------------------------- | -------- | -------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `install-location`        | `false`  | `string` | "/Applications" | Specify the directory in which to install. By default, /Applications is specified.                                                                                                                    |
 
 ## iOS build
 

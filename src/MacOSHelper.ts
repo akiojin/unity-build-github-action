@@ -70,6 +70,10 @@ export default class MacOSHelper
         bundlePostInstallScriptPath: string = '',
         bundlePreInstallScriptPath: string = ''): string
     {
+        const bundlePostInstallScriptPathNode = `<key>BundlePostInstallScriptPath</key>
+<string>${bundlePostInstallScriptPath}</string>`
+        const bundlePreInstallScriptPathNode = `<key>BundlePreInstallScriptPath</key>
+<string>${bundlePreInstallScriptPath}</string>`
         return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -85,10 +89,8 @@ export default class MacOSHelper
     <string>${bundleOverwriteAction ? 'upgrade' : 'update'}</string>
     <key>RootRelativeBundlePath</key>
     <string>${rootRelativeBundlePath}</string>
-    <key>BundlePostInstallScriptPath</key>
-    <string>${bundlePostInstallScriptPath}</string>
-    <key>BundlePreInstallScriptPath</key>
-    <string>${bundlePreInstallScriptPath}</string>
+    ${bundlePostInstallScriptPath ? bundlePostInstallScriptPathNode : ''}
+    ${bundlePreInstallScriptPath ? bundlePreInstallScriptPathNode : ''}
   </dict>
 </array>
 </plist>`;

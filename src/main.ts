@@ -70,6 +70,7 @@ async function BuildUnityProject(outputDirectory: string)
       UnityUtils.GetBuildTarget(),
       Number(core.getInput('revision')),
       IsDevelopment(),
+      core.getInput('bundle-version'),
       core.getInput('team-id'),
       core.getInput('provisioning-profile-uuid'),
       core.getInput('provisioning-profile-type'),
