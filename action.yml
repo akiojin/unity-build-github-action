@@ -33,6 +33,11 @@ inputs:
       Debug, Release.
     required: false
     default: 'Debug'
+  enable-bake:
+    description: >
+      Specify true to bake at build time.
+    required: false
+    default: false
   execute-method:
     description: >
       Execute the static method as soon as Unity opens the project,
@@ -85,6 +90,12 @@ inputs:
       If omitted, the project version is used.
     required: false
     default: ''
+  p12-base64:
+    description: >
+      Specify the Base64 data for the p12 file.
+      If you do not specify a file path in `p12`, you must specify this parameter.
+      Also, if this value is specified, the value of `p12` is ignored.
+      Required for macOS/iOS builds.
   export-method:
     description: >
       Method used to export the archive.

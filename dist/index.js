@@ -5957,7 +5957,6 @@ class UnityCommandBuilder extends argument_builder_1.ArgumentBuilder {
     constructor() {
         super();
         this.Append('-batchmode')
-            .Append('-nographics')
             .Append('-silent-crashes');
     }
     /**
@@ -5967,6 +5966,18 @@ class UnityCommandBuilder extends argument_builder_1.ArgumentBuilder {
      */
     Quit() {
         this.Append('-quit');
+        return this;
+    }
+    /**
+     * When you run this in batch mode, Unity doesn’t initialize the graphics device.
+     * You can then run automated workflows on machines that don’t have a GPU.
+     * Automated workflows only work when you have a window in focus, otherwise you can’t send simulated input commands.
+     * -nographics does not allow you to bake GI, because Enlighten requires a GPU for Meta Pass rendering.
+     *
+     * @returns this
+     */
+    NoGraphics() {
+        this.Append('-nographics');
         return this;
     }
     /**
@@ -8384,7 +8395,7 @@ class UnityBuildScriptHelper {
         const int Revision = ${revision};
         const string BundleVersion = "${bundleVersion}";
 
-#if UNITY_IOS
+#if UNITY_IOS || UNITY_STANDALONE_OSX
         const string TeamID = "${teamID}";
         const string ProvisioningProfileUUID = "${provisioningProfileUUID}";
         const ProvisioningProfileType Type = ProvisioningProfileType.${this.ToTitleCase(provisioningProfileType)};
@@ -8447,7 +8458,7 @@ class UnityBuildScriptHelper {
         {
             var options = BuildOptions.None;
 
-            if (!!Development) {
+            if (Development) {
                 options |= BuildOptions.Development;
             }
 
@@ -8474,8 +8485,7 @@ class UnityBuildScriptHelper {
             PlayerSettings.iOS.appleEnableAutomaticSigning = false;
             PlayerSettings.iOS.buildNumber = Revision.ToString();
 
-            EditorUserBuildSettings.iOSXcodeBuildConfig = !!Development ?
-                XcodeBuildConfig.Debug : XcodeBuildConfig.Release;
+            EditorUserBuildSettings.iOSXcodeBuildConfig = Development ? XcodeBuildConfig.Debug : XcodeBuildConfig.Release;
 
             if (!string.IsNullOrWhiteSpace(TeamID)) {
                 PlayerSettings.iOS.appleDeveloperTeamID = TeamID;
@@ -8492,19 +8502,25 @@ class UnityBuildScriptHelper {
                 // The provisioning profile type will be determined automatically when building the Xcode project.
                 PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType.Automatic;
             }
+#elif UNITY_STANDALONE_OSX
+            PlayerSettings.macOS.buildNumber = Revision.ToString();
+            PlayerSettings.useMacAppStoreValidation = true;
+
+            EditorUserBuildSettings.macOSXcodeBuildConfig = Development ? XcodeBuildConfig.Debug : XcodeBuildConfig.Release;
+
+            UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject = true;
 #elif UNITY_ANDROID
             PlayerSettings.Android.bundleVersionCode = Revision;
 
             EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
-            EditorUserBuildSettings.androidBuildType = !!Development ?
-                AndroidBuildType.Debug : AndroidBuildType.Release;
+            EditorUserBuildSettings.androidBuildType = Development ? AndroidBuildType.Debug : AndroidBuildType.Release;
 
             PlayerSettings.Android.keystoreName = Keystore;
             PlayerSettings.Android.useCustomKeystore = !string.IsNullOrWhiteSpace(PlayerSettings.Android.keystoreName);
 
-            if (!!PlayerSettings.Android.useCustomKeystore) {
-                if (!!string.IsNullOrWhiteSpace(KeystorePassword) ||
-                    !!string.IsNullOrWhiteSpace(KeystoreAliasPassword)) {
+            if (PlayerSettings.Android.useCustomKeystore) {
+                if (string.IsNullOrWhiteSpace(KeystorePassword) ||
+                    string.IsNullOrWhiteSpace(KeystoreAliasPassword)) {
                     throw new Exception("Keystore password or keystore alias password not specified.");
                 }
 
@@ -8562,6 +8578,11 @@ class UnityBuildScriptHelper {
                 $"    PlayerSettings.Android.targetArchitectures: {PlayerSettings.Android.targetArchitectures}\\n" +
                 $"    PlayerSettings.Android.useCustomKeystore: {PlayerSettings.Android.useCustomKeystore}\\n" +
                 $"  }}\\n" +
+#elif UNITY_STANDALONE_OSX
+                $"  macOS {{\\n" +
+                $"    PlayerSettings.macOS.buildNumber: {PlayerSettings.macOS.buildNumber}\\n" +
+                $"    PlayerSettings.useMacAppStoreValidation: {PlayerSettings.useMacAppStoreValidation}\\n" +
+                $"  }}\\n" +
 #endif
                 $"  Editor {{\\n" +
                 $"    CacheServerEnabled: {EditorPrefs.GetBool("CacheServerEnabled")}\\n" +
@@ -8577,6 +8598,7 @@ class UnityBuildScriptHelper {
                 $"    EditorUserBuildSettings.il2CppCodeGeneration: {EditorUserBuildSettings.il2CppCodeGeneration}\\n" +
 #endif
                 $"    EditorUserBuildSettings.iOSXcodeBuildConfig: {EditorUserBuildSettings.iOSXcodeBuildConfig}\\n" +
+                $"    EditorUserBuildSettings.macOSXcodeBuildConfig: {EditorUserBuildSettings.macOSXcodeBuildConfig}\\n" +
                 $"    EditorUserBuildSettings.symlinkSources: {EditorUserBuildSettings.symlinkSources}\\n" +
                 $"  }}\\n" +
                 $"}}");
@@ -8863,6 +8885,9 @@ async function BuildUnityProject(outputDirectory) {
         .SetProjectPath(core.getInput('project-directory'))
         .SetLogFile(core.getInput('log-file'))
         .EnablePackageManagerTraces();
+    if (!core.getBooleanInput('enable-bake')) {
+        builder.NoGraphics();
+    }
     if (core.getInput('execute-method')) {
         builder.SetExecuteMethod(core.getInput('execute-method'));
     }
