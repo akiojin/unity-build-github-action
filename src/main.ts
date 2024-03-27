@@ -51,6 +51,10 @@ async function BuildUnityProject(outputDirectory: string)
     .SetLogFile(core.getInput('log-file'))
     .EnablePackageManagerTraces()
 
+  if (!core.getBooleanInput('enable-bake')) {
+    builder.NoGraphics()
+  }
+
   if (core.getInput('execute-method')) {
     builder.SetExecuteMethod(core.getInput('execute-method'))
   } else {

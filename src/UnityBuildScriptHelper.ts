@@ -49,7 +49,7 @@ export default class UnityBuildScriptHelper
         const int Revision = ${revision};
         const string BundleVersion = "${bundleVersion}";
 
-#if UNITY_IOS
+#if UNITY_IOS || UNITY_STANDALONE_OSX
         const string TeamID = "${teamID}";
         const string ProvisioningProfileUUID = "${provisioningProfileUUID}";
         const ProvisioningProfileType Type = ProvisioningProfileType.${this.ToTitleCase(provisioningProfileType)};
@@ -112,7 +112,7 @@ export default class UnityBuildScriptHelper
         {
             var options = BuildOptions.None;
 
-            if (!!Development) {
+            if (Development) {
                 options |= BuildOptions.Development;
             }
 
@@ -139,8 +139,7 @@ export default class UnityBuildScriptHelper
             PlayerSettings.iOS.appleEnableAutomaticSigning = false;
             PlayerSettings.iOS.buildNumber = Revision.ToString();
 
-            EditorUserBuildSettings.iOSXcodeBuildConfig = !!Development ?
-                XcodeBuildConfig.Debug : XcodeBuildConfig.Release;
+            EditorUserBuildSettings.iOSXcodeBuildConfig = Development ? XcodeBuildConfig.Debug : XcodeBuildConfig.Release;
 
             if (!string.IsNullOrWhiteSpace(TeamID)) {
                 PlayerSettings.iOS.appleDeveloperTeamID = TeamID;
@@ -157,19 +156,25 @@ export default class UnityBuildScriptHelper
                 // The provisioning profile type will be determined automatically when building the Xcode project.
                 PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType.Automatic;
             }
+#elif UNITY_STANDALONE_OSX
+            PlayerSettings.macOS.buildNumber = Revision.ToString();
+            PlayerSettings.useMacAppStoreValidation = true;
+
+            EditorUserBuildSettings.macOSXcodeBuildConfig = Development ? XcodeBuildConfig.Debug : XcodeBuildConfig.Release;
+
+            UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject = true;
 #elif UNITY_ANDROID
             PlayerSettings.Android.bundleVersionCode = Revision;
 
             EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
-            EditorUserBuildSettings.androidBuildType = !!Development ?
-                AndroidBuildType.Debug : AndroidBuildType.Release;
+            EditorUserBuildSettings.androidBuildType = Development ? AndroidBuildType.Debug : AndroidBuildType.Release;
 
             PlayerSettings.Android.keystoreName = Keystore;
             PlayerSettings.Android.useCustomKeystore = !string.IsNullOrWhiteSpace(PlayerSettings.Android.keystoreName);
 
-            if (!!PlayerSettings.Android.useCustomKeystore) {
-                if (!!string.IsNullOrWhiteSpace(KeystorePassword) ||
-                    !!string.IsNullOrWhiteSpace(KeystoreAliasPassword)) {
+            if (PlayerSettings.Android.useCustomKeystore) {
+                if (string.IsNullOrWhiteSpace(KeystorePassword) ||
+                    string.IsNullOrWhiteSpace(KeystoreAliasPassword)) {
                     throw new Exception("Keystore password or keystore alias password not specified.");
                 }
 
@@ -227,6 +232,11 @@ export default class UnityBuildScriptHelper
                 $"    PlayerSettings.Android.targetArchitectures: {PlayerSettings.Android.targetArchitectures}\\n" +
                 $"    PlayerSettings.Android.useCustomKeystore: {PlayerSettings.Android.useCustomKeystore}\\n" +
                 $"  }}\\n" +
+#elif UNITY_STANDALONE_OSX
+                $"  macOS {{\\n" +
+                $"    PlayerSettings.macOS.buildNumber: {PlayerSettings.macOS.buildNumber}\\n" +
+                $"    PlayerSettings.useMacAppStoreValidation: {PlayerSettings.useMacAppStoreValidation}\\n" +
+                $"  }}\\n" +
 #endif
                 $"  Editor {{\\n" +
                 $"    CacheServerEnabled: {EditorPrefs.GetBool("CacheServerEnabled")}\\n" +
@@ -242,6 +252,7 @@ export default class UnityBuildScriptHelper
                 $"    EditorUserBuildSettings.il2CppCodeGeneration: {EditorUserBuildSettings.il2CppCodeGeneration}\\n" +
 #endif
                 $"    EditorUserBuildSettings.iOSXcodeBuildConfig: {EditorUserBuildSettings.iOSXcodeBuildConfig}\\n" +
+                $"    EditorUserBuildSettings.macOSXcodeBuildConfig: {EditorUserBuildSettings.macOSXcodeBuildConfig}\\n" +
                 $"    EditorUserBuildSettings.symlinkSources: {EditorUserBuildSettings.symlinkSources}\\n" +
                 $"  }}\\n" +
                 $"}}");
