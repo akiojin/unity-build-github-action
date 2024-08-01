@@ -37,7 +37,7 @@
     "@akiojin/unity-command": "1.4.1",
     "@commitlint/cli": "19.3.0",
     "@commitlint/config-conventional": "19.2.2",
-    "@types/node": "20.14.9",
+    "@types/node": "22.0.2",
     "@vercel/ncc": "0.38.1",
     "husky": "9.0.11",
     "rimraf": "5.0.7",
