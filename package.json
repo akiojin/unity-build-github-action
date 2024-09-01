@@ -39,7 +39,7 @@
     "@commitlint/config-conventional": "19.2.2",
     "@types/node": "20.14.9",
     "@vercel/ncc": "0.38.1",
-    "husky": "9.0.11",
+    "husky": "9.1.5",
     "rimraf": "5.0.7",
     "typescript": "5.5.4"
   },
