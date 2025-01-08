@@ -1,0 +1,26 @@
+{
+    "allow_auto_merge": true,
+    "allow_force_pushes": false,
+    "allow_deletions": false,
+    "block_creations": false,
+    "enforce_admins": false,
+    "required_conversation_resolution": true,
+    "required_linear_history": false,
+    "required_pull_request_reviews": {
+        "dismiss_stale_reviews": false,
+        "require_code_owner_reviews": false,
+        "required_approving_review_count": 0,
+        "require_last_push_approval": false
+    },
+    "required_signatures": false,
+    "required_status_checks": {
+        "strict": true,
+        "checks": [
+            {
+                "context": "Build",
+                "app_id": 15368
+            }
+        ]
+    },
+    "restrictions": null
+}

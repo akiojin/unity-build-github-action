@@ -1,0 +1,28 @@
+﻿name: Auto Merge
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  AutoMerge:
+    runs-on:
+      - ubuntu-latest
+
+    steps:
+      - name: 🔄 Checkout to the branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref}}
+
+      - name: ✅ Auto merge
+        run: |
+          gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.PULL_REQUEST_AUTO_MERGE }}
+          
