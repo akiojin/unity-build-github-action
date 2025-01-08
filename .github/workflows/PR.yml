@@ -15,11 +15,12 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: 🌱 Checkout to the branch
+        uses: actions/checkout@v4
 
       - uses: akiojin/auto-review-github-action@v2
         continue-on-error: true
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          target: 'ts,yml'
+          target: 'ts,yml,json'
           language: 日本語
