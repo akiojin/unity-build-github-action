@@ -17,29 +17,7 @@ jobs:
       - name: 🌱 Checkout to the branch
         uses: actions/checkout@v4
 
-      - name: 🍏 Set up Node.js version
-        uses: actions/setup-node@v4
-
       - name: ⬆️ GitHub Release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION=$(jq -r .version package.json)
-          
-          echo "Tag version: $VERSION"
-
-          MAJOR_VERSION=$(echo "$VERSION" | grep -oE "^[0-9]+")
-          TAG="v$MAJOR_VERSION"
-
-          if git rev-parse "$TAG" >/dev/null 2>&1; then
-              echo "Tag $TAG already exists. Overwriting..."
-              git tag -d "$TAG"
-              git push origin ":refs/tags/$TAG"
-          fi
-
-          git tag "$TAG"
-          git push --force origin "$TAG"
-          gh release create v$VERSION --generate-notes --target main
-
-          echo "Tag $TAG has been created and pushed successfully."
-  
+        uses: akiojin/github-release-github-action@v0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
