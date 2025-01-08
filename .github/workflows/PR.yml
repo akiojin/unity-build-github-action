@@ -15,7 +15,8 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: 🌱 Checkout to the branch
+        uses: actions/checkout@v4
 
       - uses: akiojin/auto-review-github-action@v2
         continue-on-error: true
