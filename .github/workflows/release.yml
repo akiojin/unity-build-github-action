@@ -21,13 +21,8 @@ jobs:
         uses: actions/setup-node@v4
 
       - name: ⬆️ GitHub Release
-        run: |
-          VERSION=$(jq -r .version package.json)
-          gh release create v$VERSION --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 📂 Creating a version tag
         run: |
           VERSION=$(jq -r .version package.json)
           
@@ -44,5 +39,7 @@ jobs:
 
           git tag "$TAG"
           git push --force origin "$TAG"
+          gh release create v$VERSION --generate-notes --target main
 
           echo "Tag $TAG has been created and pushed successfully."
+  
