@@ -21,5 +21,5 @@ jobs:
         continue-on-error: true
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          target: 'ts,yml'
+          target: 'ts,yml.json'
           language: 日本語
