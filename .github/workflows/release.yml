@@ -14,10 +14,10 @@ jobs:
       contents: write
 
     steps:
-      - name: 🌱 Checkout to the branch
+      - name: 🔄 Checkout to the branch
         uses: actions/checkout@v4
 
-      - name: ⬆️ GitHub Release
+      - name: 🚀 GitHub Release
         uses: akiojin/github-release-github-action@v0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
