@@ -20,4 +20,4 @@ jobs:
       - name: 🚀 GitHub Release
         uses: akiojin/github-release-github-action@v0
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
