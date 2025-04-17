@@ -29,6 +29,8 @@ function GetOutputPath(): string
     return `${outputPath}.zip`
   case 'OSXUniversal':
     return `${outputPath}.pkg`
+  case 'WebGL':
+    return outputPath
   case 'Switch':
     return IsDevelopment() ? `${outputPath}.nspd` : `${outputPath}.nsp`
   }
