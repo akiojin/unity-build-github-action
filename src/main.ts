@@ -16,7 +16,8 @@ function IsDevelopment(): boolean
 
 function GetOutputPath(): string
 {
-  const outputPath = path.join(core.getInput('output-directory'), core.getInput('output-name'))
+  const outputDirectory = core.getInput('output-directory')
+  const outputPath = path.join(outputDirectory, core.getInput('output-name'))
 
   switch (UnityUtils.GetBuildTarget()) {
   default:
@@ -30,7 +31,7 @@ function GetOutputPath(): string
   case 'OSXUniversal':
     return `${outputPath}.pkg`
   case 'WebGL':
-    return outputPath
+    return outputDirectory
   case 'Switch':
     return IsDevelopment() ? `${outputPath}.nspd` : `${outputPath}.nsp`
   }
