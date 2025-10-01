@@ -38,7 +38,7 @@
     "@types/node": "22.15.29",
     "@vercel/ncc": "0.38.3",
     "rimraf": "6.0.1",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "private": true
 }
