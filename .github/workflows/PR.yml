@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: 🔄 Checkout to the branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - uses: akiojin/auto-review-github-action@v2
         continue-on-error: true

@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: 🔄 Checkout to the branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🚀 GitHub Release
         uses: akiojin/github-release-github-action@v1
